@@ -1,5 +1,3 @@
-= Usage =
-
 To render a template, include the engine, create a Outline instance for your template, and call the get() function, which returns the path to the compiled template:
 
 {{{
