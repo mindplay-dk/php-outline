@@ -1,5 +1,3 @@
-= About Outline =
-
 Outline is a lightweight "template engine" designed for PHP developers.
 
 ==== Why yet another template engine? ====
