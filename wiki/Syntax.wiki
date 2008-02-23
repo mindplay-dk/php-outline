@@ -7,6 +7,7 @@ Simple conditional blocks can be implemented using if-blocks:
 You have your basic for-loops, which work in both directions:
 
 	`{for $var from 1 to 20} ... {/for}`
+
 	`{for $var from 10 to 0} ... {/for}`
 
 You can also specify an increment, to achieve sequences like 0, 10, 20, 30 ...
@@ -36,15 +37,19 @@ You can insert comments into your templates:
 You can of course output simple variables and define()'d php constants:
 
 	`{$var} ... simply outputs the contents of $var`
+
 	`{#NAME} ... outputs the contents of a defined constant, NAME`
 
 And you can apply modifiers to them - using a syntax similar to Smarty:
 
 	`{$var|strtoupper} ... prints $var in uppercase`
+
 	`{#NAME|strtoupper} ... prints value of constant NAME in uppercase`
 		
 	`{$var|md5} ... prints the md5-sum of $var`
+
 	`{$var|ucfirst} ... first letter in uppercase`
+
 	`{$var|wordwrap:30:"\n"|strtolower}`
 
 Note that any available (internal or user) php-function can be used as a modifier. It is also possible to override php-functions with template-specific modifier functions.
@@ -52,8 +57,11 @@ Note that any available (internal or user) php-function can be used as a modifie
 You can set variables, evaluate complex expressions, etc.:
 
 	`{set $text = 'some text'}`
+
 	`{set $number++}`
+
 	`{set $total = $total + $price}`
+
 	etc.
 
 You can capture a section of the template's output to a variable:
@@ -67,6 +75,7 @@ Inside loops, you can alternate between values:
 You can include subtemplates:
 
 	`{include some_template}`
+
 	`{include $var}`
 
 You can include and display textfiles:
