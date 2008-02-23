@@ -2,79 +2,81 @@
 
 Simple conditional blocks can be implemented using if-blocks:
 
-	{if $var == 42} ... {elseif $var == 21} ... {else} ... {/if}
+	`{if $var == 42} ... {elseif $var == 21} ... {else} ... {/if}`
 
 You have your basic for-loops, which work in both directions:
 
-	{for $var from 1 to 20} ... {/for}
-	{for $var from 10 to 0} ... {/for}
+	`{for $var from 1 to 20} ... {/for}`
+	`{for $var from 10 to 0} ... {/for}`
 
 You can also specify an increment, to achieve sequences like 0, 10, 20, 30 ...
 
-	{for $var from 0 to 100 step 10} ... {/for}
+	`{for $var from 0 to 100 step 10} ... {/for}`
 
 Looping through each element of an array is similar to php:
 
-	{foreach $array as $var} ... {/foreach}
+	`{foreach $array as $var} ... {/foreach}`
 
 Or when looping through an associative array:
 
-	{foreach $array as $index => $var} ... {foreach}
+	`{foreach $array as $index => $var} ... {foreach}`
 
 You have your while-loops:
 
-	{while $var < 20} ... {/while}
+	`{while $var < 20} ... {/while}`
 
-And you can escape from template-syntax, when you need the { and } chars for something else, e.g. inline javascript or css:
+And you can escape from template-syntax, when you need the `{` and `}` chars for something else, e.g. inline javascript or css:
 
-	{ignore} ... javascript or css ... {/ignore}
+	`{ignore} ... javascript or css ... {/ignore}`
 
 You can insert comments into your templates:
 
-	{* this won't be displayed or have any effect whatsoever *}
+	`{* this won't be displayed or have any effect whatsoever *}`
 
 You can of course output simple variables and define()'d php constants:
 
-	{$var} ... simply outputs the contents of $var
-	{#NAME} ... outputs the contents of a defined constant, NAME
+	`{$var} ... simply outputs the contents of $var`
+	`{#NAME} ... outputs the contents of a defined constant, NAME`
 
 And you can apply modifiers to them - using a syntax similar to Smarty:
 
-	{$var|strtoupper} ... prints $var in uppercase
-	{#NAME|strtoupper} ... prints value of constant NAME in uppercase
+	`{$var|strtoupper} ... prints $var in uppercase`
+	`{#NAME|strtoupper} ... prints value of constant NAME in uppercase`
 		
-	{$var|md5} ... prints the md5-sum of $var
-	{$var|ucfirst} ... first letter in uppercase
-	{$var|wordwrap:30:"\n"|strtolower}
+	`{$var|md5} ... prints the md5-sum of $var`
+	`{$var|ucfirst} ... first letter in uppercase`
+	`{$var|wordwrap:30:"\n"|strtolower}`
 
 Note that any available (internal or user) php-function can be used as a modifier. It is also possible to override php-functions with template-specific modifier functions.
 
 You can set variables, evaluate complex expressions, etc.:
 
-	{set $text = 'some text'}
-	{set $number++}
-	{set $total = $total + $price}
+	`{set $text = 'some text'}`
+	`{set $number++}`
+	`{set $total = $total + $price}`
 	etc.
 
 You can capture a section of the template's output to a variable:
 
-	{capture $myvar} ... {$myvar}
+	`{capture $myvar} ... {$myvar}`
 
 Inside loops, you can alternate between values:
 
-	{cycle} value 1 {next} value 2 {next} value 3 ... {/cycle}
+	`{cycle} value 1 {next} value 2 {next} value 3 ... {/cycle}`
 
 You can include subtemplates:
 
-	{include some_template}
-	{include $var}
+	`{include some_template}`
+	`{include $var}`
 
 You can include and display textfiles:
 
-	{display myfile.ext}
+	`{display myfile.ext}`
 
 And you can include php-scripts:
 
-	{require myscript.php}
+	`{require myscript.php}`
 
 == Modifiers ==
+
+You can declare your own modifiers. Simply write standard PHP functions, or (better) prefix your function name with "`outline_`" - these functions will take presedent over non-prefixed functions, which means you can override standard PHP functions with custom modifiers.
