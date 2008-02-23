@@ -88,4 +88,52 @@ And you can include php-scripts:
 
 == Modifiers ==
 
-You can declare your own modifiers. Simply write standard PHP functions, or (better) prefix your function name with "`outline_`" - these functions will take presedent over non-prefixed functions, which means you can override standard PHP functions with custom modifiers.
+You can declare your own modifiers. Simply write standard PHP functions, or (better) prefix your function name with "`outline_`" - these functions will take presedent over non-prefixed functions, which means you can override standard pfp-functions with custom modifiers.
+
+A few standard modifiers are included:
+
+	`{$var|replace:"find":"replace"}`
+	
+	replaces "find" with "replace" - avoid php's standard str_replace() function, as it expects the string to operate on to come last.
+		
+	`{$var|default:"empty"}`
+		
+	outputs "empty" instead of null, "" (empty string) or 0 (zero).
+		
+	`{$var|wed}`
+
+	`{$var|wed:50}`
+		
+	prevents orphans by replacing the last space with "&nbsp;". in rendered HTML, this prevents single hanging words, which is considered bad typography. the optional number, is the maximum length of the last word - if longer than that, no change is made.
+
+== Blocks ==
+
+Blocks can be used when you have something that repeats on a page, possibly with variations.
+
+For example:
+
+{{{
+{block headline $title, $color = '#00f'}
+	<h1 style="color:{$color}">
+		{$title}
+	</h1>
+{/block}
+}}}
+
+Once declared, you can call the block like any other built-in function:
+
+	`{headline "A blue headline"}`
+	
+	`{headline "A red headline", "#f00"}`
+
+Technically, blocks are simply php-functions, and therefore have all the features of a normal function declaration header in PHP - you separate the arguments with commas, both at declaration time, and when calling a block.
+
+Note that the blockname is case-insensitive.
+
+You can specify default values for arguments, e.g. $color = '#00f'.
+
+You can place your block declaration in an external template, and {include} it from other templates - just be aware, that the include statement must precede the call; a block can not be called before it has been declared.
+
+Also note that a block has it's own closed scope - it cannot see any template variables outside of itself, so if you have a variable in the template itself, that you need access to inside the block, you have to pass it as an argument.
+
+Constants, on the other hand, are available globally.
