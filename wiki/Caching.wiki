@@ -51,22 +51,26 @@ $_outline->cache('product', 'list', $pagenum);
 By default (with no arguments for the cache() method), the cached content is stored in the cache folder as "{templatename}.html" - but now instead, you get the following cache files:
 
 	- product/list/1.html
+
 	- product/list/2.html
+
 	- etc.
 
 Similarly, for your individual product pages, you can do this:
 
 {{{
-	$productid = $_GET['productid'];
-	...
-	$_outline->cache('product', 'detail', $productid);
-	...
+$productid = $_GET['productid'];
+...
+$_outline->cache('product', 'detail', $productid);
+...
 }}}
 
 This gives you another folder with files like these:
 
 	- product/detail/123.html
+
 	- product/detail/456.html
+
 	- etc.
 
 By organizing your cached content in this manner, manually clearing cached content becomes extremely simple.
@@ -74,14 +78,14 @@ By organizing your cached content in this manner, manually clearing cached conte
 For example, if one product number 123 is updated with a new description, to expire the product's detail page, do this:
 
 {{{
-	$productid = 123; // (get your updated product id from somewhere)
-	OutlineCache::expire('product', 'detail', $productid);
+$productid = 123; // (get your updated product id from somewhere)
+OutlineCache::expire('product', 'detail', $productid);
 }}}
 
 If a new product is added, the product list pages will most likely all change - to expire all the list pages, do this:
 
 {{{
-	OutlineCache::expire('product', 'list');
+OutlineCache::expire('product', 'list');
 }}}
 
 This clears all cached content under the product/list folder.
@@ -89,7 +93,7 @@ This clears all cached content under the product/list folder.
 And finally - if you just imported a whole new database of products for some reason, to expire all product lists and all detail pages:
 
 {{{
-	OutlineCache::expire('product');
+OutlineCache::expire('product');
 }}}
 
 This clears all the contents of the product folder, including both the detail pages and list pages.
@@ -106,4 +110,4 @@ Most minor applications don't need caching in the first place - the caching done
 
 Don't try to cache everything. If you're designing a CMS or some other block-based page system, for example, don't cache the main template - it's usually very low-complexity anyway; it probably consists mostly of the static HTML surrounding blocks of content, and just assembles the output of various (possibly cached) "blocks", banner ads, and so on.
 
-Chances are, the overhead of the caching engine is greater than the small amount of overhead from processing your compiled main template, which essentially is just a very simple PHP script.
+Chances are, the overhead of the caching engine is greater than the small amount of overhead from processing your compiled main template, which essentially is just a very simple php-script.
