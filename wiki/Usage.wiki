@@ -1,0 +1,49 @@
+#This page explains how to render a template from your script.
+
+= Usage =
+
+To render a template, include the engine, create a Outline instance for your template, and call the get() function, which returns the path to the compiled template:
+
+{{{
+	require "outline/engine.php";
+	$outline = new Outline('test');
+	require $outline->get();
+}}}
+
+This is a very different approach from that used by most other template engines, where you first have to go through the work of manually assigning every variable you want to make available to the template. Any global variables will be available to your template.
+
+For simple pages that peform a single operation, this may work just fine, but a lot of the time, you are going to want to run the compiled template in an isolated scope - you can do this by wrapping your template in a function, for example:
+
+{{{
+	function show_my_template($color, $icon) {
+		$data = array("1", "2", "3");
+		$_outline = new Outline('test');
+		require $_outline->get();
+	}
+}}}
+
+The template now runs within the function's local scope, which means the variables your template will see, are the variables created and assigned in that function's local scope - including the function's arguments. You template will also have access to the $_outline variable, which is why it's prefixed with an underscore; to prevent the template author from accidentally using or overwriting it inside the template.
+
+You could also wrap the template rendering code in  a method of an object - for example, a render() method on a simple class designed to render a specific template:
+
+{{{
+	class MyTemplate extends Outline {
+		
+		public function MyTemplate() {
+			parent::Outline('test');
+		}
+		
+		private $color = '#f00', $icon = 'icon.gif';
+		
+		public function setColor($color) {
+			$this->color = $color;
+		}
+		
+		public function render() {
+			$icon = $this->icon;
+			$color = $this->color;
+			require $this->get();
+		}
+		
+	}
+}}}
