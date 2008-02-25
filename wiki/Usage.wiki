@@ -1,7 +1,9 @@
+First, copy the "config.dist.php" file and customize it according to your own needs. The file itself contains some explanations of each configuration setting.
+
 To render a template, include the engine, create a Outline instance for your template, and call the get() function, which returns the path to the compiled template:
 
 {{{
-require "outline/engine.php";
+require "outline/config.php";
 $outline = new Outline('test');
 require $outline->get();
 }}}
