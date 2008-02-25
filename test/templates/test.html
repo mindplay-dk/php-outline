@@ -1,0 +1,127 @@
+<html>
+
+<head>
+	<title>{$use_this_title}</title>
+</head>
+
+<body>
+
+{ignore}
+	<h1>Testing the {require} command</h1>
+	<!-- ... also testing the ignore command -->
+{/ignore}
+
+{require test_require.php}
+
+<p>Printing a constant defined in 'test_require.php': {#TEST_VALUE}</p>
+
+<p>Applying a modifier to the same constant: {#TEST_VALUE|replace:'i':'iiiii'}</p>
+
+{ignore}<h1>Testing the {block} command</h1>{/ignore}
+
+{block testBlock $a, $b = 'this is the default value of $b'}
+	<p>This is the output from the testBlock: '{$a}' and '{$b}'</p>
+{/block}
+
+{testBlock 'this is the first value passed to testBlock'}
+{TESTBLOCK 'this is the first value passed to testBlock', 'this is the second value passed to testBlock'}
+
+<h1>Testing variables and modifiers</h1>
+
+<p>This value was assigned in the template function in 'test.php': "{$testvar}"</p>
+
+<p>And the same variable with a native PHP function applied as modifier: "{$testvar|md5}"</p>
+
+<p>This modifier uses a variable as one of it's arguments: "{$testvar|replace:'variable':'VARIABLE'}"</p>
+
+{ignore}<h1>Testing the {capture} command</h1>{/ignore}
+
+{capture $test}
+This content was captured to the $test variable.
+{/capture}
+
+<p>Captured text: "{$test}"</p>
+
+{ignore}<h1>Testing the {set} command</h1>{/ignore}
+
+{set $var='This string was assigned using the set command'}
+
+<p>{$var}</p>
+
+<h1>Testing the {ignore}{while}{/ignore} command</h1>
+
+{set $i = 5}
+<ul>
+	{while $i > 0}
+		<li>countdown {$i} ...</li>
+		{set $i = $i - 1}
+	{/while}
+</ul>
+
+{ignore}<h1>Testing variations of the {for} command</h1>{/ignore}
+
+<p>Counting to ten: {for $var from 1 to 10}{$var}, {/for}...</p>
+
+<p>Counting to a hundred by ten at a time: {for $var from 0 to 100 by 10}{$var}, {/for}...</p>
+
+<p>Counting backwards from ten: {for $var from 10 to 1}{$var}, {/for}...</p>
+
+{ignore}<h1>Testing the {include} command</h1>{/ignore}
+
+{include test_include}
+
+{ignore}<h1>Testing the {foreach} command</h1>{/ignore}
+
+{set $odd = false}
+
+{foreach $testarray as $color => $rgb}
+	<p style="color:#{$rgb}">{$color}</p>
+{/foreach}
+
+{ignore}<h1>Testing access to an object created in 'test_require.php'</h1>{/ignore}
+
+<p>Variable access: {$testobject->variable}</p>
+<p>Method access: {$testobject->method()}</p>
+
+{ignore}<h1>Testing the {if} command</h1>{/ignore}
+
+<p>
+	{for $var from 1 to 10}
+		{$var}
+		{if $var < 3}
+			is less than three
+		{elseif $var > 8}
+			is greater than 8
+		{else}
+			is somewhere in between
+		{/if}
+		<br />
+	{/for}
+</p>
+
+{ignore}<h1>Testing the {cycle} and {next} commands</h1>{/ignore}
+
+<p>
+	{for $var from 1 to 9}
+		{cycle}
+			one,
+		{next}
+			two,
+		{next}
+			three,
+		{/cycle}
+	{/for}
+	...
+</p>
+
+{* this comment will go unseen *}
+
+<h2>Page generated at {$testdate}</h2>
+<h3>Displaying the compiled template using the {ignore}{display}{/ignore} command:</h3>
+<pre>
+{display compiled/test.php}
+</pre>
+
+</body>
+
+</html>
