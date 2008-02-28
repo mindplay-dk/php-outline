@@ -5,7 +5,7 @@
 OutlineCache
 ----------
 
-Copyright (C) 2007, Rasmus Schultz <http://www.mindplay.dk>
+Copyright (C) 2008, Rasmus Schultz <http://www.mindplay.dk>
 
 Please see "README.txt" for license and usage information.
 
@@ -60,7 +60,7 @@ class OutlineCache {
 	
 	function capture() {
 		
-		if ($this->buffering) trigger_error("Cache: begin() may only be called once, or after end() has been called");
+		if ($this->buffering) trigger_error("Cache: capture() may only be called once, or after stop() has been called");
 		
 		$path = '';
 		
@@ -81,7 +81,7 @@ class OutlineCache {
 	
 	function stop() {
 		
-		if (!$this->buffering) trigger_error("Cache: begin() must be called before end() can be called");
+		if (!$this->buffering) trigger_error("Cache: capture() must be called before stop() can be called");
 		
 		if (!@file_put_contents(implode($this->path), ob_get_contents()))
 			trigger_error("Cache: unable to write new cache entry ".implode($this->path), E_USER_ERROR);
