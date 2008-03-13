@@ -9,6 +9,4 @@ class TestClass {
 	}
 }
 
-$testobject = new TestClass();
-
 ?>
