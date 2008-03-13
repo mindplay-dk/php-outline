@@ -22,6 +22,10 @@ class OutlineEngine {
 	protected $template;
 	protected $compiled;
 	
+	public function __destruct() {
+		foreach ($this as $index => $value) unset($this->$index);
+	}
+	
 	public function build($template, $compiled, $force = false) {
 		
 		// Builds $template and writes the resulting compiled script to $compiled.
@@ -77,6 +81,11 @@ class Outline extends OutlineEngine {
 			@constant("OUTLINE_ALWAYS_COMPILE")
 		);
 		
+	}
+	
+	public function __destruct() {
+		if (isset($this->cache)) $this->cache->__destruct();
+		parent::__destruct();
 	}
 	
 	public function cache() {
