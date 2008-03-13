@@ -93,9 +93,9 @@ class OutlineCompiler {
 			array("type" => self::COMMAND_TAG,   "commands" => & self::$tags)
 		);
 		if ($parent) {
-			$this->commands[] = array("type" => self::COMMAND_USER, commands => & $parent->usertags);
+			$this->commands[] = array("type" => self::COMMAND_USER, "commands" => & $parent->usertags);
 		} else {
-			$this->commands[] = array("type" => self::COMMAND_USER, commands => & $this->usertags);
+			$this->commands[] = array("type" => self::COMMAND_USER, "commands" => & $this->usertags);
 		}
 	}
 	
@@ -403,7 +403,9 @@ abstract class OutlinePlugin {
 		foreach ($this as $index => $value) unset($this->$index);
 	}
 	
-	abstract public static function register();
+	public static function register() {
+		trigger_error("OutlinePlugin::register() : plugins must override this method", E_USER_ERROR);
+	}
 	
 }
 
