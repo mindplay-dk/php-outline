@@ -5,210 +5,293 @@
 OutlineCompiler
 ---------------
 
-Copyright (C) 2008, Rasmus Schultz <http://www.mindplay.dk>
+Copyright (C) 2007-2008, Rasmus Schultz <http://www.mindplay.dk>
 
 Please see "README.txt" for license and other information.
 	
 */
 
-define("OUTLINE_TOKEN_OPEN",   "{");
-define("OUTLINE_TOKEN_CLOSE",  "}");
-define("OUTLINE_TOKEN_PIPE",   "|");
-define("OUTLINE_TOKEN_VAR",    '$');
-define("OUTLINE_TOKEN_IGNORE", '*');
-define("OUTLINE_TOKEN_CANCEL", '/');
-define("OUTLINE_TOKEN_CONST",  '#');
+define("OUTLINE_COMPILER", 1);
 
-define("OUTLINE_STATE_PASSTHRU", 1);
-define("OUTLINE_STATE_PARSING",  2);
+define("OUTLINE_BRACKET_OPEN",        '{');
+define("OUTLINE_BRACKET_CLOSE",       '}');
+define("OUTLINE_BRACKET_COMMENT",     '{*');
+define("OUTLINE_BRACKET_END_COMMENT", '*}');
+define("OUTLINE_BRACKET_IGNORE",      '{ignore}');
+define("OUTLINE_BRACKET_END_IGNORE",  '{/ignore}');
+define("OUTLINE_COMMAND_CANCEL",      '/');
+define("OUTLINE_PHPTAG_OPEN",         '<'.'?php ');
+define("OUTLINE_PHPTAG_CLOSE",        ' ?'.'>');
+define("OUTLINE_MODIFIER_PIPE",       '|');
+define("OUTLINE_MODIFIER_SEP",        ':');
+define("OUTLINE_MODIFIER_PREFIX",     'outline__');
+define("OUTLINE_USERBLOCK_PREFIX",    'outline__user_');
 
-define("OUTLINE_CLOSE_IGNORE_TAG", '{/ignore}');
-
-function & OutlinePlugins(&$outline) {
+class OutlineCompilerException extends Exception {
 	
-	static $plugin_names;
+	protected $linenum = 0;
 	
-	$plugins = array();
-	
-	if (!isset($plugin_names)) {
-		$plugin_names = array();
-		foreach (glob(OUTLINE_PLUGIN_PATH."/*.php") as $path) {
-			$plugin_names[] = ucfirst(basename($path, '.php'));
-			require_once $path;
-		}
-		if (defined("OUTLINE_DEBUG")) OutlineDebug("Loading Plugins (" . implode(', ', $plugin_names) . ")");
+	public function __construct($message, OutlineCompiler & $compiler) {
+		parent::__construct($message, -1);
+		$this->linenum = $compiler->getLineNum();
 	}
 	
-	foreach ($plugin_names as $name) {
-		$class = "Outline" . $name;
-		$plugins[$name] = new $class($outline);
-	}
-	
-	return $plugins;
+	public function getLineNum() { return $this->linenum; }
 	
 }
 
 class OutlineCompiler {
 	
-	var $o;
-	var $coding;
-	var $linenum;
-	var $infile;
+	const BRACKET_OPEN        = 1;
+	const BRACKET_CLOSE       = 2;
+	const BRACKET_COMMENT     = 3;
+	const BRACKET_END_COMMENT = 4;
+	const BRACKET_IGNORE      = 5;
+	const BRACKET_END_IGNORE  = 6;
 	
-	var $plugins;
+	const COMMAND_TAG =   1;
+	const COMMAND_BLOCK = 2;
+	const COMMAND_USER =  3;
 	
-	var $ignore;
+	// * Brackets:
 	
-	function build($tplname) {
+	static protected $brackets_begin = array(
+		OUTLINE_BRACKET_IGNORE => self::BRACKET_IGNORE,
+		OUTLINE_BRACKET_COMMENT => self::BRACKET_COMMENT,
+		OUTLINE_BRACKET_OPEN => self::BRACKET_OPEN
+	);
+	
+	static protected $brackets_end = array(
+		OUTLINE_BRACKET_CLOSE => self::BRACKET_CLOSE
+	);
+	
+	static protected $brackets_comment = array(
+		OUTLINE_BRACKET_END_COMMENT => self::BRACKET_END_COMMENT
+	);
+	
+	static protected $brackets_ignore = array(
+		OUTLINE_BRACKET_END_IGNORE => self::BRACKET_END_IGNORE
+	);
+	
+	// * Other members:
+	
+	static protected $blocks = array();
+	static protected $tags = array();
+	public $usertags = array();
+	
+	protected $commands;
+	
+	protected $plugins = array();
+	static protected $plugin_registry = array();
+	static protected $current_plugin = null;
+	
+	protected $utf8 = false;
+	
+	public function __construct(OutlineCompiler & $parent = null) {
+		$this->commands = array(
+			array("type" => self::COMMAND_BLOCK, "commands" => & self::$blocks),
+			array("type" => self::COMMAND_TAG,   "commands" => & self::$tags)
+		);
+		if ($parent) {
+			$this->commands[] = array("type" => self::COMMAND_USER, commands => & $parent->usertags);
+		} else {
+			$this->commands[] = array("type" => self::COMMAND_USER, commands => & $this->usertags);
+		}
+	}
+	
+	public function __destruct() {
+		foreach ($this as $index => $value) unset($this->$index);
+	}
+	
+	// --- Compiler and Parser methods:
+	
+	public function compile($tpl) {
 		
-		if (defined("OUTLINE_DEBUG")) OutlineDebug("Building template '$tplname'");
+		if ($this->utf8 = self::is_utf8($tpl)) trigger_error("OutlineCompiler running in UTF-8 mode", E_USER_NOTICE);
 		
-		$this->plugins = & OutlinePlugins($this);
+		$brackets = & self::$brackets_begin;
+		$command = '';
+		$in_command = false;
+		$in_comment = false;
 		
-		$infile = OUTLINE_TEMPLATE_PATH . '/' . $tplname . OUTLINE_TEMPLATE_SUFFIX;
-		$outfile = OUTLINE_COMPILED_PATH . '/' . $tplname . OUTLINE_COMPILED_SUFFIX;
+		$i = 0;
 		
-		if (!file_exists($infile)) trigger_error("OutlineCompiler::build(): input file '$infile' not found", E_USER_ERROR);
-		$i = fopen($infile, 'r');
-		
-		$this->infile = $infile;
-		
-		@mkdir(dirname($outfile), 0777, true);
-		$this->o = fopen($outfile, 'w');
-		if (!$this->o) trigger_error("OutlineCompiler::build(): output file '$outfile' is not writable", E_USER_ERROR);
-		
-		$state = OUTLINE_STATE_PASSTHRU;
-		
+		$this->compiled = '';
 		$this->coding = false;
-		
-		$tag = '';
-		
 		$this->linenum = 1;
 		
-		$this->ignore = false;
-		
-		$close_ignore = str_repeat(' ', strlen(OUTLINE_CLOSE_IGNORE_TAG));
-		
-		while (!feof($i)) {
+		while ($i < strlen($tpl)) {
 			
-			$buffer = fread($i, OUTLINE_BUFFER_SIZE);
-			$len = strlen($buffer);
+			if ($newline = (substr($tpl, $i, 1) === "\n")) $this->linenum++;
 			
-			for ($n=0; $n<$len; $n++) {
+			foreach ($brackets as $bracket => $type) {
 				
-				$char = $buffer{$n};
-				
-				if ($this->ignore) {
+				if (substr($tpl, $i, strlen($bracket)) === $bracket) {
 					
-					$close_ignore = substr($close_ignore.$char, 1, strlen(OUTLINE_CLOSE_IGNORE_TAG));
-					if ($close_ignore == OUTLINE_CLOSE_IGNORE_TAG) {
-						$dummy = '';
-						outline_ignore_close($this, $dummy);
-						fseek($this->o, -strlen(OUTLINE_CLOSE_IGNORE_TAG)+1, SEEK_CUR);
-						ftruncate($this->o, ftell($this->o));
+					switch ($type) {
+						
+						// * Normal opening/closing brackets:
+						
+						case self::BRACKET_OPEN:	
+							$in_command = true;
+							$brackets = & self::$brackets_end;
+						break;
+						
+						case self::BRACKET_CLOSE:
+							$in_command = false;
+							$this->parse($command);
+							$command = '';
+							$brackets = & self::$brackets_begin;
+						break;
+						
+						// * Comments:
+						
+						case self::BRACKET_COMMENT:
+							$in_comment = true;
+							$brackets = & self::$brackets_comment;
+						break;
+						
+						case self::BRACKET_END_COMMENT:
+							$in_comment = false;
+							$brackets = & self::$brackets_begin;
+						break;
+						
+						// * Ignore command:
+						
+						case self::BRACKET_IGNORE:
+							$in_command = true;
+							$brackets = & self::$brackets_ignore;
+						break;
+						
+						case self::BRACKET_END_IGNORE:
+							$in_command = false;
+							$this->output($command);
+							$command = '';
+							$brackets = & self::$brackets_begin;
+						break;
+						
+					}
+					
+					$i += strlen($bracket);
+					
+					continue 2;
+					
+				}
+				
+			}
+			
+			if ($in_command) {
+				$command .= substr($tpl, $i, 1);
+			} elseif (!$in_comment || $newline) {
+				$this->output(substr($tpl, $i, 1));
+			}
+			
+			$i++;
+			
+		}
+		
+		if (count($this->block_stack))
+			throw new OutlineCompilerException("OutlineCompiler::compile() : unterminated block: " . end($this->block_stack) . " at end of template", $this);
+		
+		if ($this->coding) $this->compiled .= OUTLINE_PHPTAG_CLOSE;
+		
+		foreach ($this->plugins as $class => $plugin) {
+			$plugin->__destruct();
+			unset($this->plugins[$class]);
+		}
+		
+		return $this->compiled;
+		
+	}
+	
+	protected function parse($command) {
+		
+		$cancel = (substr($command, 0, strlen(OUTLINE_COMMAND_CANCEL)) === OUTLINE_COMMAND_CANCEL);
+		
+		$match = 0;
+		
+		$lcommand = strtolower($command);
+		
+		foreach ($this->commands as $c) {
+			
+			foreach ($c['commands'] as $keyword => $item) {
+				if ((substr($lcommand, $cancel ? strlen(OUTLINE_COMMAND_CANCEL) : 0, strlen($keyword)) === $keyword) && (strlen($keyword) > $match)) {
+					$match = strlen($keyword);
+					$type = $c['type'];
+					if ($type == self::COMMAND_USER) {
+						$classname = null;
+						$function = $item;
 					} else {
-						fwrite($this->o, $this->emit($char));
+						$classname = $item['class'];
+						$function = ($cancel ? 'end_' : '') . $item['function'];
 					}
-					
-				} else {
-					
-					switch ($state) {
-						
-						case OUTLINE_STATE_PASSTHRU:
-							
-							if ($char == OUTLINE_TOKEN_OPEN) {
-								$state = OUTLINE_STATE_PARSING;
-							} else {
-								fwrite($this->o, $this->emit($char));
-							}
-							
-						break;
-						
-						case OUTLINE_STATE_PARSING:
-							
-							if ($char == OUTLINE_TOKEN_CLOSE) {
-								fwrite($this->o, $this->parse($tag));
-								$tag = '';
-								$state = OUTLINE_STATE_PASSTHRU;
-							} else {
-								$tag .= $char;
-							}
-							
-						break;
-						
-					}
-					
+					$args = trim(substr($command, strlen($keyword)));
+					$command_name = substr($command, $cancel ? strlen(OUTLINE_COMMAND_CANCEL) : 0, strlen($keyword));
 				}
-				
-				if ($char == "\n") $this->linenum++;
-				
 			}
 			
 		}
 		
-		fwrite($this->o, $this->emit(''));
+		if (!$match) throw new OutlineCompilerException("OutlineCompiler::parse() : unrecognized tag: ".htmlspecialchars($command), $this);
 		
-		fclose($this->o);
+		if ($classname && !isset($this->plugins[$classname]))
+			$this->plugins[$classname] = new $classname($this);
 		
-		if (count($this->plugins['Basics']->struct_stack))
-			$this->error('Unexpected end of file - no closing tag found for {' . end($this->plugins['Basics']->struct_stack) . '}');
-		
-	}
-	
-	function parse($tag) {
-		
-		if ($tag{0} == OUTLINE_TOKEN_IGNORE) return;
-		
-		$mods = $this->escape_split($tag, OUTLINE_TOKEN_PIPE);
-		
-		$tag = trim(array_shift($mods));
-		
-		if ($tag{0} == OUTLINE_TOKEN_VAR || $tag{0} == OUTLINE_TOKEN_CONST) {
+		switch ($type) {
 			
-			$code = $tag{0} == OUTLINE_TOKEN_CONST ? substr($tag,1) : $tag;
+			case self::COMMAND_BLOCK:
+				$cancel ? $this->popBlock($command_name, $command) : $this->pushBlock($command_name, $command);
+				$this->plugins[$classname]->$function($args);
+			return;
 			
-			foreach ($mods as $mod) {
-				$args = $this->escape_split($mod, ':');
-				$mod = trim(array_shift($args));
-				if (function_exists('outline_'.$mod)) {
-					$code = 'outline_' . $mod . '(' . $code . (count($args) ? ', '.implode(', ', $args) : '') . ')';
-				} else if (function_exists($mod)) {
-					$code = $mod . '(' . $code . (count($args) ? ', '.implode(', ', $args) : '') . ')';
-				} else {
-					$this->error("Function '$mod' not found");
-				}
-			}
+			case self::COMMAND_TAG:
+				$this->plugins[$classname]->$function($args);
+			return;
 			
-			return $this->code("echo $code;");
-			
-		} else {
-			
-			$offset = strpos($tag, ' ');
-			$keyword = ( $offset ? substr($tag, 0, $offset) : $tag );
-			
-			if ($keyword{0} == OUTLINE_TOKEN_CANCEL) {
-				$keyword = substr($keyword, 1);
-				$code = $this->exec($keyword, trim(substr($tag, $offset)), true);
-			} else {
-				$code = $this->exec($keyword, trim(substr($tag, $offset)), false);
-			}
-			
-			return $this->code($code);
+			case self::COMMAND_USER:
+				$this->code($this->usertags[$keyword]."($args);");
+			return;
 			
 		}
-		
+	
 	}
 	
-	function & escape_split($str, $token) {
+	// --- Coding and output methods:
+	
+	protected $coding;
+	
+	public function code($php) {
+		$this->compiled .= ( $this->coding ? ' ' : OUTLINE_PHPTAG_OPEN ) . $php;
+		$this->coding = true;
+	}
+	
+	public function output($text) {
+		$this->compiled .= ( $this->coding ? OUTLINE_PHPTAG_CLOSE : '' ) . $text;
+		$this->coding = false;
+	}
+	
+	// --- Utility methods:
+	
+	public static function is_utf8(&$str) {
+		return ( mb_detect_encoding($str,'ASCII,UTF-8',true) == 'UTF-8' );
+	}
+	
+	public function split(&$str) {
+		if (!$this->utf8) return str_split($str,1);
+		$chars = null;
+		preg_match_all('/.{1}|[^\x00]{1,1}$/us', $str, $chars);
+		return $chars[0];
+	}
+	
+	public function escape_split(&$str, $token) {
 		
 		$a = array();
-		$bit = '';
-		$len = strlen($str);
-		$last = '';
-		$quote = '';
+		$bit = ''; $last = ''; $quote = '';
+		$chars = self::split($str);
+		$len = count($chars);
 		
 		for ($i=0; $i<$len; $i++) {
-			$char = $str{$i};
+			$char = $chars[$i];
 			if ($char == "'" || $char == '"') {
 				if ($last != "\\") {
 					if ($quote == '') {
@@ -233,38 +316,94 @@ class OutlineCompiler {
 		
 	}
 	
-	function exec(&$keyword, &$arguments, $closing) {
+	// --- Block/nesting management methods:
+	
+	protected $block_stack = array();
+	
+	public function pushBlock($name, $command) {
+		$this->block_stack[] = $name;
+	}
+	
+	public function popBlock($name, $command) {
+		$this->checkBlock($name, $command);
+		array_pop($this->block_stack);
+	}
+	
+	public function checkBlock($name, $command) {
+		if (end($this->block_stack) !== $name)
+			throw new OutlineCompilerException("unmatched tag: ".htmlspecialchars($command) . (count($this->block_stack) ? " - expected closing tag for " . end($this->block_stack) : ""), $this);
+	}
+	
+	// --- Command registration methods:
+	
+	protected static function registerCommand($type, $keyword, $function) {
 		
-		$funcname = 'outline_' . $keyword . ($closing ? '_close' : '');
+		if ( isset(self::$tags[$keyword]) || isset(self::$blocks[$keyword]) )
+			trigger_error("OutlineCompiler::register() : keyword '$keyword' already registered", E_USER_ERROR);
 		
-		if (function_exists($funcname)) {
-			return call_user_func($funcname, $this, $arguments);
-		} else {
-			$blockname = strtoupper($keyword);
-			if (defined("OUTLINE_BLOCK_DECL_".$blockname)) {
-				return ' outline_block_' . $blockname . '(' . $arguments . '); ';
-			} else {
-				$this->error("Unrecognized " . ($closing ? 'closing ' : '') . "tag '$keyword'");
-			}
+		$plugin = array(
+			"class" => self::$current_plugin,
+			"function" => $function
+		);
+		
+		switch ($type) {
+			case self::COMMAND_BLOCK: self::$blocks[$keyword] = $plugin; break;
+			case self::COMMAND_TAG: self::$tags[$keyword] = $plugin; break;
 		}
 		
 	}
 	
-	function code($php) {
-		$code = ( $this->coding ? '' : OUTLINE_PHPTAG_OPEN ) . $php;
-		$this->coding = true;
-		return $code;
+	public static function registerTag($keyword, $function) {
+		self::registerCommand(self::COMMAND_TAG, $keyword, $function);
 	}
 	
-	function emit($text) {
-		$code = ( $this->coding ? OUTLINE_PHPTAG_CLOSE : '' ) . $text;
-		$this->coding = false;
-		return $code;
+	public static function registerBlock($keyword, $function) {
+		self::registerCommand(self::COMMAND_BLOCK, $keyword, $function);
 	}
 	
-	function error($msg) {
-		trigger_error("OutlineCompiler : $msg - in <b>" . $this->infile . "</b> on line <b>" . $this->linenum . "</b><br />", E_USER_ERROR);
+	public function registerUserTag($keyword, $function) {
+		$keyword = strtolower($keyword);
+		if (isset($this->usertags[$keyword])) throw new OutlineCompilerException("OutlineCompiler::registerUserTag() : user-block '$keyword' redeclared", $this);
+		if (function_exists($function)) throw new OutlineCompilerException("OutlineCompiler::registerUserTag() : keyword '$keyword' already in use", $this);
+		$this->usertags[$keyword] = $function;
 	}
+	
+	// --- Plugin management methods:
+	
+	public static function registerPlugin($classname) {
+		
+		if (in_array($classname, self::$plugin_registry))
+			trigger_error("OutlineCompiler::registerPlugin() : plugin '$classname' already registered", E_USER_ERROR);
+		
+		self::$plugin_registry[] = $classname;
+		
+		self::$current_plugin = $classname;
+		call_user_func(array($classname, "register"));
+		self::$current_plugin = null;
+		
+	}
+	
+	// --- Error management methods:
+	
+	protected $linenum;
+	
+	public function getLineNum() { return $this->linenum; }
+	
+}
+
+abstract class OutlinePlugin {
+	
+	protected $compiler;
+	
+	public function __construct(OutlineCompiler & $compiler) {
+		$this->compiler = & $compiler;
+	}
+	
+	public function __destruct() {
+		foreach ($this as $index => $value) unset($this->$index);
+	}
+	
+	abstract public static function register();
 	
 }
 

@@ -7,11 +7,12 @@
 <body>
 
 {ignore}
-	<h1>Testing the {require} command</h1>
-	<!-- ... also testing the ignore command -->
+	<h1>Testing the {require} and {ignore} commands</h1>
 {/ignore}
 
 {require test_require.php}
+
+<p>Testing »funny« characters</p>
 
 <p>Printing a constant defined in 'test_require.php': {#TEST_VALUE}</p>
 
@@ -19,12 +20,15 @@
 
 {ignore}<h1>Testing the {block} command</h1>{/ignore}
 
+<p><i>The {ignore}{block}{/ignore} command is currently broken...</i></p>
+{*
 {block testBlock $a, $b = 'this is the default value of $b'}
 	<p>This is the output from the testBlock: '{$a}' and '{$b}'</p>
 {/block}
 
 {testBlock 'this is the first value passed to testBlock'}
 {TESTBLOCK 'this is the first value passed to testBlock', 'this is the second value passed to testBlock'}
+*}
 
 <h1>Testing variables and modifiers</h1>
 
@@ -40,7 +44,7 @@
 This content was captured to the $test variable.
 {/capture}
 
-<p>Captured text: "{$test}"</p>
+<p>Captured text: "{$test|trim}"</p>
 
 {ignore}<h1>Testing the {set} command</h1>{/ignore}
 
@@ -80,6 +84,8 @@ This content was captured to the $test variable.
 
 {ignore}<h1>Testing access to an object created in 'test_require.php'</h1>{/ignore}
 
+{set $testobject = new TestClass()}
+
 <p>Variable access: {$testobject->variable}</p>
 <p>Method access: {$testobject->method()}</p>
 
@@ -91,9 +97,9 @@ This content was captured to the $test variable.
 		{if $var < 3}
 			is less than three
 		{elseif $var > 8}
-			is greater than 8
+			is greater than eight
 		{else}
-			is somewhere in between
+			is between three and eight
 		{/if}
 		<br />
 	{/for}
@@ -114,7 +120,11 @@ This content was captured to the $test variable.
 	...
 </p>
 
-{* this comment will go unseen *}
+{*
+	these comments will go unseen
+	these comments will go unseen
+	these comments will go unseen
+*}
 
 <h2>Page generated at {$testdate}</h2>
 <h3>Displaying the compiled template using the {ignore}{display}{/ignore} command:</h3>

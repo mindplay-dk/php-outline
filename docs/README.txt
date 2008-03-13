@@ -1,11 +1,13 @@
 Outline
 =======
 
-	Version 0.1
+	Version 0.9-beta1
 	
-	(Pre-release for evaluation and discussion)
+	The latest version will be made available here:
 	
-	Copyright (C) 2008, Rasmus Schultz <http://www.mindplay.dk>
+		http://outline.mindplay.dk
+	
+	This page also contains a Wiki with documentation.
 	
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
@@ -30,20 +32,10 @@ Getting started
 	To try it out in your own application, see the Wiki on the website.
 	
 	
-Obtaining the latest version
-----------------------------
-
-	The latest version will be made available here:
-	
-		http://code.google.com/p/php-outline
-	
-	This page also contains a Wiki with documentation.
-	
-	
 License
 -------
 
-	Copyright (C) 2008, Rasmus Schultz <http://www.mindplay.dk>
+	Copyright (C) 2007-2008, Rasmus Schultz <http://www.mindplay.dk>
 	
 	This program is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
