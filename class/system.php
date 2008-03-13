@@ -197,7 +197,7 @@ class OutlineSystem extends OutlinePlugin {
 		$this->cycle_stack[] = $num;
 		$this->cycles[$num] = 1;
 		$var = '$outline_cycle_' . $num;
-		$this->compiler->code("if (!isset($var)) { $var = 0; } $var++; if ($var == 1) {");
+		$this->compiler->code("!isset($var) ? $var = 0 : $var++; if ($var == 1) {");
 	}
 	
 	public function cycle_next_tag($args) {
