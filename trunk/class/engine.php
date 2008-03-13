@@ -50,8 +50,6 @@ class OutlineEngine {
 				throw new OutlineException("error compiling template '$template', line " . $e->getLineNum() . " - " . $e->getMessage());
 			}
 			
-			unset($comp);
-			
 			return true;
 			
 		}
