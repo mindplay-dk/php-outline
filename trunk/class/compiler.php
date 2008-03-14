@@ -13,17 +13,11 @@ Please see "README.txt" for license and other information.
 
 define("OUTLINE_COMPILER", 1);
 
-define("OUTLINE_BRACKET_OPEN",        '{');
-define("OUTLINE_BRACKET_CLOSE",       '}');
-define("OUTLINE_BRACKET_COMMENT",     '{*');
-define("OUTLINE_BRACKET_END_COMMENT", '*}');
-define("OUTLINE_BRACKET_IGNORE",      '{ignore}');
-define("OUTLINE_BRACKET_END_IGNORE",  '{/ignore}');
-define("OUTLINE_COMMAND_CANCEL",      '/');
 define("OUTLINE_PHPTAG_OPEN",         '<'.'?php ');
 define("OUTLINE_PHPTAG_CLOSE",        ' ?'.'>');
 define("OUTLINE_MODIFIER_PIPE",       '|');
 define("OUTLINE_MODIFIER_SEP",        ':');
+define("OUTLINE_COMMAND_CANCEL",      '/');
 define("OUTLINE_MODIFIER_PREFIX",     'outline__');
 define("OUTLINE_USERBLOCK_PREFIX",    'outline__user_');
 define("OUTLINE_USERBLOCK_CONST",     'OUTLINE_USER_');
@@ -55,23 +49,7 @@ class OutlineCompiler {
 	
 	// * Brackets:
 	
-	static protected $brackets_begin = array(
-		OUTLINE_BRACKET_IGNORE => self::BRACKET_IGNORE,
-		OUTLINE_BRACKET_COMMENT => self::BRACKET_COMMENT,
-		OUTLINE_BRACKET_OPEN => self::BRACKET_OPEN
-	);
-	
-	static protected $brackets_end = array(
-		OUTLINE_BRACKET_CLOSE => self::BRACKET_CLOSE
-	);
-	
-	static protected $brackets_comment = array(
-		OUTLINE_BRACKET_END_COMMENT => self::BRACKET_END_COMMENT
-	);
-	
-	static protected $brackets_ignore = array(
-		OUTLINE_BRACKET_END_IGNORE => self::BRACKET_END_IGNORE
-	);
+	protected $brackets_begin, $brackets_end, $brackets_comment, $brackets_ignore;
 	
 	// * Other members:
 	
@@ -86,22 +64,32 @@ class OutlineCompiler {
 	
 	protected $utf8 = false;
 	
-	protected $engine;
+	public $config;
 	
 	public function __construct(OutlineEngine & $engine) {
-		$this->engine = & $engine;
+		$this->config = & $engine->config;
 		$this->commands = array(
 			array("type" => self::COMMAND_BLOCK, "commands" => & self::$blocks),
 			array("type" => self::COMMAND_TAG,   "commands" => & self::$tags)
+		);
+		$this->brackets_begin = array(
+			$this->config['bracket_ignore'] => self::BRACKET_IGNORE,
+			$this->config['bracket_comment'] => self::BRACKET_COMMENT,
+			$this->config['bracket_open'] => self::BRACKET_OPEN
+		);
+		$this->brackets_end = array(
+			$this->config['bracket_close'] => self::BRACKET_CLOSE
+		);
+		$this->brackets_comment = array(
+			$this->config['bracket_end_comment'] => self::BRACKET_END_COMMENT
+		);
+		$this->brackets_ignore = array(
+			$this->config['bracket_end_ignore'] => self::BRACKET_END_IGNORE
 		);
 	}
 	
 	public function __destruct() {
 		foreach ($this as $index => $value) unset($this->$index);
-	}
-	
-	public function & getEngine() {
-		return $this->engine;
 	}
 	
 	// --- Compiler and Parser methods:
@@ -110,7 +98,7 @@ class OutlineCompiler {
 		
 		if ($this->utf8 = self::is_utf8($tpl)) trigger_error("OutlineCompiler running in UTF-8 mode", E_USER_NOTICE);
 		
-		$brackets = & self::$brackets_begin;
+		$brackets = & $this->brackets_begin;
 		$command = '';
 		$in_command = false;
 		$in_comment = false;
@@ -135,40 +123,40 @@ class OutlineCompiler {
 						
 						case self::BRACKET_OPEN:	
 							$in_command = true;
-							$brackets = & self::$brackets_end;
+							$brackets = & $this->brackets_end;
 						break;
 						
 						case self::BRACKET_CLOSE:
 							$in_command = false;
 							$this->parse($command);
 							$command = '';
-							$brackets = & self::$brackets_begin;
+							$brackets = & $this->brackets_begin;
 						break;
 						
 						// * Comments:
 						
 						case self::BRACKET_COMMENT:
 							$in_comment = true;
-							$brackets = & self::$brackets_comment;
+							$brackets = & $this->brackets_comment;
 						break;
 						
 						case self::BRACKET_END_COMMENT:
 							$in_comment = false;
-							$brackets = & self::$brackets_begin;
+							$brackets = & $this->brackets_begin;
 						break;
 						
 						// * Ignore command:
 						
 						case self::BRACKET_IGNORE:
 							$in_command = true;
-							$brackets = & self::$brackets_ignore;
+							$brackets = & $this->brackets_ignore;
 						break;
 						
 						case self::BRACKET_END_IGNORE:
 							$in_command = false;
 							$this->output($command);
 							$command = '';
-							$brackets = & self::$brackets_begin;
+							$brackets = & $this->brackets_begin;
 						break;
 						
 					}
