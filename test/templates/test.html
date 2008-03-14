@@ -21,14 +21,13 @@
 {ignore}<h1>Testing the {block} command</h1>{/ignore}
 
 <p><i>The {ignore}{block}{/ignore} command is currently broken...</i></p>
-{*
+
 {block testBlock $a, $b = 'this is the default value of $b'}
 	<p>This is the output from the testBlock: '{$a}' and '{$b}'</p>
 {/block}
 
-{testBlock 'this is the first value passed to testBlock'}
-{TESTBLOCK 'this is the first value passed to testBlock', 'this is the second value passed to testBlock'}
-*}
+{!testBlock 'this is the first value passed to testBlock'}
+{!TESTBLOCK 'this is the first value passed to testBlock', 'this is the second value passed to testBlock'}
 
 <h1>Testing variables and modifiers</h1>
 
