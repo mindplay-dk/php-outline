@@ -23,13 +23,19 @@ class OutlineEngine {
 	protected $compiled;
 	
 	public $config = array(
-		"template_path" =>   OUTLINE_TEMPLATE_PATH,   /* Path to folder containing templates */
-		"compiled_path" =>   OUTLINE_COMPILED_PATH,   /* older containing compiled templates (must be writable) */
-		"template_suffix" => OUTLINE_TEMPLATE_SUFFIX, /* Suffix (extension) of template files */
-		"compiled_suffix" => OUTLINE_COMPILED_SUFFIX, /* Suffix (extension) of compiled template files (usually ".php") */
-		"cache_path" =>      OUTLINE_CACHE_PATH,      /* The folder in which the Cache class stores it's content */
-		"cache_suffix" =>    OUTLINE_CACHE_SUFFIX,    /* File extension or suffix for cache files */
-		"cache_time" =>      OUTLINE_CACHE_TIME       /* Default cache time (in seconds) */
+		"template_path" =>       OUTLINE_TEMPLATE_PATH,   /* Path to folder containing templates */
+		"compiled_path" =>       OUTLINE_COMPILED_PATH,   /* older containing compiled templates (must be writable) */
+		"template_suffix" =>     '.html',                 /* Suffix (extension) of template files */
+		"compiled_suffix" =>     '.php',                  /* Suffix (extension) of compiled template files (usually ".php") */
+		"cache_path" =>          OUTLINE_CACHE_PATH,      /* The folder in which the Cache class stores it's content */
+		"cache_suffix" =>        '.html',                 /* File extension or suffix for cache files */
+		"cache_time" =>          OUTLINE_CACHE_TIME,      /* Default cache time (in seconds) */
+		"bracket_open" =>        '{',
+		"bracket_close" =>       '}',
+		"bracket_comment" =>     '{*',
+		"bracket_end_comment" => '*}',
+		"bracket_ignore" =>      '{ignore}',
+		"bracket_end_ignore" =>  '{/ignore}'
 	);
 	
 	public function __destruct() {
