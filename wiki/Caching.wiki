@@ -1,3 +1,5 @@
+=== This information is not up-to-date - the caching engine has changed quite a bit since this was written. Once the API is final, this information will be updated. ===
+
 Outline comes with a simple caching engine, which you can use to optimize the performance of your web site drastically.
 
 Here's an example:
