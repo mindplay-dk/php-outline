@@ -22,6 +22,16 @@ class OutlineEngine {
 	protected $template;
 	protected $compiled;
 	
+	public $config = array(
+		"template_path" =>   OUTLINE_TEMPLATE_PATH,   /* Path to folder containing templates */
+		"compiled_path" =>   OUTLINE_COMPILED_PATH,   /* older containing compiled templates (must be writable) */
+		"template_suffix" => OUTLINE_TEMPLATE_SUFFIX, /* Suffix (extension) of template files */
+		"compiled_suffix" => OUTLINE_COMPILED_SUFFIX, /* Suffix (extension) of compiled template files (usually ".php") */
+		"cache_path" =>      OUTLINE_CACHE_PATH,      /* The folder in which the Cache class stores it's content */
+		"cache_suffix" =>    OUTLINE_CACHE_SUFFIX,    /* File extension or suffix for cache files */
+		"cache_time" =>      OUTLINE_CACHE_TIME       /* Default cache time (in seconds) */
+	);
+	
 	public function __destruct() {
 		foreach ($this as $index => $value) unset($this->$index);
 	}
@@ -47,7 +57,8 @@ class OutlineEngine {
 			if (@constant("OUTLINE_DEBUG")) OutlineDebug("compiling template '$template' to '$compiled'");
 			
 			try {
-				$compiler = new OutlineCompiler();
+				$compiler = new OutlineCompiler($this);
+				@mkdir(dirname($compiled), 0777, true);
 				file_put_contents($compiled, $compiler->compile(file_get_contents($template)));
 				$compiler->__destruct(); unset($compiler);
 			} catch (OutlineCompilerException $e) {
@@ -76,16 +87,11 @@ class Outline extends OutlineEngine {
 		$this->tplname = $tplname;
 		
 		$this->caching = !$this->build(
-			OUTLINE_TEMPLATE_PATH . '/' . $tplname . OUTLINE_TEMPLATE_SUFFIX,
-			OUTLINE_COMPILED_PATH . '/' . $tplname . OUTLINE_COMPILED_SUFFIX,
+			$this->config['template_path'] . '/' . $tplname . $this->config['template_suffix'],
+			$this->config['compiled_path'] . '/' . $tplname . $this->config['compiled_suffix'],
 			@constant("OUTLINE_ALWAYS_COMPILE")
 		);
 		
-	}
-	
-	public function __destruct() {
-		if (isset($this->cache)) $this->cache->__destruct();
-		parent::__destruct();
 	}
 	
 	public function cache() {
@@ -93,10 +99,10 @@ class Outline extends OutlineEngine {
 		if (!@constant("OUTLINE_CACHE_ENGINE"))
 			require OUTLINE_CLASS_PATH . "/cache.php";
 		
-		$path = func_get_args();
-		if (count($path) == 0) $path[] = $this->tplname;
+		$path = explode('/',$this->tplname);
+		if ($add_path = func_get_args()) $path = array_merge($path, $add_path);
 		
-		$this->cache = new OutlineCache($path);
+		$this->cache = new OutlineCache($this->config, $path);
 		
 	}
 	
@@ -107,24 +113,48 @@ class Outline extends OutlineEngine {
 	
 	public function capture() {
 		if (empty($this->cache)) return false;
-		if (@constant("OUTLINE_DEBUG")) OutlineDebug("Starting cache capture");
 		$this->cache->capture();
 	}
 	
 	public function stop() {
 		if (empty($this->cache)) return false;
 		$this->cache->stop();
-		if (@constant("OUTLINE_DEBUG")) OutlineDebug("Cache capture finished");
 	}
 	
 	public function get() {
-		if ($this->caching && isset($this->cache) && $this->cache->valid()) {
+		if ($this->caching && !empty($this->cache) && $this->cache->valid()) {
 			return $this->cache->get();
 		} else {
 			return $this->compiled;
 		}
 	}
 		
+}
+
+class OutlineUtil {
+	
+	public static function clean($fname) {
+		$pattern = "/([[:alnum:]_\.-]*)/";
+		$replace = "_";
+		return str_replace(str_split(preg_replace($pattern,$replace,$fname)),$replace,$fname);
+	}
+	
+	public static function delete($path, $suffix) {
+		
+		$wiped = true;
+		
+		foreach (glob($path . '/*' . $suffix) as $file)
+			if (!unlink($file)) trigger_error("OutlineCache::_delete() : unable to remove file '$file'", E_USER_WARNING);
+		
+		foreach (glob($path . '/*', GLOB_ONLYDIR) as $dir) {
+			$wiped = $wiped && self::_delete($dir, $suffix);
+			if (!rmdir($dir)) trigger_error("OutlineCache::_delete() : unable to remove dir '$dir' - not empty?", E_USER_WARNING);
+		}
+		
+		return $wiped;
+		
+	}
+	
 }
 
 ?>

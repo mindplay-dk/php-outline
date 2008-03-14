@@ -91,11 +91,15 @@ class OutlineSystem extends OutlinePlugin {
 	
 	static protected $block_keyword = null;
 	
+	public function user_block_name($keyword) {
+		return ( OUTLINE_USERBLOCK_PREFIX . $keyword );
+	}
+	
 	public function user_block($args) {
 		if (self::$block_keyword) throw new OutlineException("nested user-block declarations are not allowed", $this->compiler);
 		$pos = strpos($args, " "); if ($pos === false) $pos = strlen($args);
 		$keyword = self::$block_keyword = strtolower(substr($args, 0, $pos));
-		$function = OUTLINE_USERBLOCK_PREFIX.$keyword;
+		$function = $this->user_block_name($keyword);
 		$args = substr($args, $pos+1);
 		$this->compiler->code("function {$function}({$args}) {");
 	}
@@ -110,7 +114,7 @@ class OutlineSystem extends OutlinePlugin {
 		$pos = strpos($args, " "); if ($pos === false) $pos = strlen($args);
 		$keyword = strtolower(substr($args, 0, $pos));
 		$args = substr($args, $pos+1);
-		$this->compiler->code(OUTLINE_USERBLOCK_PREFIX.$keyword.'('.$args.');');
+		$this->compiler->code($this->user_block_name($keyword).'('.$args.');');
 	}
 	
 	// * capture block:

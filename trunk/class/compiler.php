@@ -86,7 +86,10 @@ class OutlineCompiler {
 	
 	protected $utf8 = false;
 	
-	public function __construct() {
+	protected $engine;
+	
+	public function __construct(OutlineEngine & $engine) {
+		$this->engine = & $engine;
 		$this->commands = array(
 			array("type" => self::COMMAND_BLOCK, "commands" => & self::$blocks),
 			array("type" => self::COMMAND_TAG,   "commands" => & self::$tags)
@@ -95,6 +98,10 @@ class OutlineCompiler {
 	
 	public function __destruct() {
 		foreach ($this as $index => $value) unset($this->$index);
+	}
+	
+	public function & getEngine() {
+		return $this->engine;
 	}
 	
 	// --- Compiler and Parser methods:
@@ -272,7 +279,7 @@ class OutlineCompiler {
 		
 		$a = array();
 		$bit = ''; $last = ''; $quote = '';
-		$chars = self::split($str);
+		$chars = $this->split($str);
 		$len = count($chars);
 		
 		for ($i=0; $i<$len; $i++) {
