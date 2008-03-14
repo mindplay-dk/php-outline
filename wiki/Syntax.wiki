@@ -120,11 +120,11 @@ For example:
 {/block}
 }}}
 
-Once declared, you can call the block like any other built-in function:
+Once declared, you can call the block, almost like any other tag, but using an "!" before the blockname:
 
-	`{headline "A blue headline"}`
+	`{!headline "A blue headline"}`
 	
-	`{headline "A red headline", "#f00"}`
+	`{!headline "A red headline", "#f00"}`
 
 Technically, blocks are simply php-functions, and therefore have all the features of a normal function declaration header in PHP - you separate the arguments with commas, both at declaration time, and when calling a block.
 
