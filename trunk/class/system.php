@@ -106,6 +106,7 @@ class OutlineSystem extends OutlinePlugin {
 	}
 	
 	public function user_tag($args) {
+		$args = trim($args);
 		$pos = strpos($args, " "); if ($pos === false) $pos = strlen($args);
 		$keyword = strtolower(substr($args, 0, $pos));
 		$args = substr($args, $pos+1);
