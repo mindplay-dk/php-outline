@@ -26,6 +26,7 @@ define("OUTLINE_MODIFIER_PIPE",       '|');
 define("OUTLINE_MODIFIER_SEP",        ':');
 define("OUTLINE_MODIFIER_PREFIX",     'outline__');
 define("OUTLINE_USERBLOCK_PREFIX",    'outline__user_');
+define("OUTLINE_USERBLOCK_CONST",     'OUTLINE_USER_');
 
 class OutlineCompilerException extends Exception {
 	
@@ -51,7 +52,6 @@ class OutlineCompiler {
 	
 	const COMMAND_TAG =   1;
 	const COMMAND_BLOCK = 2;
-	const COMMAND_USER =  3;
 	
 	// * Brackets:
 	
@@ -77,7 +77,6 @@ class OutlineCompiler {
 	
 	static protected $blocks = array();
 	static protected $tags = array();
-	public $usertags = array();
 	
 	protected $commands;
 	
@@ -87,16 +86,11 @@ class OutlineCompiler {
 	
 	protected $utf8 = false;
 	
-	public function __construct(OutlineCompiler & $parent = null) {
+	public function __construct() {
 		$this->commands = array(
 			array("type" => self::COMMAND_BLOCK, "commands" => & self::$blocks),
 			array("type" => self::COMMAND_TAG,   "commands" => & self::$tags)
 		);
-		if ($parent) {
-			$this->commands[] = array("type" => self::COMMAND_USER, "commands" => & $parent->usertags);
-		} else {
-			$this->commands[] = array("type" => self::COMMAND_USER, "commands" => & $this->usertags);
-		}
 	}
 	
 	public function __destruct() {
@@ -218,13 +212,8 @@ class OutlineCompiler {
 				if ((substr($lcommand, $cancel ? strlen(OUTLINE_COMMAND_CANCEL) : 0, strlen($keyword)) === $keyword) && (strlen($keyword) > $match)) {
 					$match = strlen($keyword);
 					$type = $c['type'];
-					if ($type == self::COMMAND_USER) {
-						$classname = null;
-						$function = $item;
-					} else {
-						$classname = $item['class'];
-						$function = ($cancel ? 'end_' : '') . $item['function'];
-					}
+					$classname = $item['class'];
+					$function = ($cancel ? 'end_' : '') . $item['function'];
 					$args = trim(substr($command, strlen($keyword)));
 					$command_name = substr($command, $cancel ? strlen(OUTLINE_COMMAND_CANCEL) : 0, strlen($keyword));
 				}
@@ -246,10 +235,6 @@ class OutlineCompiler {
 			
 			case self::COMMAND_TAG:
 				$this->plugins[$classname]->$function($args);
-			return;
-			
-			case self::COMMAND_USER:
-				$this->code($this->usertags[$keyword]."($args);");
 			return;
 			
 		}
@@ -359,13 +344,6 @@ class OutlineCompiler {
 	
 	public static function registerBlock($keyword, $function) {
 		self::registerCommand(self::COMMAND_BLOCK, $keyword, $function);
-	}
-	
-	public function registerUserTag($keyword, $function) {
-		$keyword = strtolower($keyword);
-		if (isset($this->usertags[$keyword])) throw new OutlineCompilerException("OutlineCompiler::registerUserTag() : user-block '$keyword' redeclared", $this);
-		if (function_exists($function)) throw new OutlineCompilerException("OutlineCompiler::registerUserTag() : keyword '$keyword' already in use", $this);
-		$this->usertags[$keyword] = $function;
 	}
 	
 	// --- Plugin management methods:
