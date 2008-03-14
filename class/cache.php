@@ -21,48 +21,54 @@ class OutlineCache {
 	protected $checked = false;
 	protected $buffering = false;
 	
-	public function __construct($path) {
+	protected $config;
+	
+	public function __construct(&$config, $path) {
 		
-		if (count($path) == 0) throw new OutlineException("Cache: constructor requires one or more arguments");
+		$this->config = & $config;
 		
-		$this->path = array(OUTLINE_CACHE_PATH);
+		if (count($path) == 0) throw new OutlineException("OutlineCache::__construct() : path is empty");
+		
+		$this->path = array($this->config['cache_path']);
 		
 		$last = count($path);
 		for ($n=0; $n<$last; $n++) {
-			$this->path[] = '/' . self::_clean($path[$n]) . ($n == $last-1 ? OUTLINE_CACHE_SUFFIX : '');
+			$this->path[] = '/' . OutlineUtil::clean($path[$n]) . ($n == $last-1 ? $this->config['cache_suffix'] : '');
 		}
 		
 		$this->time = time();
 		
 	}
 	
-	public function valid($time_sec = OUTLINE_CACHE_TIME) {
+	public function valid($time_sec = null) {
 		
 		if ($this->checked) return $this->valid;
-		
-		$time = @filemtime(implode($this->path));
-		$this->valid = $time ? ($this->time - $time < $time_sec) : false;
 		$this->checked = true;
 		
-		return $this->valid;
+		if ($time_sec === null) $time_sec = $this->config['cache_time'];
+		
+		$time = @filemtime(implode($this->path));
+		return ( $this->valid = $time ? ($this->time - $time < $time_sec) : false );
 		
 	}
 	
 	public function get() {
 		if ($this->valid) return implode($this->path);
-		throw new OutlineException("Cache: valid() must be called before get(), and only if valid() returns true");
+		throw new OutlineException("OutlineCache::get() : valid() must be called before get(), and only if valid() returns true");
 	}
 	
 	public function capture() {
 		
-		if ($this->buffering) throw new OutlineException("Cache: capture() may only be called once, or after stop() has been called");
+		if (@constant("OUTLINE_DEBUG")) OutlineDebug("Starting cache capture");
+		
+		if ($this->buffering) throw new OutlineException("OutlineCache::capture() : capture() may only be called once, or after stop() has been called");
 		
 		$path = ''; $last = count($this->path);
 		
 		for ($n=0; $n<$last-1; $n++) {
 			$path .= $this->path[$n];
 			if (!is_dir($path)) {
-				if (!mkdir($path)) throw new OutlineException("Cache: unable to create folder ".$path);
+				if (!mkdir($path)) throw new OutlineException("OutlineCache::capture() : unable to create folder '$path'");
 			}
 		}
 		
@@ -74,51 +80,30 @@ class OutlineCache {
 	
 	public function stop() {
 		
-		if (!$this->buffering) throw new OutlineException("Cache: capture() must be called before stop() can be called");
+		if (@constant("OUTLINE_DEBUG")) OutlineDebug("Cache capture finished");
+		
+		if (!$this->buffering) throw new OutlineException("OutlineCache::stop() : capture() must be called before stop() can be called");
 		
 		if (!@file_put_contents(implode($this->path), ob_get_contents()))
-			throw new OutlineException("Cache: unable to write new cache entry ".implode($this->path));
+			throw new OutlineException("OutlineCache::stop() : unable to write new cache entry ".implode($this->path));
 		
 		ob_end_flush();
 		
 	}
-	
-	// --- Static function for flushing cache:
-	
-	public static function expire() {
+	/*
+	public function clean() {
 		
-		$path = OUTLINE_CACHE_PATH;
+		$path = dirname($this->path);
 		
 		foreach (func_get_args() as $dir)
-			$path .= '/' . self::_clean($dir);
+			$path .= '/' . OutlineUtil::clean($dir);
 		
-		if (is_dir($path)) self::_delete($path);
+		if (is_dir($path)) OutlineUtil::delete($path, $this->config['cache_suffix']);
 		
-		if (is_file($path.OUTLINE_CACHE_SUFFIX)) unlink($path.OUTLINE_CACHE_SUFFIX);
-		
-	}
-	
-	// --- Private helper functions:
-	
-	protected static function _clean($dir) {
-		return $dir; /* TO-DO: replace invalid characters */
-	}
-	
-	protected static function _delete($path) {
-		
-		$wiped = true;
-		
-		foreach (glob($path . '/*' . OUTLINE_CACHE_SUFFIX) as $file)
-			if (!unlink($file)) trigger_error("Cache: unable to remove file '$file'", E_USER_WARNING);
-		
-		foreach (glob($path . '/*', GLOB_ONLYDIR) as $dir) {
-			$wiped = $wiped && self::_delete($dir);
-			if (!rmdir($dir)) trigger_error("Cache: unable to remove dir '$dir'", E_USER_WARNING);
-		}
-		
-		return $wiped;
+		if (is_file($path.$this->config['cache_suffix'])) unlink($path.$this->config['cache_suffix']);
 		
 	}
+	*/
 	
 }
 
