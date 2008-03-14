@@ -98,12 +98,18 @@ class OutlineSystem extends OutlinePlugin {
 		$function = OUTLINE_USERBLOCK_PREFIX.$keyword;
 		$args = substr($args, $pos+1);
 		$this->compiler->code("function {$function}({$args}) {");
-		$this->compiler->registerUserTag($keyword, $function);
 	}
 	
 	public function end_user_block($args) {
 		self::$block_keyword = null;
 		$this->compiler->code('}');
+	}
+	
+	public function user_tag($args) {
+		$pos = strpos($args, " "); if ($pos === false) $pos = strlen($args);
+		$keyword = strtolower(substr($args, 0, $pos));
+		$args = substr($args, $pos+1);
+		$this->compiler->code(OUTLINE_USERBLOCK_PREFIX.$keyword.'('.$args.');');
 	}
 	
 	// * capture block:
@@ -226,6 +232,7 @@ class OutlineSystem extends OutlinePlugin {
 		OutlineCompiler::registerTag('include', 'include_tag');
 		OutlineCompiler::registerTag('display', 'display_tag');
 		OutlineCompiler::registerBlock('block', 'user_block');
+		OutlineCompiler::registerTag('!', 'user_tag');
 		OutlineCompiler::registerBlock('capture', 'capture_block');
 		OutlineCompiler::registerBlock('while', 'while_block');
 		OutlineCompiler::registerBlock('for', 'for_block');
