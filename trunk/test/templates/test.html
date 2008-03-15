@@ -79,6 +79,14 @@ This content was captured to the $test variable.
 	<p style="color:#{$rgb}">{$color}</p>
 {/foreach}
 
+{ignore}<h1>Testing {else} with {foreach}</h1>{/ignore}
+
+{foreach $empty_array as $name => $value}
+	<p>This will never execute</p>
+{else}
+	<p>This displays because the foreach'ed array was empty.</p>
+{/foreach}
+
 {ignore}<h1>Testing access to an object created in 'test_require.php'</h1>{/ignore}
 
 {set $testobject = new TestClass()}

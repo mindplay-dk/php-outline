@@ -28,6 +28,7 @@ function show_my_template($use_this_title) {
 			"GREEN" => "00a000",
 			"BLUE" => "4080FF"
 		);
+		$empty_array = array();
 		
 		// start caching, render the template, end caching:
 		

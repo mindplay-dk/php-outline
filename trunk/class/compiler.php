@@ -309,6 +309,10 @@ class OutlineCompiler {
 		array_pop($this->block_stack);
 	}
 	
+	public function getBlock() {
+		return end($this->block_stack);
+	}
+	
 	public function checkBlock($name, $command) {
 		if (end($this->block_stack) !== $name)
 			throw new OutlineCompilerException("unmatched tag: ".htmlspecialchars($command) . (count($this->block_stack) ? " - expected closing tag for " . end($this->block_stack) : ""), $this);
