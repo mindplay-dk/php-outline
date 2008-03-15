@@ -19,6 +19,8 @@ function outline__time($var, $format) { return strftime($format, $var); }
 function outline__html($var, $quote = ENT_QUOTES) { return htmlspecialchars($var, $quote); }
 function outline__url($var) { return rawurlencode($var); }
 function outline__escape($var) { return strtr($var, array('\\'=>'\\\\',"'"=>"\\'",'"'=>'\\"',"\r"=>'\\r',"\n"=>'\\n','</'=>'<\/')); }
+function outline__upper($var) { return strtoupper($var); }
+function outline__lower($var) { return strtolower($var); }
 
 function outline__wed($str, $max=18) {
 	$str = rtrim($str);
