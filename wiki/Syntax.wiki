@@ -22,6 +22,10 @@ Or when looping through an associative array:
 
 	`{foreach $array as $index => $var} ... {foreach}`
 
+Additionally, you can use {else} with the {foreach} command to execute a default action, if the foreach'ed $array is empty:
+
+	`{foreach $array as $var} ... {else} ... {/foreach}`
+
 You have your while-loops:
 
 	`{while $var < 20} ... {/while}`
