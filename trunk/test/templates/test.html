@@ -27,13 +27,32 @@
 {!testBlock 'this is the first value passed to testBlock'}
 {!TESTBLOCK 'this is the first value passed to testBlock', 'this is the second value passed to testBlock'}
 
-<h1>Testing variables and modifiers</h1>
+<h1>Testing variables and standard modifiers</h1>
 
 <p>This value was assigned in the template function in 'test.php': "{$testvar}"</p>
 
 <p>And the same variable with a native PHP function applied as modifier: "{$testvar|md5}"</p>
 
 <p>This modifier uses a variable as one of it's arguments: "{$testvar|replace:'variable':'VARIABLE'}"</p>
+
+<textarea cols="60" rows="10">
+default: {$empty_array|default:"the array is empty"}
+
+strip: {set $test="spaces   will   be   stripped"}{$test|strip}
+
+date: {#time()|date:"Y-m-d H:i:s"}
+
+time: {#time()|time:"%c"}
+
+html: {set $test = "<strong>bold text</strong>"}{$test|html}
+
+url: {set $test = "url-encode this!"}http://www.google.com/search?{$test|url}
+
+escape: {set $test = "'this will be escaped\nfor javascript'"}javascript:window.alert('{$test|escape}');
+
+wed: {set $test = "the wed modifier prevents orphans in html"}{$test|wed|html}
+
+</textarea>
 
 {ignore}<h1>Testing the {capture} command</h1>{/ignore}
 
