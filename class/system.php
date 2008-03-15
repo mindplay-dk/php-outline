@@ -53,16 +53,19 @@ class OutlineSystem extends OutlinePlugin {
 	public function if_block($args) {
 		$this->compiler->code('if ('.$args.') {');
 	}
-
+	
 	public function end_if_block($args) {
 		$this->compiler->code('}');
 	}
 	
 	public function else_tag($args) {
-		$this->compiler->checkBlock('if', 'else');
-		$this->compiler->code('} else {');
+		switch ($this->compiler->getBlock()) {	
+			case 'if' : $this->compiler->code('} else {'); break;
+			case 'foreach' : $this->compiler->code('} if (empty('.end($this->foreach_stack).')) {'); break;
+			default: throw new OutlineCompilerException('the else-command cannot be used here', $this->compiler);
+		}
 	}
-
+	
 	public function elseif_tag($args) {
 		$this->compiler->checkBlock('if', 'elseif');
 		$this->compiler->code('} else if ('.$args.') {');
@@ -191,11 +194,15 @@ class OutlineSystem extends OutlinePlugin {
 	
 	// * foreach block:
 	
+	protected $foreach_stack = array();
+	
 	public function foreach_block($args) {
+		$this->foreach_stack[] = trim(reset(explode(" ", $args)));
 		$this->compiler->code('foreach ('.$args.') {');
 	}
 	
 	public function end_foreach_block($args) {
+		array_pop($this->foreach_stack);
 		$this->compiler->code('}');
 	}
 	
