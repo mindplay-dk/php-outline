@@ -21,6 +21,9 @@ function outline__url($var) { return rawurlencode($var); }
 function outline__escape($var) { return strtr($var, array('\\'=>'\\\\',"'"=>"\\'",'"'=>'\\"',"\r"=>'\\r',"\n"=>'\\n','</'=>'<\/')); }
 function outline__upper($var) { return strtoupper($var); }
 function outline__lower($var) { return strtolower($var); }
+function outline__format($var, $decimals=2, $dec_point='.', $thousand_sep=',') { return $var ? number_format(floatval($var), $decimals, $dec_point, $thousand_sep) : ''; }
+function outline__br($var, $replace = "<br />") { return str_replace("\n", $replace, $var); }
+function outline__chop($var, $max = 100, $dots = '...', $chop = false) { return strlen($var)>$max ? ( $chop ? substr($var,0,$max).$dots : preg_replace('/\s+?(\S+)?$/','',substr($var, 0, $max)).$dots ) : $var; }
 
 function outline__wed($str, $max=18) {
 	$str = rtrim($str);

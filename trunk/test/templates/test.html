@@ -35,7 +35,7 @@
 
 <p>This modifier uses a variable as one of it's arguments: "{$testvar|replace:'variable':'VARIABLE'}"</p>
 
-<textarea cols="60" rows="10">
+<textarea cols="80" rows="15">
 default: {$empty_array|default:"the array is empty"}
 
 strip: {set $test="spaces   will   be   stripped"}{$test|strip}
@@ -49,8 +49,17 @@ html: {set $test = "<strong>bold text</strong>"}{$test|html}
 url: {set $test = "url-encode this!"}http://www.google.com/search?{$test|url}
 
 escape: {set $test = "'this will be escaped\nfor javascript'"}javascript:window.alert('{$test|escape}');
-
 wed: {set $test = "the wed modifier prevents orphans in html"}{$test|wed|html}
+
+lower: {set $test = 'LOWERCASE'}{$test|lower}
+
+upper: {set $test = 'uppercase'}{$test|upper}
+
+format: {set $test = 3.1415}{$test|format} | {set $test = 42000000}{$test|format:0}
+
+br: {set $test = "this is\na test"}{$test|br|html}
+
+chop: {set $test = "this is an example - the chop function shortens elaborate text at a given length"}{$test|chop:65}
 
 </textarea>
 
