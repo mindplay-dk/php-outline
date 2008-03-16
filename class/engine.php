@@ -134,7 +134,7 @@ class Outline extends OutlineEngine {
 			return $this->compiled;
 		}
 	}
-		
+	
 }
 
 class OutlineUtil {
@@ -150,11 +150,11 @@ class OutlineUtil {
 		$wiped = true;
 		
 		foreach (glob($path . '/*' . $suffix) as $file)
-			if (!unlink($file)) trigger_error("OutlineCache::_delete() : unable to remove file '$file'", E_USER_WARNING);
+			if (!unlink($file)) trigger_error("OutlineUtil::delete() : unable to remove file '$file'", E_USER_WARNING);
 		
 		foreach (glob($path . '/*', GLOB_ONLYDIR) as $dir) {
 			$wiped = $wiped && self::_delete($dir, $suffix);
-			if (!rmdir($dir)) trigger_error("OutlineCache::_delete() : unable to remove dir '$dir' - not empty?", E_USER_WARNING);
+			if (!rmdir($dir)) trigger_error("OutlineUtil::delete() : unable to remove dir '$dir' - not empty?", E_USER_WARNING);
 		}
 		
 		return $wiped;
