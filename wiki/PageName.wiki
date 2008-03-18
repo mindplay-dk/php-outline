@@ -1,0 +1,9 @@
+= Comparison to Smarty =
+
+Please note that this comparison page is not here to demonstrate how "superior" Outline is to Smarty - whether or not Outline is more suitable than Smarty for your purposes, is entirely dependent on the needs of your project, your personal needs and preferences.
+
+This comparison page is here mainly to give you an idea of what you can do with this template engine - since most developers, with an interest in templating for php, have more than likely crossed paths with Smarty at some point in their carreer, demonstrating it from this perspective should give you a quick idea of how you can use Outline.
+
+....
+
+==== This page is under construction ====
