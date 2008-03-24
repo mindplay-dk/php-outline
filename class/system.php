@@ -104,12 +104,12 @@ class OutlineSystem extends OutlinePlugin {
 		$keyword = self::$block_keyword = strtolower(substr($args, 0, $pos));
 		$function = $this->user_block_name($keyword);
 		$args = substr($args, $pos+1);
-		$this->compiler->code("function {$function}({$args}) {");
+		$this->compiler->code("if (!function_exists('{$function}')) { function {$function}({$args}) {");
 	}
 	
 	public function end_user_block($args) {
 		self::$block_keyword = null;
-		$this->compiler->code('}');
+		$this->compiler->code('} }');
 	}
 	
 	public function user_tag($args) {
