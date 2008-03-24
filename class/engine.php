@@ -144,7 +144,7 @@ class Outline extends OutlineEngine {
 	
 	public function get() {
 		self::$engine_stack[] = & $this;
-		if ((count(self::$engine_stack) == 1) && $this->config['quiet']) self::$error_level = error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING ^ E_STRICT);
+		if ((count(self::$engine_stack) == 1) && $this->config['quiet']) self::$error_level = error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING | E_STRICT ^ E_STRICT);
 		if ($this->caching && !empty($this->cache) && $this->cache->valid()) {
 			return $this->cache->get();
 		} else {
