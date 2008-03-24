@@ -88,7 +88,9 @@ class Outline extends OutlineEngine {
 	protected $caching = true;
 	protected $cache;
 	
-	public function __construct($tplname) {
+	protected static $engine_stack = array();
+	
+	public function __construct($tplname, $config = null) {
 		
 		$this->tplname = $tplname;
 		
@@ -97,6 +99,16 @@ class Outline extends OutlineEngine {
 			$this->config['compiled_path'] . '/' . $tplname . $this->config['compiled_suffix'],
 			@constant("OUTLINE_ALWAYS_COMPILE")
 		);
+		
+		if (is_array($config)) {
+			foreach ($config as $name => $value) {
+				if (!array_key_exists($name, $this->config)) throw new OutlineException("Outline::__construct() : invalid configuration option '$name'");
+				$this->config[$name] = $value;
+			}
+		} else if ($config === null && count(self::$engine_stack)) {
+			if (@constant("OUTLINE_DEBUG")) OutlineDebug("inheriting configuration of parent engine");
+			$this->config = & self::$engine_stack[0];
+		}
 		
 	}
 	
@@ -128,11 +140,16 @@ class Outline extends OutlineEngine {
 	}
 	
 	public function get() {
+		self::$engine_stack[] = & $this;
 		if ($this->caching && !empty($this->cache) && $this->cache->valid()) {
 			return $this->cache->get();
 		} else {
 			return $this->compiled;
 		}
+	}
+	
+	public static function finish() {
+		array_pop(self::$engine_stack);
 	}
 	
 }
