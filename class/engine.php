@@ -30,6 +30,7 @@ class OutlineEngine {
 		"cache_path" =>          OUTLINE_CACHE_PATH,      /* The folder in which the Cache class stores it's content */
 		"cache_suffix" =>        '.html',                 /* File extension or suffix for cache files */
 		"cache_time" =>          OUTLINE_CACHE_TIME,      /* Default cache time (in seconds) */
+		"quiet" =>               true,                    /* Suppresses E_NOTICE and E_WARNING error messages */
 		"bracket_open" =>        '{',
 		"bracket_close" =>       '}',
 		"bracket_comment" =>     '{*',
@@ -90,6 +91,8 @@ class Outline extends OutlineEngine {
 	
 	protected static $engine_stack = array();
 	
+	protected static $error_level;
+	
 	public function __construct($tplname, $config = null) {
 		
 		$this->tplname = $tplname;
@@ -141,6 +144,7 @@ class Outline extends OutlineEngine {
 	
 	public function get() {
 		self::$engine_stack[] = & $this;
+		if ((count(self::$engine_stack) == 1) && $this->config['quiet']) self::$error_level = error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING ^ E_STRICT);
 		if ($this->caching && !empty($this->cache) && $this->cache->valid()) {
 			return $this->cache->get();
 		} else {
@@ -149,6 +153,7 @@ class Outline extends OutlineEngine {
 	}
 	
 	public static function finish() {
+		if ((count(self::$engine_stack) == 1) && self::$engine_stack[0]->config['quiet']) error_reporting(self::$error_level);
 		array_pop(self::$engine_stack);
 	}
 	
