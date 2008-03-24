@@ -182,6 +182,8 @@ class OutlineCompiler {
 		if (count($this->block_stack))
 			throw new OutlineCompilerException("OutlineCompiler::compile() : unterminated block: " . end($this->block_stack) . " at end of template", $this);
 		
+		$this->code('Outline::finish();');
+		
 		if ($this->coding) $this->compiled .= OUTLINE_PHPTAG_CLOSE;
 		
 		foreach ($this->plugins as $class => $plugin) {
