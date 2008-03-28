@@ -16,36 +16,15 @@ class OutlineSystem extends OutlinePlugin {
 	// * System tags and helper methods:
 	
 	public function var_tag($args) {
-		$this->compiler->code('echo ' . $this->apply_modifiers('$'.$args) . ';');
+		$this->compiler->code('echo ' . $this->compiler->apply_modifiers('$'.$args) . ';');
 	}
 	
 	public function echo_tag($args) {
-		$this->compiler->code('echo ' . $this->apply_modifiers($args) . ';');
+		$this->compiler->code('echo ' . $this->compiler->apply_modifiers($args) . ';');
 	}
 	
 	public function set_tag($args) {
 		$this->compiler->code($args.';');
-	}
-	
-	public function apply_modifiers($args) {
-		
-		$mods = $this->compiler->escape_split($args, OUTLINE_MODIFIER_PIPE);
-		$code = trim(array_shift($mods));
-		
-		foreach ($mods as $mod) {
-			$args = $this->compiler->escape_split($mod, OUTLINE_MODIFIER_SEP);
-			$mod = trim(array_shift($args));
-			if (function_exists(OUTLINE_MODIFIER_PREFIX.$mod)) {
-				$code = OUTLINE_MODIFIER_PREFIX.$mod . '(' . $code . (count($args) ? ', '.implode(', ', $args) : '') . ')';
-			} else if (function_exists($mod)) {
-				$code = $mod . '(' . $code . (count($args) ? ', '.implode(', ', $args) : '') . ')';
-			} else {
-				throw new OutlineException("modifier '$mod' not found", $this->compiler);
-			}
-		}
-		
-		return $code;
-		
 	}
 	
 	// * if / elseif / else / endif tags:
@@ -232,6 +211,8 @@ class OutlineSystem extends OutlinePlugin {
 		$var = '$outline_cycle_' . $num;
 		$this->compiler->code("} if ($var == $count) { $var = 0; }");
 	}
+	
+	// --- Plugin registration:
 	
 	public static function register() {
 		OutlineCompiler::registerTag('$', 'var_tag');

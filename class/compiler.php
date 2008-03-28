@@ -298,6 +298,36 @@ class OutlineCompiler {
 		
 	}
 	
+	public function parse_attributes($str) {
+		$attribs = array();
+		foreach ($bits = escape_split($str, " ") as $bit) {
+			$a = explode("=", $bit, 2);
+			if (count($a)==2) $attribs[trim($a[0])] = trim($a[1]);
+		}
+		return $attribs;
+	}
+	
+	public function apply_modifiers($args) {
+		
+		$mods = $this->escape_split($args, OUTLINE_MODIFIER_PIPE);
+		$code = trim(array_shift($mods));
+		
+		foreach ($mods as $mod) {
+			$args = $this->escape_split($mod, OUTLINE_MODIFIER_SEP);
+			$mod = trim(array_shift($args));
+			if (function_exists(OUTLINE_MODIFIER_PREFIX.$mod)) {
+				$code = OUTLINE_MODIFIER_PREFIX.$mod . '(' . $code . (count($args) ? ', '.implode(', ', $args) : '') . ')';
+			} else if (function_exists($mod)) {
+				$code = $mod . '(' . $code . (count($args) ? ', '.implode(', ', $args) : '') . ')';
+			} else {
+				throw new OutlineCompilerException("modifier '$mod' not found", $this);
+			}
+		}
+		
+		return $code;
+		
+	}
+	
 	// --- Block/nesting management methods:
 	
 	protected $block_stack = array();
