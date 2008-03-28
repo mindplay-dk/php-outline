@@ -49,6 +49,10 @@ class OutlineTpl {
 		return $content;
 	}
 	
+	public function addPlugin($class, $path) {
+		$this->config['plugins'][$class] = $path;
+	}
+	
 }
 
 ?>
