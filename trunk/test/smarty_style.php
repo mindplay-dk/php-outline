@@ -22,7 +22,7 @@ header("Content-type: text/html; charset=iso-8859-1");
 $tpl = new OutlineTpl();
 
 $tpl->assign("testvar", 'This variable has local scope');
-$tpl->assign("testdate", date("r"));
+$tpl->assign("testdate", @date("r"));
 
 $colors = array(
 	"RED" => "ff0000",
