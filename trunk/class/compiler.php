@@ -53,14 +53,17 @@ class OutlineCompiler {
 	
 	// * Other members:
 	
-	static protected $blocks = array();
-	static protected $tags = array();
+	protected $blocks = array();
+	protected $tags = array();
 	
 	protected $commands;
 	
 	protected $plugins = array();
-	static protected $plugin_registry = array();
-	static protected $current_plugin = null;
+	protected $plugin_registry = array();
+	
+	static protected $loaded_plugins = array();
+	
+	public $current_plugin = null;
 	
 	protected $utf8 = false;
 	
@@ -69,8 +72,8 @@ class OutlineCompiler {
 	public function __construct(OutlineEngine & $engine) {
 		$this->config = & $engine->config;
 		$this->commands = array(
-			array("type" => self::COMMAND_BLOCK, "commands" => & self::$blocks),
-			array("type" => self::COMMAND_TAG,   "commands" => & self::$tags)
+			array("type" => self::COMMAND_BLOCK, "commands" => & $this->blocks),
+			array("type" => self::COMMAND_TAG,   "commands" => & $this->tags)
 		);
 		$this->brackets_begin = array(
 			$this->config['bracket_ignore'] => self::BRACKET_IGNORE,
@@ -86,6 +89,14 @@ class OutlineCompiler {
 		$this->brackets_ignore = array(
 			$this->config['bracket_end_ignore'] => self::BRACKET_END_IGNORE
 		);
+		foreach ($this->config['plugins'] as $class => $path) {
+			if (!in_array($class, self::$loaded_plugins)) {
+				self::$loaded_plugins[] = $class;
+				OutlineDebug("Loading plugin '$class' from $path");
+				require_once $path;
+			}
+			$this->registerPlugin($class);
+		}
 	}
 	
 	public function __destruct() {
@@ -352,43 +363,45 @@ class OutlineCompiler {
 	
 	// --- Command registration methods:
 	
-	protected static function registerCommand($type, $keyword, $function) {
+	protected function registerCommand($type, $keyword, $function) {
 		
-		if ( isset(self::$tags[$keyword]) || isset(self::$blocks[$keyword]) )
+		if ( isset($this->tags[$keyword]) || isset($this->blocks[$keyword]) )
 			trigger_error("OutlineCompiler::register() : keyword '$keyword' already registered", E_USER_ERROR);
 		
 		$plugin = array(
-			"class" => self::$current_plugin,
+			"class" => $this->current_plugin,
 			"function" => $function
 		);
 		
 		switch ($type) {
-			case self::COMMAND_BLOCK: self::$blocks[$keyword] = $plugin; break;
-			case self::COMMAND_TAG: self::$tags[$keyword] = $plugin; break;
+			case self::COMMAND_BLOCK: $this->blocks[$keyword] = $plugin; break;
+			case self::COMMAND_TAG: $this->tags[$keyword] = $plugin; break;
 		}
 		
 	}
 	
-	public static function registerTag($keyword, $function) {
-		self::registerCommand(self::COMMAND_TAG, $keyword, $function);
+	public function registerTag($keyword, $function) {
+		$this->registerCommand(self::COMMAND_TAG, $keyword, $function);
 	}
 	
-	public static function registerBlock($keyword, $function) {
-		self::registerCommand(self::COMMAND_BLOCK, $keyword, $function);
+	public function registerBlock($keyword, $function) {
+		$this->registerCommand(self::COMMAND_BLOCK, $keyword, $function);
 	}
 	
 	// --- Plugin management methods:
 	
-	public static function registerPlugin($classname) {
+	public function registerPlugin($classname) {
 		
-		if (in_array($classname, self::$plugin_registry))
+		if (@constant("OUTLINE_DEBUG")) OutlineDebug("Registering plugin '$classname'");
+		
+		if (in_array($classname, $this->plugin_registry))
 			trigger_error("OutlineCompiler::registerPlugin() : plugin '$classname' already registered", E_USER_ERROR);
 		
-		self::$plugin_registry[] = $classname;
+		$this->plugin_registry[] = $classname;
 		
-		self::$current_plugin = $classname;
-		call_user_func(array($classname, "register"));
-		self::$current_plugin = null;
+		$this->current_plugin = $classname;
+		call_user_func(array($classname, "register"), $this);
+		$this->current_plugin = null;
 		
 	}
 	
@@ -412,7 +425,7 @@ abstract class OutlinePlugin {
 		foreach ($this as $index => $value) unset($this->$index);
 	}
 	
-	public static function register() {
+	public static function register(&$compiler) {
 		trigger_error("OutlinePlugin::register() : plugins must override this method", E_USER_ERROR);
 	}
 	
