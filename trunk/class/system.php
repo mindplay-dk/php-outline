@@ -197,7 +197,7 @@ class OutlineSystem extends OutlinePlugin {
 	protected $foreach_stack = array();
 	
 	public function foreach_block($args) {
-		$this->foreach_stack[] = trim(reset(explode(" ", $args)));
+		$this->foreach_stack[] = trim(@reset(explode(" ", $args)));
 		$this->compiler->code('foreach ('.$args.') {');
 	}
 	
