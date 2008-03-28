@@ -107,21 +107,25 @@ class Outline extends OutlineEngine {
 		
 		$this->tplname = $tplname;
 		
-		$this->caching = !$this->build(
-			$this->config['template_path'] . '/' . $tplname . $this->config['template_suffix'],
-			$this->config['compiled_path'] . '/' . $tplname . $this->config['compiled_suffix'],
-			@constant("OUTLINE_ALWAYS_COMPILE")
-		);
-		
 		if (is_array($config)) {
 			foreach ($config as $name => $value) {
 				if (!array_key_exists($name, $this->config)) throw new OutlineException("Outline::__construct() : invalid configuration option '$name'");
-				$this->config[$name] = $value;
+				if (is_array($this->config[$name])) {
+					$this->config[$name] += $value;
+				} else {
+					$this->config[$name] = $value;
+				}
 			}
 		} else if ($config === null && count(self::$engine_stack)) {
 			if (@constant("OUTLINE_DEBUG")) OutlineDebug("inheriting configuration of parent engine");
 			$this->config = & self::$engine_stack[0];
 		}
+		
+		$this->caching = !$this->build(
+			$this->config['template_path'] . '/' . $tplname . $this->config['template_suffix'],
+			$this->config['compiled_path'] . '/' . $tplname . $this->config['compiled_suffix'],
+			@constant("OUTLINE_ALWAYS_COMPILE")
+		);
 		
 	}
 	
