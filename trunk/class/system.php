@@ -104,7 +104,7 @@ class OutlineSystem extends OutlinePlugin {
 	protected $cap_stack = array();
 	
 	public function capture_block($args) {
-		if (substr($args,0,1) != '$') throw new OutlineException('no variable specified for capture');
+		if (substr($args,0,1) != '$') throw new OutlineCompilerException('no variable specified for capture', $this->compiler);
 		$this->cap_stack[] = $args;
 		$this->compiler->code('ob_start();');
 	}
@@ -176,7 +176,7 @@ class OutlineSystem extends OutlinePlugin {
 	protected $foreach_stack = array();
 	
 	public function foreach_block($args) {
-		$this->foreach_stack[] = trim(@reset(explode(" ", $args)));
+		$this->foreach_stack[] = trim(@reset(explode(" ", $args, 2)));
 		$this->compiler->code('foreach ('.$args.') {');
 	}
 	

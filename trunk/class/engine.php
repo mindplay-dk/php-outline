@@ -199,4 +199,7 @@ class OutlineUtil {
 	
 }
 
+function first_key(&$a) { return reset(array_keys($a)); }
+function last_key(&$a) { return end(array_keys($a)); }
+
 ?>

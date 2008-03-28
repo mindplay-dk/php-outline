@@ -311,7 +311,7 @@ class OutlineCompiler {
 	
 	public function parse_attributes($str) {
 		$attribs = array();
-		foreach ($bits = escape_split($str, " ") as $bit) {
+		foreach ($bits = $this->escape_split($str, " ") as $bit) {
 			$a = explode("=", $bit, 2);
 			if (count($a)==2) $attribs[trim($a[0])] = trim($a[1]);
 		}
