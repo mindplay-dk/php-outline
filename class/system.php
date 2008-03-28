@@ -214,28 +214,26 @@ class OutlineSystem extends OutlinePlugin {
 	
 	// --- Plugin registration:
 	
-	public static function register() {
-		OutlineCompiler::registerTag('$', 'var_tag');
-		OutlineCompiler::registerTag('#', 'echo_tag');
-		OutlineCompiler::registerTag('set', 'set_tag');
-		OutlineCompiler::registerBlock('if', 'if_block');
-		OutlineCompiler::registerTag('else', 'else_tag');
-		OutlineCompiler::registerTag('elseif', 'elseif_tag');
-		OutlineCompiler::registerTag('require', 'require_tag');
-		OutlineCompiler::registerTag('include', 'include_tag');
-		OutlineCompiler::registerTag('display', 'display_tag');
-		OutlineCompiler::registerBlock('block', 'user_block');
-		OutlineCompiler::registerTag('!', 'user_tag');
-		OutlineCompiler::registerBlock('capture', 'capture_block');
-		OutlineCompiler::registerBlock('while', 'while_block');
-		OutlineCompiler::registerBlock('for', 'for_block');
-		OutlineCompiler::registerBlock('foreach', 'foreach_block');
-		OutlineCompiler::registerBlock('cycle', 'cycle_block');
-		OutlineCompiler::registerTag('next', 'cycle_next_tag');
+	public static function register(&$compiler) {
+		$compiler->registerTag('$', 'var_tag');
+		$compiler->registerTag('#', 'echo_tag');
+		$compiler->registerTag('set', 'set_tag');
+		$compiler->registerBlock('if', 'if_block');
+		$compiler->registerTag('else', 'else_tag');
+		$compiler->registerTag('elseif', 'elseif_tag');
+		$compiler->registerTag('require', 'require_tag');
+		$compiler->registerTag('include', 'include_tag');
+		$compiler->registerTag('display', 'display_tag');
+		$compiler->registerBlock('block', 'user_block');
+		$compiler->registerTag('!', 'user_tag');
+		$compiler->registerBlock('capture', 'capture_block');
+		$compiler->registerBlock('while', 'while_block');
+		$compiler->registerBlock('for', 'for_block');
+		$compiler->registerBlock('foreach', 'foreach_block');
+		$compiler->registerBlock('cycle', 'cycle_block');
+		$compiler->registerTag('next', 'cycle_next_tag');
 	}
 	
 }
-
-OutlineCompiler::registerPlugin('OutlineSystem');
 
 ?>

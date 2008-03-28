@@ -36,11 +36,20 @@ class OutlineEngine {
 		"bracket_comment" =>     '{*',
 		"bracket_end_comment" => '*}',
 		"bracket_ignore" =>      '{ignore}',
-		"bracket_end_ignore" =>  '{/ignore}'
+		"bracket_end_ignore" =>  '{/ignore}',
+		"plugins" =>             array()
 	);
+	
+	public function __construct() {
+		$this->config['plugins']['OutlineSystem'] = OUTLINE_CLASS_PATH . "/system.php";
+	}
 	
 	public function __destruct() {
 		foreach ($this as $index => $value) unset($this->$index);
+	}
+	
+	public function addPlugin($class, $path) {
+		$this->config['plugins'][$class] = $path;
 	}
 	
 	public function build($template, $compiled, $force = false) {
@@ -58,7 +67,6 @@ class OutlineEngine {
 			if (!@constant("OUTLINE_COMPILER")) {
 				if (@constant("OUTLINE_DEBUG")) OutlineDebug("loading OutlineCompiler");
 				require OUTLINE_CLASS_PATH . "/compiler.php";
-				require OUTLINE_CLASS_PATH . "/system.php";
 			}
 			
 			if (@constant("OUTLINE_DEBUG")) OutlineDebug("compiling template '$template' to '$compiled'");
@@ -94,6 +102,8 @@ class Outline extends OutlineEngine {
 	protected static $error_level;
 	
 	public function __construct($tplname, $config = null) {
+		
+		parent::__construct();
 		
 		$this->tplname = $tplname;
 		
