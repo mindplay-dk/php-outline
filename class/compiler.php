@@ -89,14 +89,6 @@ class OutlineCompiler {
 		$this->brackets_ignore = array(
 			$this->config['bracket_end_ignore'] => self::BRACKET_END_IGNORE
 		);
-		foreach ($this->config['plugins'] as $class => $path) {
-			if (!in_array($class, self::$loaded_plugins)) {
-				self::$loaded_plugins[] = $class;
-				OutlineDebug("Loading plugin '$class' from $path");
-				require_once $path;
-			}
-			$this->registerPlugin($class);
-		}
 	}
 	
 	public function __destruct() {
@@ -119,6 +111,15 @@ class OutlineCompiler {
 		$this->compiled = '';
 		$this->coding = false;
 		$this->linenum = 1;
+		
+		foreach ($this->config['plugins'] as $class => $path) {
+			if (!in_array($class, self::$loaded_plugins)) {
+				self::$loaded_plugins[] = $class;
+				OutlineDebug("Loading plugin '$class' from $path");
+				require_once $path;
+			}
+			$this->registerPlugin($class);
+		}
 		
 		while ($i < strlen($tpl)) {
 			
