@@ -118,12 +118,12 @@ class Outline extends OutlineEngine {
 			}
 		} else if ($config === null && count(self::$engine_stack)) {
 			if (@constant("OUTLINE_DEBUG")) OutlineDebug("inheriting configuration of parent engine");
-			$this->config = & self::$engine_stack[0];
+			$this->config = & self::$engine_stack[0]->config;
 		}
 		
 		$this->caching = !$this->build(
-			$this->config['template_path'] . '/' . $tplname . $this->config['template_suffix'],
-			$this->config['compiled_path'] . '/' . $tplname . $this->config['compiled_suffix'],
+			$this->config["template_path"] . '/' . $tplname . $this->config["template_suffix"],
+			$this->config["compiled_path"] . '/' . $tplname . $this->config["compiled_suffix"],
 			@constant("OUTLINE_ALWAYS_COMPILE")
 		);
 		
