@@ -48,10 +48,6 @@ class OutlineEngine {
 		foreach ($this as $index => $value) unset($this->$index);
 	}
 	
-	public function addPlugin($class, $path) {
-		$this->config['plugins'][$class] = $path;
-	}
-	
 	public function build($template, $compiled, $force = false) {
 		
 		// Builds $template and writes the resulting compiled script to $compiled.
