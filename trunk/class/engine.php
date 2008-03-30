@@ -37,6 +37,7 @@ class OutlineEngine {
 		"bracket_end_comment" => '*}',
 		"bracket_ignore" =>      '{ignore}',
 		"bracket_end_ignore" =>  '{/ignore}',
+		"outline_context" =>     null,
 		"plugins" =>             array()
 	);
 	
@@ -167,8 +168,8 @@ class Outline extends OutlineEngine {
 		array_pop(self::$engine_stack);
 	}
 	
-	public static function & engine_ref() {
-		return end(self::$engine_stack);
+	public static function & get_context() {
+		return self::$engine_stack[count(self::$engine_stack)-1]->config['outline_context'];
 	}
 	
 }
