@@ -121,6 +121,8 @@ class OutlineCompiler {
 			$this->registerPlugin($class);
 		}
 		
+		$this->code("\$outline = Outline::engine_ref();");
+		
 		while ($i < strlen($tpl)) {
 			
 			if ($newline = (substr($tpl, $i, 1) === "\n")) $this->linenum++;
