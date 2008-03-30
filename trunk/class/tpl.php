@@ -54,10 +54,6 @@ class OutlineTpl {
 		$this->config['plugins'][$class] = $path;
 	}
 	
-	public function getTest() {
-		return "TEST";
-	}
-	
 }
 
 ?>
