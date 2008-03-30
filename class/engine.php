@@ -167,6 +167,10 @@ class Outline extends OutlineEngine {
 		array_pop(self::$engine_stack);
 	}
 	
+	public static function & engine_ref() {
+		return end(self::$engine_stack);
+	}
+	
 }
 
 class OutlineUtil {
