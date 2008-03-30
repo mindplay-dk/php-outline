@@ -62,7 +62,7 @@ class OutlineSystem extends OutlinePlugin {
 		$tplname = trim($args);
 		if (substr($tplname,0,1) != '$') $tplname = "'$tplname'";
 		$var = '$outline_include_' . ($this->include_num++);
-		$this->compiler->code("$var = new Outline($tplname); require $var" . '->get();');
+		$this->compiler->code("$var = new Outline($tplname); require {$var}->get();");
 	}
 	
 	public function display_tag($args) {
