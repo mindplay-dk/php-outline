@@ -21,6 +21,7 @@ class OutlineTpl {
 	
 	public function __construct($config = null) {
 		$this->config = $config;
+		$this->config['outline_context'] = & $this;
 	}
 	
 	public function __destruct() {
@@ -51,6 +52,10 @@ class OutlineTpl {
 	
 	public function addPlugin($class, $path) {
 		$this->config['plugins'][$class] = $path;
+	}
+	
+	public function getTest() {
+		return "TEST";
 	}
 	
 }

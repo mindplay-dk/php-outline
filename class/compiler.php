@@ -121,7 +121,7 @@ class OutlineCompiler {
 			$this->registerPlugin($class);
 		}
 		
-		$this->code("\$outline = Outline::engine_ref();");
+		$this->code("\$outline = Outline::get_context();");
 		
 		while ($i < strlen($tpl)) {
 			
