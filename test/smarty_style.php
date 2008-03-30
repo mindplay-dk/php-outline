@@ -19,7 +19,13 @@ $something = 'This variable has global scope';
 
 header("Content-type: text/html; charset=iso-8859-1");
 
-$tpl = new OutlineTpl();
+class OutlineTest extends OutlineTpl {
+	public function getTest() {
+		return 'this is a test';
+	}
+}
+
+$tpl = new OutlineTest();
 
 $tpl->assign("testvar", 'This variable has local scope');
 $tpl->assign("testdate", @date("r"));

@@ -16,6 +16,10 @@
 
 <p>Testing context object: {if $outline}context object found{else}no context object found{/if} (only OutlineTpl or another wrapper-class has this)</p>
 
+{if $outline}
+	<p>Contextual OutlineTest object's getTest() method returned: {$outline->getTest()}</p>
+{/if}
+
 <p>Printing a constant defined in 'test_require.php': {#TEST_VALUE}</p>
 
 <p>Applying a modifier to the same constant: {#TEST_VALUE|replace:'i':'iiiii'}</p>
@@ -100,6 +104,10 @@ This content was captured to the $test variable.
 {ignore}<h1>Testing the {include} command</h1>{/ignore}
 
 {include include/test_include}
+
+{if $outline}
+	<p>After include, contextual OutlineTest object's getTest() method returned: {$outline->getTest()}</p>
+{/if}
 
 {ignore}<h1>Testing the {foreach} command</h1>{/ignore}
 
