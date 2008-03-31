@@ -115,7 +115,7 @@ class OutlineCompiler {
 		foreach ($this->config['plugins'] as $class => $path) {
 			if (!in_array($class, self::$loaded_plugins)) {
 				self::$loaded_plugins[] = $class;
-				OutlineDebug("Loading plugin '$class' from $path");
+				if (@constant("OUTLINE_DEBUG")) OutlineDebug("Loading plugin '$class' from $path");
 				require_once $path;
 			}
 			$this->registerPlugin($class);
