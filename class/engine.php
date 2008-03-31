@@ -41,10 +41,6 @@ class OutlineEngine {
 		"plugins" =>             array()
 	);
 	
-	public function __construct() {
-		$this->config['plugins']['OutlineSystem'] = OUTLINE_CLASS_PATH . "/system.php";
-	}
-	
 	public function __destruct() {
 		foreach ($this as $index => $value) unset($this->$index);
 	}
@@ -100,7 +96,7 @@ class Outline extends OutlineEngine {
 	
 	public function __construct($tplname, $config = null) {
 		
-		parent::__construct();
+		$this->config['plugins']['OutlineSystem'] = OUTLINE_CLASS_PATH . "/system.php";
 		
 		$this->tplname = $tplname;
 		
