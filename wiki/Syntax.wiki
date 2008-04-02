@@ -100,7 +100,7 @@ And you can include php-scripts:
 
 You can declare your own modifiers. Simply write standard PHP functions, or (better) prefix your function name with "`outline_`" - these functions will take presedent over non-prefixed functions, which means you can override standard pfp-functions with custom modifiers.
 
-A few standard modifiers are included:
+A small library of standard modifiers are included - here are a few examples:
 
 	`{$var|replace:"find":"replace"}`
 	
@@ -115,6 +115,8 @@ A few standard modifiers are included:
 	`{$var|wed:50}`
 		
 	prevents orphans by replacing the last space with "&nbsp;". in rendered HTML, this prevents single hanging words, which is considered bad typography. the optional number, is the maximum length of the last word - if longer than that, no change is made.
+
+For a complete list of modifiers, see the example template included with Outline.
 
 == Custom Functions ==
 
@@ -132,7 +134,7 @@ Outline parses any number of attributes and passes them as arguments to your fun
 
 Note that this is not parsed as such - anything you place after "name=" is taken as php expressions. That means a value can come from a function-call, method-call, etc. - and it also means that you _must_ quote strings.
 
-== Inserts ==
+== Uncached Inserts ==
 
 Inserts are similar to custom functions, but are called an executed _even after_ caching. That is, everything your template outputs can be cached, but the output from an insert is _never_ cached.
 
