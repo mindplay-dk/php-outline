@@ -21,6 +21,8 @@ define("OUTLINE_COMMAND_CANCEL",      '/');
 define("OUTLINE_MODIFIER_PREFIX",     'outline__');
 define("OUTLINE_USERBLOCK_PREFIX",    'outline__user_');
 define("OUTLINE_USERBLOCK_CONST",     'OUTLINE_USER_');
+define("OUTLINE_USERFUNC_PREFIX",     'outline_function_');
+define("OUTLINE_INSERTFUNC_PREFIX",   'outline_insert_');
 
 class OutlineCompilerException extends Exception {
 	
@@ -232,7 +234,16 @@ class OutlineCompiler {
 			
 		}
 		
-		if (!$match) throw new OutlineCompilerException("OutlineCompiler::parse() : unrecognized tag: ".htmlspecialchars($command), $this);
+		if (!$match) {
+			list($function, $args) = explode(" ", $command, 2);
+			$function = OUTLINE_USERFUNC_PREFIX . $function;
+			if (function_exists($function)) {
+				$this->code('echo '.$function.'('.$this->build_arguments($args).');');
+				return;
+			} else {
+				throw new OutlineCompilerException("OutlineCompiler::parse() : unrecognized tag: ".htmlspecialchars($command), $this);
+			}
+		}
 		
 		if ($classname && !isset($this->plugins[$classname]))
 			$this->plugins[$classname] = new $classname($this);
@@ -340,6 +351,13 @@ class OutlineCompiler {
 		
 		return $code;
 		
+	}
+	
+	public function build_arguments($args) {
+		$a = array();
+		foreach ($this->parse_attributes($args) as $name => $value)
+			$a[] = "\"$name\" => $value";
+		return "array(".implode(", ", $a).")";
 	}
 	
 	// --- Block/nesting management methods:

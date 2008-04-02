@@ -84,10 +84,12 @@ class OutlineCache {
 		
 		if (!$this->buffering) throw new OutlineException("OutlineCache::stop() : capture() must be called before stop() can be called");
 		
-		if (!@file_put_contents(implode($this->path), ob_get_contents()))
+		if (!@file_put_contents(implode($this->path), $this->valid ? ob_get_contents() : ob_get_clean()))
 			throw new OutlineException("OutlineCache::stop() : unable to write new cache entry ".implode($this->path));
 		
-		ob_end_flush();
+		if ($this->valid) ob_end_flush();
+		
+		$this->valid = true;
 		
 	}
 	/*

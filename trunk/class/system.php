@@ -212,6 +212,13 @@ class OutlineSystem extends OutlinePlugin {
 		$this->compiler->code("} if ($var == $count) { $var = 0; }");
 	}
 	
+	// * insert tag:
+	
+	public function insert_tag($_args) {
+		list($function, $args) = explode(" ", $_args, 2);
+		$this->compiler->code("echo Outline::defer('" . OUTLINE_INSERTFUNC_PREFIX . $function . "', " . $this->compiler->build_arguments($args) . ");");
+	}
+	
 	// --- Plugin registration:
 	
 	public static function register(&$compiler) {
@@ -232,6 +239,7 @@ class OutlineSystem extends OutlinePlugin {
 		$compiler->registerBlock('foreach', 'foreach_block');
 		$compiler->registerBlock('cycle', 'cycle_block');
 		$compiler->registerTag('next', 'cycle_next_tag');
+		$compiler->registerTag('insert:', 'insert_tag');
 	}
 	
 }
