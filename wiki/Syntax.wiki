@@ -56,6 +56,10 @@ And you can apply modifiers to them - using a syntax similar to Smarty:
 
 	`{$var|wordwrap:30:"\n"|strtolower}`
 
+Note that the {#} tag can actually be used to output the return-value of any php statement - you can use it to call any php-function you wish. For example, to call the time() function:
+
+	`{#time()}`
+
 Note that any available (internal or user) php-function can be used as a modifier. It is also possible to override php-functions with template-specific modifier functions.
 
 You can set variables, evaluate complex expressions, etc.:
@@ -70,7 +74,9 @@ You can set variables, evaluate complex expressions, etc.:
 
 You can capture a section of the template's output to a variable:
 
-	`{capture $myvar} ... {$myvar}`
+	`{capture $myvar} capture this! {/capture}`
+
+The string "capture this!" is now stored in $myvar.
 
 Inside loops, you can alternate between values:
 
@@ -110,9 +116,43 @@ A few standard modifiers are included:
 		
 	prevents orphans by replacing the last space with "&nbsp;". in rendered HTML, this prevents single hanging words, which is considered bad typography. the optional number, is the maximum length of the last word - if longer than that, no change is made.
 
-== Blocks ==
+== Custom Functions ==
 
-Blocks can be used when you have something that repeats on a page, possibly with variations.
+When no command is found, Outline looks for a custom function - for example, in your php script, if you declare the following function:
+
+	`function outline_function_fancy($args) { var_dump($args); }`
+
+You can now call the function from a template, like so:
+
+	`{fancy name="Bob" age=90}`
+
+Outline parses any number of attributes and passes them as arguments to your function, so your function receives a value like:
+
+	`array("name" => "Bob", age => 90)`
+
+Note that this is not parsed as such - anything you place after "name=" is taken as php expressions. That means a value can come from a function-call, method-call, etc. - and it also means that you _must_ quote strings.
+
+== Inserts ==
+
+Inserts are similar to custom functions, but are called an executed _even after_ caching. That is, everything your template outputs can be cached, but the output from an insert is _never_ cached.
+
+An insert is simply a function, similar to custom functions. For example:
+
+	`function outline_insert_now($args) { return date("r"); }`
+
+The template syntax for calling an insert is also similar:
+
+	`{insert:now}`
+
+This will display today's date - even if the template's output was cached three days ago.
+
+Since inserts cannot be cached, they should be used only for content that changes constantly - for example, a box that displays whether a user is currently logged in, real time status displays, etc.
+
+== User Blocks ==
+
+User blocks can be used when you have something that repeats on a page, possibly with variations.
+
+_Please note that this feature is subject to change - it will probably adopt a syntax more similar to that of custom functions and inserts soon._
 
 For example:
 
