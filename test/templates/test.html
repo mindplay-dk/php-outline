@@ -20,6 +20,16 @@
 	<p>Contextual OutlineTest object's getTest() method returned: {$outline->getTest()}</p>
 {/if}
 
+<p>This is a demonstration of uncached inserts - the output below will change every second, even though the output is cached. The execution of the function 'uncached_function', declared in 'test.php', is deferred until the time the cache is retrieved.</p>
+
+<ul>
+	{foreach $testarray as $color => $code}
+		<li>{$color} : {insert:timestamp color=$code}</li>
+	{/foreach}
+</ul>
+
+<p>This demonstrates a custom function call: <em>{testfunc value=time()}</em></p>
+
 <p>Printing a constant defined in 'test_require.php': {#TEST_VALUE}</p>
 
 <p>Applying a modifier to the same constant: {#TEST_VALUE|replace:'i':'iiiii'}</p>

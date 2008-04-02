@@ -6,6 +6,14 @@ $something = 'This variable has global scope';
 
 header("Content-type: text/html; charset=iso-8859-1");
 
+function outline_insert_timestamp($args) {
+	return "<span style=\"color:#{$args['color']};\">" . time() . "</span>";
+}
+
+function outline_function_testfunc($args) {
+	return "today's date is " . date("r") . ' - passed string was: ' . $args['value'];
+}
+
 function show_my_template($use_this_title) {
 	
 	$_outline = new Outline('test');
@@ -35,6 +43,8 @@ function show_my_template($use_this_title) {
 		$_outline->capture();
 		require $_outline->get();
 		$_outline->stop();
+		
+		require $_outline->get();
 		
 	}
 	

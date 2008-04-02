@@ -139,14 +139,18 @@ class Outline extends OutlineEngine {
 		return $this->cache->valid($time);
 	}
 	
+	protected $capturing = false;
+	
 	public function capture() {
 		if (empty($this->cache)) return false;
 		$this->cache->capture();
+		$this->capturing = true;
 	}
 	
 	public function stop() {
 		if (empty($this->cache)) return false;
 		$this->cache->stop();
+		$this->capturing = false;
 	}
 	
 	public function get() {
@@ -166,6 +170,16 @@ class Outline extends OutlineEngine {
 	
 	public static function & get_context() {
 		return self::$engine_stack[count(self::$engine_stack)-1]->config['outline_context'];
+	}
+	
+	public static function defer($function, $args) {
+		if (!function_exists($function)) throw new OutlineException("Outline::defer() : function '{$function}' does not exist");
+		$engine = self::$engine_stack[count(self::$engine_stack)-1];
+		if ($engine->capturing) {
+			return "<?php echo {$function}(" . str_replace("\n", "", var_export($args,true)) . "); ?>";
+		} else {
+			return call_user_func($function, $args);
+		}
 	}
 	
 }

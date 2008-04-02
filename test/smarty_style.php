@@ -19,6 +19,14 @@ $something = 'This variable has global scope';
 
 header("Content-type: text/html; charset=iso-8859-1");
 
+function outline_insert_timestamp($args) {
+	return "<span style=\"color:#{$args['color']};\">" . time() . "</span>";
+}
+
+function outline_function_testfunc($args) {
+	return "today's date is " . date("r") . ' - passed string was: ' . $args['value'];
+}
+
 class OutlineTest extends OutlineTpl {
 	public function getTest() {
 		return 'this is a test';
