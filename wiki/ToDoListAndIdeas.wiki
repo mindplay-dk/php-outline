@@ -11,7 +11,7 @@ Things I plan on adding or changing in the near future (e.g. before first releas
  
  * Implement clear_cache()
 
- * Support for caching in OutlineTpl
+ * Support for caching in !OutlineTpl
 
 Ideas for the future:
 
