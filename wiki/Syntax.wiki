@@ -62,6 +62,12 @@ Note that the {#} tag can actually be used to output the return-value of any php
 
 Note that any available (internal or user) php-function can be used as a modifier. It is also possible to override php-functions with template-specific modifier functions.
 
+The "." operator is commonly used in template engines for "lazy" array-resolution - for example `{$array.item.subitem}` instead of `{$array['item']['subitem']} - in Outline, this operator retains it's original meaning, which is simply to concatenate string. However, Outline also offers a way to do "lazy" array resolution:
+
+	`{@array.item.subitem}`
+
+Note that you can also apply modifiers to the @ command, using the | syntax.
+
 You can set variables, evaluate complex expressions, etc.:
 
 	`{set $text = 'some text'}`
