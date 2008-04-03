@@ -235,7 +235,7 @@ class OutlineCompiler {
 		}
 		
 		if (!$match) {
-			list($function, $args) = explode(" ", $command, 2);
+			@list($function, $args) = explode(" ", $command, 2);
 			$function = OUTLINE_USERFUNC_PREFIX . $function;
 			if (function_exists($function)) {
 				$this->code('echo '.$function.'('.$this->build_arguments($args).');');

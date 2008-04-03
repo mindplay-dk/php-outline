@@ -86,13 +86,12 @@ class OutlineSystem extends OutlinePlugin {
 		return ( OUTLINE_USERBLOCK_PREFIX . $keyword );
 	}
 	
-	public function user_block($args) {
+	public function user_block($_args) {
 		if (self::$block_keyword) throw new OutlineException("nested user-block declarations are not allowed", $this->compiler);
-		$pos = strpos($args, " "); if ($pos === false) $pos = strlen($args);
-		$keyword = self::$block_keyword = strtolower(substr($args, 0, $pos));
+		@list($keyword, $args) = explode(" ", substr($_args,1), 2);
+		self::$block_keyword = $keyword = strtolower(trim($keyword));
 		$function = $this->user_block_name($keyword);
-		$args = substr($args, $pos+1);
-		$this->compiler->code("if (!function_exists('{$function}')) { function {$function}({$args}) {");
+		$this->compiler->code("if (!function_exists('{$function}')) { function {$function}(\$args) { extract(\$args+" . $this->compiler->build_arguments($args) . "); ");
 	}
 	
 	public function end_user_block($args) {
@@ -100,12 +99,9 @@ class OutlineSystem extends OutlinePlugin {
 		$this->compiler->code('} }');
 	}
 	
-	public function user_tag($args) {
-		$args = trim($args);
-		$pos = strpos($args, " "); if ($pos === false) $pos = strlen($args);
-		$keyword = strtolower(substr($args, 0, $pos));
-		$args = substr($args, $pos+1);
-		$this->compiler->code($this->user_block_name($keyword).'('.$args.');');
+	public function user_tag($_args) {
+		@list($keyword, $args) = explode(" ", $_args, 2);
+		$this->compiler->code($this->user_block_name($keyword).'('.$this->compiler->build_arguments($args).');');
 	}
 	
 	// * capture block:
@@ -224,7 +220,7 @@ class OutlineSystem extends OutlinePlugin {
 	// * insert tag:
 	
 	public function insert_tag($_args) {
-		list($function, $args) = explode(" ", $_args, 2);
+		@list($function, $args) = explode(" ", $_args, 2);
 		$this->compiler->code("echo Outline::defer('" . OUTLINE_INSERTFUNC_PREFIX . $function . "', " . $this->compiler->build_arguments($args) . ");");
 	}
 	
