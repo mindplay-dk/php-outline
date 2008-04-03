@@ -1,0 +1,18 @@
+#labels todo
+= To-do =
+
+Things I plan on adding or changing in the near future (e.g. before first release):
+
+ * Lazy array resolution, e.g.: `{@user.name}` as an alternative to `{$user['name']}` - must support standard modifier syntax, too.
+
+ * Apply any modifier to a block, e.g.: `{modify|replace:"apples":"cake"}I love apples!{/modify}`
+
+ * Change the user-block syntax to use name=value syntax, similar to the syntax used for custom functions and inserts.
+ 
+ * Implement clear_cache()
+
+ * Support for caching in OutlineTpl
+
+Ideas for the future:
+
+ * nothing right now...
