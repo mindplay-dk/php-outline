@@ -27,6 +27,15 @@ class OutlineSystem extends OutlinePlugin {
 		$this->compiler->code($args.';');
 	}
 	
+	public function array_tag($args) {
+		$parts = $this->compiler->escape_split($args, OUTLINE_MODIFIER_PIPE);
+		$expr = array_shift($parts);
+		$bits = explode(".", $expr);
+		$array = array_shift($bits);
+		foreach ($bits as $bit) $array .= "['{$bit}']";
+		$this->var_tag($array . (count($parts) ? OUTLINE_MODIFIER_PIPE.implode(OUTLINE_MODIFIER_PIPE, $parts) : ''));
+	}
+	
 	// * if / elseif / else / endif tags:
 	
 	public function if_block($args) {
@@ -240,6 +249,7 @@ class OutlineSystem extends OutlinePlugin {
 		$compiler->registerBlock('cycle', 'cycle_block');
 		$compiler->registerTag('next', 'cycle_next_tag');
 		$compiler->registerTag('insert:', 'insert_tag');
+		$compiler->registerTag('@', 'array_tag');
 	}
 	
 }
