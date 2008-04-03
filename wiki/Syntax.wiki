@@ -160,23 +160,23 @@ Since inserts cannot be cached, they should be used only for content that change
 
 User blocks can be used when you have something that repeats on a page, possibly with variations.
 
-_Please note that this feature is subject to change - it will probably adopt a syntax more similar to that of custom functions and inserts soon._
-
 For example:
 
 {{{
-{block headline $title, $color = '#00f'}
+{block:headline title='' color='#00f'}
 	<h1 style="color:{$color}">
 		{$title}
 	</h1>
 {/block}
 }}}
 
-Once declared, you can call the block, almost like any other tag, but using an "!" before the blockname:
+The `name=value` pairs specify default values for the arguments. Once declared, you can call the block, almost like any other tag, but using an "!" before the blockname:
 
-	`{!headline "A blue headline"}`
-	
-	`{!headline "A red headline", "#f00"}`
+	`{!headline title="A blue headline"}`
+
+In the above call, the {$color} value defaults to '#00f' as specified in the block declaration. You can override the default color as follows:
+
+	`{!headline title="A red headline" color="#f00"}`
 
 Technically, blocks are simply php-functions, and therefore have all the features of a normal function declaration header in PHP - you separate the arguments with commas, both at declaration time, and when calling a block.
 
