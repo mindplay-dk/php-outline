@@ -36,12 +36,12 @@
 
 {ignore}<h1>Testing the {block} command</h1>{/ignore}
 
-{block testBlock $a, $b = 'this is the default value of $b'}
+{block:testBlock a='' b='this is the default value of $b'}
 	<p>This is the output from the testBlock: '{$a}' and '{$b}'</p>
 {/block}
 
-{!testBlock 'this is the first value passed to testBlock'}
-{!TESTBLOCK 'this is the first value passed to testBlock', 'this is the second value passed to testBlock'}
+{!testBlock a='this is the first value passed to testBlock'}
+{!TESTBLOCK a='this is the first value passed to testBlock' b='this is the second value passed to testBlock'}
 
 <h1>Testing variables and standard modifiers</h1>
 
