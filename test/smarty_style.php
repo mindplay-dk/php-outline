@@ -20,11 +20,13 @@ $something = 'This variable has global scope';
 header("Content-type: text/html; charset=iso-8859-1");
 
 function outline_insert_timestamp($args) {
-	return "<span style=\"color:#{$args['color']};\">" . time() . "</span>";
+	$outline = Outline::get_context();
+	return "<span style=\"color:#{$args['color']};\">" . time() . "</span> (context:".get_class($outline).")";
 }
 
 function outline_function_testfunc($args) {
-	return "today's date is " . date("r") . ' - passed string was: ' . $args['value'];
+	$outline = Outline::get_context();
+	return "today's date is " . date("r") . ' - passed string was: ' . $args['value'] . " (context:".get_class($outline).")";
 }
 
 class OutlineTest extends OutlineTpl {
