@@ -14,11 +14,9 @@
 
 <p>Testing »funny« characters</p>
 
-<p>Testing context object: {if $outline}context object found{else}no context object found{/if} (only OutlineTpl or another wrapper-class has this)</p>
+<p>Testing context object - the local $outline reference is of type: {#get_class($outline)}</p>
 
-{if $outline}
-	<p>Contextual OutlineTest object's getTest() method returned: {$outline->getTest()}</p>
-{/if}
+<p>Contextual object's getTest() method returned: {$outline->getTest()}</p>
 
 <p>This is a demonstration of uncached inserts - the output below will change every second, even though the output is cached. The execution of the function 'uncached_function', declared in 'test.php', is deferred until the time the cache is retrieved.</p>
 

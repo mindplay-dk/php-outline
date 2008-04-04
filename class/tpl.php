@@ -1,6 +1,6 @@
 <?php
 
-class OutlineTpl {
+class OutlineTpl implements IOutlineEngine {
 	
 	/*
 	
@@ -52,6 +52,10 @@ class OutlineTpl {
 	
 	public function addPlugin($class, $path) {
 		$this->config['plugins'][$class] = $path;
+	}
+	
+	public function & getOutlineEngine() {
+		return $this->config['outline_context']->getOutlineEngine();
 	}
 	
 }

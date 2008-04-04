@@ -29,7 +29,7 @@ function outline_function_testfunc($args) {
 
 class OutlineTest extends OutlineTpl {
 	public function getTest() {
-		return 'this is a test';
+		return 'this is a test message returned from the OutlineTest class which extends OutlineTpl';
 	}
 }
 
