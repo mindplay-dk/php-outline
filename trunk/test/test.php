@@ -14,9 +14,15 @@ function outline_function_testfunc($args) {
 	return "today's date is " . date("r") . ' - passed string was: ' . $args['value'];
 }
 
+class MyOutline extends Outline {
+	public function getTest() {
+		return "this message comes from the MyOutline test class";
+	}
+}
+
 function show_my_template($use_this_title) {
 	
-	$_outline = new Outline('test');
+	$_outline = new MyOutline('test');
 	$_outline->cache(); // enable caching
 	
 	if ($_outline->cached(10)) {

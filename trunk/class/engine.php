@@ -17,7 +17,11 @@ class OutlineException extends Exception {
 	}
 }
 
-class OutlineEngine {
+interface IOutlineEngine {
+	public function & getOutlineEngine();
+}
+
+class OutlineEngine implements IOutlineEngine {
 	
 	protected $template;
 	protected $compiled;
@@ -40,6 +44,10 @@ class OutlineEngine {
 		"outline_context" =>     null,
 		"plugins" =>             array()
 	);
+	
+	public function __construct() {
+		if ($this->config['outline_context'] === null) $this->config['outline_context'] = & $this;
+	}
 	
 	public function __destruct() {
 		foreach ($this as $index => $value) unset($this->$index);
@@ -81,6 +89,10 @@ class OutlineEngine {
 		
 	}
 	
+	public function & getOutlineEngine() {
+		return $this;
+	}
+	
 }
 
 class Outline extends OutlineEngine {
@@ -95,6 +107,8 @@ class Outline extends OutlineEngine {
 	protected static $error_level;
 	
 	public function __construct($tplname, $config = null) {
+		
+		parent::__construct();
 		
 		$this->config['plugins']['OutlineSystem'] = OUTLINE_CLASS_PATH . "/system.php";
 		
