@@ -4,4 +4,6 @@
 	{if $outline}
 		<p>Contextual OutlineTest object's getTest() method returned: {$outline->getTest()}</p>
 	{/if}
+	<p>Calling a user block declared in the parent template:</p>
+	{!testblock a="this was called from the included template"}
 </div>
