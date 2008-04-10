@@ -3,8 +3,6 @@
 
 Things I plan on adding or changing in the near future (e.g. before first release):
 
- * guarantee unique function names with {block} tags in templates, add function registration to Outline
-
  * Implement clear_cache()
 
  * Support for caching in !OutlineTpl
