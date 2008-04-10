@@ -69,9 +69,11 @@ class OutlineCompiler {
 	
 	protected $utf8 = false;
 	
+	public $engine;
 	public $config;
 	
 	public function __construct(OutlineEngine & $engine) {
+		$this->engine = & $engine;
 		$this->config = & $engine->config;
 		$this->commands = array(
 			array("type" => self::COMMAND_BLOCK, "commands" => & $this->blocks),

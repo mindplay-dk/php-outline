@@ -134,6 +134,8 @@ class Outline extends OutlineEngine {
 			@constant("OUTLINE_ALWAYS_COMPILE")
 		);
 		
+		if (!isset($this->config['functions'])) $this->config['functions'] = array();
+		
 	}
 	
 	public function cache() {
@@ -177,6 +179,10 @@ class Outline extends OutlineEngine {
 		}
 	}
 	
+	public function getTplName() {
+		return $this->tplname;
+	}
+	
 	public static function finish() {
 		if ((count(self::$engine_stack) == 1) && self::$engine_stack[0]->config['quiet']) error_reporting(self::$error_level);
 		array_pop(self::$engine_stack);
@@ -194,6 +200,19 @@ class Outline extends OutlineEngine {
 		} else {
 			return call_user_func($function, $args);
 		}
+	}
+	
+	public static function register_function($function, $name) {
+		$context = self::get_context();
+		$engine = $context->getOutlineEngine();
+		$engine->config['functions'][$name] = $function;
+	}
+	
+	public static function dispatch($name, $args) {
+		$context = self::get_context();
+		$engine = $context->getOutlineEngine();
+		if (!isset($engine->config['functions'][$name])) throw new OutlineException("Outline::dispatch() : user function '$name' does not exist");
+		call_user_func($engine->config['functions'][$name], $args);
 	}
 	
 }

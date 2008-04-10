@@ -83,7 +83,7 @@ class OutlineSystem extends OutlinePlugin {
 	static protected $block_keyword = null;
 	
 	public function user_block_name($keyword) {
-		return ( OUTLINE_USERBLOCK_PREFIX . $keyword );
+		return ( OUTLINE_USERBLOCK_PREFIX . OutlineUtil::clean($this->compiler->engine->getTplName()) . '_' . $keyword );
 	}
 	
 	public function user_block($_args) {
@@ -91,7 +91,7 @@ class OutlineSystem extends OutlinePlugin {
 		@list($keyword, $args) = explode(" ", substr($_args,1), 2);
 		self::$block_keyword = $keyword = strtolower(trim($keyword));
 		$function = $this->user_block_name($keyword);
-		$this->compiler->code("if (!function_exists('{$function}')) { function {$function}(\$args) { extract(\$args+" . $this->compiler->build_arguments($args) . "); ");
+		$this->compiler->code("Outline::register_function('{$function}', '{$keyword}'); if (!function_exists('{$function}')) { function {$function}(\$args) { extract(\$args+" . $this->compiler->build_arguments($args) . "); ");
 	}
 	
 	public function end_user_block($args) {
@@ -101,7 +101,7 @@ class OutlineSystem extends OutlinePlugin {
 	
 	public function user_tag($_args) {
 		@list($keyword, $args) = explode(" ", $_args, 2);
-		$this->compiler->code($this->user_block_name($keyword).'('.$this->compiler->build_arguments($args).');');
+		$this->compiler->code("Outline::dispatch('".strtolower(trim($keyword))."', ".$this->compiler->build_arguments($args).');');
 	}
 	
 	// * capture block:
