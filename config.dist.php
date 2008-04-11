@@ -13,7 +13,7 @@ define("OUTLINE_SCRIPT_PATH", OUTLINE_SYSTEM_PATH . "/test");           // Root 
 define("OUTLINE_CLASS_PATH",  OUTLINE_SYSTEM_PATH . "/class");          // Path to Outline's system classes
 
 define("OUTLINE_DEBUG", true);                                          // If set, displays various debugging messages during load/compile
-define("OUTLINE_ALWAYS_COMPILE", true);                                 // If set, compiles templates unconditionally, on every run
+#define("OUTLINE_ALWAYS_COMPILE", true);                                 // If set, compiles templates unconditionally, on every run
 
 // * Default OutlineEngine configuration settings:
 
