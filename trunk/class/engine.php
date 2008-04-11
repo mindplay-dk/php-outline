@@ -147,12 +147,20 @@ class Outline extends OutlineEngine {
 		if ($add_path = func_get_args()) $path = array_merge($path, $add_path);
 		
 		$this->cache = new OutlineCache($this->config, $path);
+		if (!$this->caching) $this->clear_cache();
 		
 	}
 	
 	public function cached($time) {
 		if (!$this->caching || empty($this->cache)) return false;
 		return $this->cache->valid($time);
+	}
+	
+	public function clear_cache() {
+		if (!$this->cache) throw new OutlineException("can't clear cache, caching is not enabled - you must call cache() first");
+		$path = array($this->tplname);
+		if ($add_path = func_get_args()) $path = array_merge($path, $add_path);
+		$this->cache->clean($path);
 	}
 	
 	protected $capturing = false;
@@ -229,11 +237,12 @@ class OutlineUtil {
 		
 		$wiped = true;
 		
-		foreach (glob($path . '/*' . $suffix) as $file)
+		foreach (glob($path . '/*' . $suffix) as $file) {
 			if (!unlink($file)) trigger_error("OutlineUtil::delete() : unable to remove file '$file'", E_USER_WARNING);
+		}
 		
 		foreach (glob($path . '/*', GLOB_ONLYDIR) as $dir) {
-			$wiped = $wiped && self::_delete($dir, $suffix);
+			$wiped = $wiped && self::delete($dir, $suffix);
 			if (!rmdir($dir)) trigger_error("OutlineUtil::delete() : unable to remove dir '$dir' - not empty?", E_USER_WARNING);
 		}
 		

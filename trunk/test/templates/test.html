@@ -6,6 +6,11 @@
 
 <body>
 
+{if $test_cache}
+	<p>Testing hierachical caching: {$cache_msg}</p>
+	<p>Note that caching-level "a" will be cleared manually on every run, to demonstrate cascading cache clearing. The engine itself will clear the entire cache, if the 'test.html' template is changed.</p>
+{/if}
+
 {ignore}
 	<h1>Testing the {require} and {ignore} commands</h1>
 {/ignore}
