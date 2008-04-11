@@ -3,8 +3,6 @@
 
 Things I plan on adding or changing in the near future (e.g. before first release):
 
- * Implement clear_cache()
-
  * Support for caching in !OutlineTpl
 
  * Apply any modifier to a block, e.g.: `{modify|replace:"apples":"cake"}I love apples!{/modify}`
