@@ -48,7 +48,7 @@ class OutlineCache {
 		if ($time_sec === null) $time_sec = $this->config['cache_time'];
 		
 		$time = @filemtime(implode($this->path));
-		return ( $this->valid = $time ? ($this->time - $time < $time_sec) : false );
+		return ( $this->valid = ( $time ? ($this->time - $time < $time_sec) : false ) );
 		
 	}
 	
@@ -92,20 +92,24 @@ class OutlineCache {
 		$this->valid = true;
 		
 	}
-	/*
-	public function clean() {
+	
+	public function clean($path) {
 		
-		$path = dirname($this->path);
+		if (!is_array($path)) $path = array($path);
 		
-		foreach (func_get_args() as $dir)
-			$path .= '/' . OutlineUtil::clean($dir);
+		$dir = $this->config['cache_path'];
 		
-		if (is_dir($path)) OutlineUtil::delete($path, $this->config['cache_suffix']);
+		$last = count($path);
+		for ($n=0; $n<$last; $n++) {
+			$dir .= '/'.OutlineUtil::clean($path[$n]);
+		}
 		
-		if (is_file($path.$this->config['cache_suffix'])) unlink($path.$this->config['cache_suffix']);
+		$file = $dir . $this->config['cache_suffix'];
+		
+		if (is_dir($dir)) OutlineUtil::delete($dir, $this->config['cache_suffix']);
+		if (is_file($file)) unlink($file);
 		
 	}
-	*/
 	
 }
 
