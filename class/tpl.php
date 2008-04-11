@@ -55,7 +55,7 @@ class OutlineTpl implements IOutlineEngine {
 	}
 	
 	public function & getOutlineEngine() {
-		return $this->config['outline_context']->getOutlineEngine();
+		return $this->outline;
 	}
 	
 }
