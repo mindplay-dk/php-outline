@@ -10,9 +10,9 @@ From this philosophy, Outline was designed as an "extension" over PHP, a kind of
 
 My goal with Outline, is to do as little "re-inventing the wheel" as possible - rather than replacing or wrapping (and thus limiting) PHP functionality, Outline tries only to make existing php-syntax more accessible and convenient, in situations where focus is on presentation and layout; typically the HTML output.
 
-The "engine" itself consists of about 200 lines of code, which means that there is barely any overhead when running an already previously compiled template.
+The "engine" itself consists of about 300 lines of code, which means that there is barely any overhead when running an already previously compiled template.
 
-The compiler is also extremely lightweight - the goal is to keep the entire engine under 1000 lines of code.
+The compiler is also extremely lightweight - the goal is to keep the entire engine under 1000 lines of code. (if you count the lines, you'll see there's more than a 1000, but this includes plenty of whitespace and comments)
 
 The reason why Outline is so small, is that it does not implement any real parser or interpreter as such - the compiler basically consists of a simple template-to-PHP translation system, with basic structural syntax checks.
 
