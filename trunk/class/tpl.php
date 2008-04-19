@@ -16,8 +16,9 @@ class OutlineTpl implements IOutlineEngine {
 	*/
 	
 	protected $vars = array();
-	protected $outline;
+	protected $engines = array();
 	protected $config;
+	protected $current_tplname;
 	
 	public function __construct($config = null) {
 		$this->config = $config;
@@ -25,8 +26,15 @@ class OutlineTpl implements IOutlineEngine {
 	}
 	
 	public function __destruct() {
-		if ($this->outline) $this->outline->__destruct();
+		foreach ($this->engines as $engine) $engine->__destruct();
 		foreach ($this as $index => $value) unset($this->$index);
+	}
+	
+	protected function & getEngine($tplname) {
+		if (!isset($this->engines[$tplname])) 
+			$this->engines[$tplname] = new Outline($tplname, $this->config);
+		$this->current_tplname = $tplname;
+		return $this->engines[$tplname];
 	}
 	
 	public function assign($var, $value) {
@@ -38,9 +46,9 @@ class OutlineTpl implements IOutlineEngine {
 	}
 	
 	public function display($tplname) {
-		$this->outline = new Outline($tplname, $this->config);
+		$this->getEngine($tplname);
 		extract($this->vars);
-		require $this->outline->get();
+		require $this->engines[$tplname]->get();
 	}
 	
 	public function fetch($tplname) {
@@ -55,7 +63,7 @@ class OutlineTpl implements IOutlineEngine {
 	}
 	
 	public function & getOutlineEngine() {
-		return $this->outline;
+		return $this->engines[$this->current_tplname];
 	}
 	
 }
