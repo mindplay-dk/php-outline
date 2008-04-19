@@ -151,9 +151,9 @@ class Outline extends OutlineEngine {
 		
 	}
 	
-	public function cached($time) {
+	public function cached($time = null) {
 		if (!$this->caching || empty($this->cache)) return false;
-		return $this->cache->valid($time);
+		return $this->cache->valid($time === null ? $this->config['cache_time'] : $time);
 	}
 	
 	public function clear_cache() {
