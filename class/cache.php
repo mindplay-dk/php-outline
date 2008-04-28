@@ -67,12 +67,10 @@ class OutlineCache {
 		
 		$path = ''; $last = count($this->path);
 		
-		for ($n=0; $n<$last-1; $n++) {
+		for ($n=0; $n<$last-1; $n++)
 			$path .= $this->path[$n];
-			if (!is_dir($path)) {
-				if (!mkdir($path)) throw new OutlineException("OutlineCache::capture() : unable to create folder '$path'");
-			}
-		}
+		
+		@mkdir($path, OUTLINE_DIR_MODE, true);
 		
 		$this->buffering = true;
 		

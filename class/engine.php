@@ -74,8 +74,8 @@ class OutlineEngine implements IOutlineEngine {
 			
 			try {
 				$compiler = new OutlineCompiler($this);
-				@mkdir(dirname($compiled), 0777, true);
-				file_put_contents($compiled, $compiler->compile(file_get_contents($template)));
+				@mkdir(dirname($compiled), OUTLINE_DIR_MODE, true);
+				OutlineUtil::write_file($compiled, $compiler->compile(file_get_contents($template)));
 				$compiler->__destruct(); unset($compiler);
 			} catch (OutlineCompilerException $e) {
 				throw new OutlineException("error compiling template '$template', line " . $e->getLineNum() . " - " . $e->getMessage());
