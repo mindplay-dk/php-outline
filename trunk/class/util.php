@@ -25,6 +25,33 @@ class OutlineUtil {
 		
 	}
 	
+	private static $files = array();
+	
+	public static function write_file($filename, $content) {
+		
+		$temp = tempnam(OUTLINE_CACHE_PATH, 'temp');
+		if (!($f = @fopen($temp, 'wb'))) {
+			$temp = OUTLINE_CACHE_PATH . DIRECTORY_SEPARATOR . uniqid('temp');
+			if (!($f = @fopen($_tmp_file, 'wb'))) {
+				trigger_error("OutlineUtil::write_file() : error writing temporary file '$temp'", E_USER_WARNING);
+				return false;
+			}
+		}
+		
+		fwrite($f, $content);
+		fclose($f);
+		
+		if (!@rename($temp, $filename)) {
+			@unlink($filename);
+			@rename($temp, $filename);
+		}
+		
+		@chmod($params['filename'], OUTLINE_FILE_MODE);
+		
+		return true;
+		
+	}
+	
 }
 
 ?>

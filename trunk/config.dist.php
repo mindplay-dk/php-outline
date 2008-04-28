@@ -24,6 +24,9 @@ define("OUTLINE_CACHE_PATH",    OUTLINE_SCRIPT_PATH . "/cache");        // The f
 define("OUTLINE_CACHE_SUFFIX", ".html");                                // File extension or suffix for cache files
 define("OUTLINE_CACHE_TIME", 60*60*24);                                 // Default cache time (in seconds)
 
+define("OUTLINE_FILE_MODE", 0777);                                      // Permission flag for created files (cache and compiled templates)
+define("OUTLINE_DIR_MODE", 0777);                                       // Permission flag for created directories
+
 // * Debug function:
 
 function OutlineDebug($msg) {
