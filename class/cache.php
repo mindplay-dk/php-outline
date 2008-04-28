@@ -13,6 +13,8 @@ Please see "README.txt" for license and usage information.
 
 define("OUTLINE_CACHE_ENGINE", true);
 
+require_once OUTLINE_CLASS_PATH . "/util.php";
+
 class OutlineCache {
 	
 	protected $path, $time;
