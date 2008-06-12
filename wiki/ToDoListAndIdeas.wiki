@@ -5,8 +5,22 @@ Things I plan on adding or changing in the near future (e.g. before first releas
 
  * Support for caching in !OutlineTpl
 
- * Apply any modifier to a block, e.g.: `{modify|replace:"apples":"cake"}I love apples!{/modify}`
-
 Ideas for the future:
 
- * nothing right now...
+ * Apply any modifier to a block, e.g.: `{modify replace:"apples":"cake"}I love apples!{/modify}`
+
+ * Apply default modifiers to variable-output, e.g.:
+
+ `raw output: {$message}, escaped output: {$message|html}`
+
+ could instead be written as:
+
+ `{apply html}raw output: {=$message}, escaped output: {$message}{/apply}`
+
+ Unlike {modify}, which applies modifiers to the output, {apply} can be used to add default modifiers to all applicable template tags.
+
+ The "=" symbol in {=$message} indicates that you want to bypass any default modifiers - in this example, _don't_ apply the html modifier.
+
+ This is useful when reusing the same modifier a lot, particularly when you need to escape or encode lots of variables for HTML output.
+
+ The syntax is up for discussion. Also, whether default modifiers should be applied before or after local modifiers. Probably after - so that default modifiers always run last, and can't interfere with other local modifiers.
