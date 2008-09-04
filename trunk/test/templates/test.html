@@ -116,6 +116,8 @@ This content was captured to the $test variable.
 
 <p>Counting backwards from ten: {for $var from 10 to 1}{$var}, {/for}...</p>
 
+<p>Using dynamic arguments: {for $var from date('Y') to date('Y')-9}{$var}, {/for}...</p>
+
 {ignore}<h1>Testing the {include} command</h1>{/ignore}
 
 {include include/test_include}
