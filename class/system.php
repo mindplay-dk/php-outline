@@ -135,39 +135,32 @@ class OutlineSystem extends OutlinePlugin {
 	
 	public function for_block($args) {
 		
-		$bits = array();
+		preg_match(
+			'/(\$[\w\d_]*)\s+from\s+(.*)\sto\s(.*(?=\sby\s)|.*)(\sby\s(.+))?/',
+			$args,
+			$exp
+		);
 		
-		foreach (explode(" ", $args) as $item)
-			if (strlen(trim($item))) $bits[] = trim($item);
+		$var = $from = $to = null; $by = 1; $c = count($exp);
 		
-		$ok = true; $step = 1; $op = '<=';
-		
-		if ($bits[1] == 'from' && $bits[3] == 'to' && ctype_digit($bits[2]) && ctype_digit($bits[4])) {
-			$from = intval($bits[2]);
-			$to = intval($bits[4]);
-			if (count($bits) == 5) {
-				$step = 1;
-			} else if (count($bits) == 7 && $bits[5] == 'by' && ctype_digit($bits[6])) {
-				$step = intval($bits[6]);
-				$ok = ($step != 0);
-			} else {
-				$ok = false;
-			}
+		if ($c==4 || $c==6) {
+			list($var, $from, $to, $by) = array($exp[1], $exp[2], $exp[3], isset($exp[5]) ? $exp[5] : 1);
 		} else {
-			$ok = false;
+			throw new OutlineException("syntax error in for-statement", $this->compiler);
 		}
-		
-		$var = $bits[0];
 		
 		if (in_array($var, $this->for_stack)) throw new OutlineException("use of same iterator '$var' in nested {for} statements", $this->compiler);
 		
-		if (!$ok || substr($var,0,1) != '$') throw new OutlineException("syntax error in for-statement", $this->compiler);
-		
-		if ($to < $from) { $step = -$step; $op = '>='; }
-		
 		$this->for_stack[] = $var;
 		
-		$this->compiler->code("for ($var=$from; $var$op$to; $var+=$step) {");
+		$object = '$outline_for_'.substr($var,1);
+		
+		if (is_numeric($from) && is_numeric($to) && is_numeric($by)) {
+			$this->compiler->code("for ({$var}={$from}; {$var}" . ($from>$to ? '>=' : '<=') . "{$to}; {$var}+=" . ($to<$from && $by>0 ? -$by : $by) . ") {");
+		} else {
+			$this->compiler->code("{$object} = new OutlineIterator({$from}, {$to}, {$by});");
+			$this->compiler->code("while ({$object}->next()) { {$var} = {$object}->index;");
+		}
 		
 	}
 	

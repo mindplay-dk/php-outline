@@ -228,4 +228,25 @@ class Outline extends OutlineEngine {
 function first_key(&$a) { return reset(array_keys($a)); }
 function last_key(&$a) { return end(array_keys($a)); }
 
+class OutlineIterator {
+	
+	public $index, $start, $end, $step;
+	
+	public function __construct($start, $end, $step) {
+		$this->start = $start;
+		$this->end = $end;
+		$this->step = ($end<$start && $step>0 ? -$step : $step);
+		$this->index = $start - $this->step;
+	}
+	
+	public function next() {
+		$more = ($this->step>0 ? $this->index<$this->end : $this->index>$this->end);
+		$this->index += $this->step;
+		return $more;
+	}
+	
+	public function __toString() { return strval($this->index); }
+	
+}
+
 ?>
