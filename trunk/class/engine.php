@@ -245,8 +245,6 @@ class OutlineIterator {
 		return $more;
 	}
 	
-	public function __toString() { return strval($this->index); }
-	
 }
 
 ?>
