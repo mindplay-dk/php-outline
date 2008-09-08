@@ -24,3 +24,5 @@ Ideas for the future:
  This is useful when reusing the same modifier a lot, particularly when you need to escape or encode lots of variables for HTML output.
 
  The syntax is up for discussion. Also, whether default modifiers should be applied before or after local modifiers. Probably after - so that default modifiers always run last, and can't interfere with other local modifiers.
+
+ * Add {default} command, e.g.: `{default $name='value'}` assigns 'value' to $name, if $name does not have a value.
