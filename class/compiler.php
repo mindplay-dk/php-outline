@@ -69,7 +69,7 @@ class OutlineCompiler {
 	
 	public $current_plugin = null;
 	
-	protected $utf8 = false;
+	public $utf8 = false;
 	
 	public $engine;
 	public $config;

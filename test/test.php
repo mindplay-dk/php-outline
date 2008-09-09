@@ -2,8 +2,6 @@
 
 require_once "../config.dist.php";
 
-$something = 'This variable has global scope';
-
 header("Content-type: text/html; charset=iso-8859-1");
 
 function outline_insert_timestamp($args) {
@@ -42,7 +40,7 @@ function show_my_template($use_this_title) {
 		$testarray = array(
 			"RED" => "ff0000",
 			"GREEN" => "00a000",
-			"BLUE" => "4080FF"
+			"BLUE" => "4080ff"
 		);
 		$empty_array = array();
 		
