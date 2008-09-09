@@ -135,16 +135,24 @@ class OutlineSystem extends OutlinePlugin {
 	
 	public function for_block($args) {
 		
-		preg_match(
-			'/(\$[\w\d_]*)\s+from\s+(.*)\sto\s(.*(?=\sby\s)|.*)(\sby\s(.+))?/',
-			$args,
-			$exp
-		);
+		if ($this->compiler->utf8) {
+			mb_ereg(
+				'(\$[\w\d_]*)\s+from\s+(.*)\sto\s(.*(?=\sby\s)|.*)(\sby\s(.+))?',
+				$args,
+				$exp
+			);
+		} else {
+			preg_match(
+				'/(\$[\w\d_]*)\s+from\s+(.*)\sto\s(.*(?=\sby\s)|.*)(\sby\s(.+))?/',
+				$args,
+				$exp
+			);
+		}
 		
 		$var = $from = $to = null; $by = 1; $c = count($exp);
 		
 		if ($c==4 || $c==6) {
-			list($var, $from, $to, $by) = array($exp[1], $exp[2], $exp[3], isset($exp[5]) ? $exp[5] : 1);
+			list($var, $from, $to, $by) = array($exp[1], $exp[2], $exp[3], @$exp[5] == false ? 1 : $exp[5]);
 		} else {
 			throw new OutlineException("syntax error in for-statement", $this->compiler);
 		}

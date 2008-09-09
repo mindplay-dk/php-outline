@@ -3,7 +3,7 @@
 class OutlineUtil {
 	
 	public static function clean($fname) {
-		$pattern = "/([[:alnum:]_\.-]*)/";
+		$pattern = "/([[:alnum:]_\.]*)/";
 		$replace = "_";
 		return str_replace(str_split(preg_replace($pattern,$replace,$fname)),$replace,$fname);
 	}
