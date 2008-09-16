@@ -5,15 +5,17 @@ Things I plan on adding or changing in the near future (e.g. before first releas
 
  * Support for caching in !OutlineTpl
 
+ * add `{debug}` command - helper function for template developers; displays a list of all assigned template variables.
+
+ * Add {default} command, e.g.: `{default $name='value'}` assigns 'value' to $name, if $name does not have a value.
+
 Ideas for the future:
 
  * Apply any modifier to a block, e.g.: `{modify replace:"apples":"cake"}I love apples!{/modify}`
 
- * Add {default} command, e.g.: `{default $name='value'}` assigns 'value' to $name, if $name does not have a value.
-
- * Add {section} block, e.g.: `{section head}...{/section}` captures the content within the section separately from the output of the template - that content can then be retrieved with `$outline->getSection('head')`. This command would enable a more structured way to capture partial output to be inserted (by means of code) other places that a page's main output.
-
 Ideas I'm having second thoughts about:
+
+ * Add {section} block, e.g.: `{section head}...{/section}` captures the content within the section separately from the output of the template - that content can then be retrieved with `$outline->getSection('head')`. This command would enable a more structured way to capture partial output to be inserted (by means of code) other places than a page's main output.
 
  * Apply default modifiers to variable-output, e.g.:
 
