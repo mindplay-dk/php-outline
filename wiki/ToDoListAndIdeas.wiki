@@ -9,6 +9,12 @@ Ideas for the future:
 
  * Apply any modifier to a block, e.g.: `{modify replace:"apples":"cake"}I love apples!{/modify}`
 
+ * Add {default} command, e.g.: `{default $name='value'}` assigns 'value' to $name, if $name does not have a value.
+
+ * Add {section} block, e.g.: `{section head}...{/section}` captures the content within the section separately from the output of the template - that content can then be retrieved with `$outline->getSection('head')`. This command would enable a more structured way to capture partial output to be inserted (by means of code) other places that a page's main output.
+
+Ideas I'm having second thoughts about:
+
  * Apply default modifiers to variable-output, e.g.:
 
  `raw output: {$message}, escaped output: {$message|html}`
@@ -24,5 +30,3 @@ Ideas for the future:
  This is useful when reusing the same modifier a lot, particularly when you need to escape or encode lots of variables for HTML output.
 
  The syntax is up for discussion. Also, whether default modifiers should be applied before or after local modifiers. Probably after - so that default modifiers always run last, and can't interfere with other local modifiers.
-
- * Add {default} command, e.g.: `{default $name='value'}` assigns 'value' to $name, if $name does not have a value.
