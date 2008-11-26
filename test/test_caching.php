@@ -1,5 +1,9 @@
 <?php
 
+/*
+This script demonstrates caching without encapsulation.
+*/
+
 require_once "../config.dist.php";
 
 $something = 'This variable has global scope';

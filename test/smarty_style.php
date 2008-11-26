@@ -2,15 +2,15 @@
 
 /*
 
-This example demonstrates Smarty-style templating with Outline
+This example demonstrates traditional templating with Outline -
+using caching, and using the OutlineTpl encapsulation class to
+contain all template variables.
 
-The OutlineTpl class is not part of the Outline system as such,
-it's just a wrapper-class provided for your convenience, and so
-it has to be included manually (or from your config file).
-
+Note that the OutlineTpl class is not part of the Outline core,
+and has to be included manually (or from your config file).
 */
 
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 require_once "../config.dist.php";
 require_once OUTLINE_CLASS_PATH."/tpl.php";
@@ -35,10 +35,10 @@ class OutlineTest extends OutlineTpl {
 	}
 }
 
-$tpl = new OutlineTest();
+$tpl = new OutlineTest('test', array("cache_time" => 10));
 
 $tpl->assign("testvar", 'This variable has local scope');
-$tpl->assign("testdate", @date("r"));
+$tpl->assign("testdate", date("r"));
 
 $colors = array(
 	"RED" => "ff0000",
@@ -48,6 +48,12 @@ $colors = array(
 
 $tpl->assign_by_ref("testarray", $colors);
 
-$tpl->display('test');
+$a = substr("abc", rand(0,2), 1);
+$b = substr("123", rand(0,2), 1);
+$tpl->cache($a, $b); // comment out to disable caching
+
+echo '<p style="color:#f00">Cache version '.$a.', '.$b.' - '.($tpl->cached() ? 'fresh' : 'expired').'</p>';
+
+$tpl->display();
 
 ?>
