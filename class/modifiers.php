@@ -5,7 +5,7 @@
 Outline Modifiers
 -----------------
 
-Copyright (C) 2007-2008, Rasmus Schultz <http://www.mindplay.dk>
+Copyright (C) 2007-2009, Rasmus Schultz <http://www.mindplay.dk>
 
 Please see "README.txt" for license and other information.
 
