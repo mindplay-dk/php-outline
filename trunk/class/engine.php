@@ -5,24 +5,44 @@
 Outline (Engine)
 ----------------
 
-Copyright (C) 2007-2008, Rasmus Schultz <http://www.mindplay.dk>
+Copyright (C) 2007-2009, Rasmus Schultz <http://www.mindplay.dk>
 
 Please see "README.txt" for license and usage information.
 	
 */
 
 class OutlineException extends Exception {
+  
+  /*
+  General exception thrown by [OutlineEngine], [OutlineCache] and
+  various methods in an [OutlinePlugin] (e.g. [OutlineSystem])
+  */
+  
 	public function __construct($message) {
 		parent::__construct($message, -1);
 	}
+  
 }
 
 interface IOutlineEngine {
+  
+  /*
+  [OutlineEngine] and [OutlineTpl] implement this interface, which
+  enables various commands to determine the engine context.
+  */
+  
 	public function & getOutlineEngine();
+  
 }
 
 class OutlineEngine implements IOutlineEngine {
 	
+  /*
+  This class acts as a lightweight proxy to [OutlineCompiler], which
+  will be loaded by this class as necessary. Custom template engines
+  can be built on this base class, which is the base class for [Outline].
+  */
+  
 	protected $template;
 	protected $compiled;
 	
@@ -46,7 +66,9 @@ class OutlineEngine implements IOutlineEngine {
 	);
 	
 	public function __construct() {
-		if ($this->config['outline_context'] === null) $this->config['outline_context'] = & $this;
+		if ($this->config['outline_context'] === null) {
+      $this->config['outline_context'] = & $this;
+    }
 	}
 	
 	public function __destruct() {
@@ -55,8 +77,12 @@ class OutlineEngine implements IOutlineEngine {
 	
 	public function build($template, $compiled, $force = false) {
 		
-		// Builds $template and writes the resulting compiled script to $compiled.
-		// Returns true if the template was built, false if the compiled template was already up-to-date.
+		/*
+    Builds $template and writes the resulting compiled script to $compiled.
+    
+		Returns true if the template was built, false if the compiled
+    template was already up-to-date.
+    */
 		
 		$this->template = $template;
 		$this->compiled = $compiled;
@@ -89,6 +115,8 @@ class OutlineEngine implements IOutlineEngine {
 		
 	}
 	
+  // --- IOutlineEngine implementation:
+  
 	public function & getOutlineEngine() {
 		return $this;
 	}
@@ -97,6 +125,11 @@ class OutlineEngine implements IOutlineEngine {
 
 class Outline extends OutlineEngine {
 	
+  /*
+  This is the core template engine, which integrates with [OutlineCache]
+  and provides support-functions for the standard commands in [OutlineSystem].
+  */
+  
 	protected $tplname;
 	
 	protected $caching = true;
@@ -108,6 +141,11 @@ class Outline extends OutlineEngine {
 	
 	public function __construct($tplname, $config = null) {
 		
+    /*
+    $tplname: name of template to load - will be compiled as needed.
+    $config: optional configuration settings - see [OutlineEngine] for valid configuration options.
+    */
+    
 		parent::__construct();
 		
 		$this->config['plugins']['OutlineSystem'] = OUTLINE_CLASS_PATH . "/system.php";
@@ -140,6 +178,23 @@ class Outline extends OutlineEngine {
 	
 	public function cache() {
 		
+    /*
+    Turns on caching - loads [OutlineCache] as needed.
+    
+    This method takes any number of arguments - any value that has
+    a meaningful string representation, is valid. The arguments
+    determine where in the cache hierachy the output is cached.
+    
+    For example:
+    
+      $outline->cache('product', 'list', $pagenum);
+    
+    This gives you three levels of caching hierachy - this places
+    all your product-related content under the first-order cache
+    named 'product', and all your product lists under the
+    second-order cache named 'list'.
+    */
+    
 		if (!@constant("OUTLINE_CACHE_ENGINE"))
 			require OUTLINE_CLASS_PATH . "/cache.php";
 		
@@ -151,33 +206,94 @@ class Outline extends OutlineEngine {
 		
 	}
 	
-	public function cached($time = null) {
+  	public function cached($time = null) {
+    
+    /*
+    Returns true if the cache for this template has expired.
+    $time: optional - cache lifetime in seconds, defaults to 'cache_time' in the configuration.
+    */
+    
 		if (!$this->caching || empty($this->cache)) return false;
 		return $this->cache->valid($time === null ? $this->config['cache_time'] : $time);
+    
 	}
 	
 	public function clear_cache() {
+    
+    /*
+    Manually clear the cache for this template.
+    
+    Generally, the cache is automatically cleared as needed - with long
+    cache lifetimes, sometimes it is preferable to manually clear when
+    the rendered data has been updated.
+    */
+    
 		if (!$this->cache) throw new OutlineException("can't clear cache, caching is not enabled - you must call cache() first");
-		$path = array($this->tplname);
+		
+    $path = array($this->tplname);
 		if ($add_path = func_get_args()) $path = array_merge($path, $add_path);
+    
 		$this->cache->clean($path);
+    
 	}
 	
 	protected $capturing = false;
 	
 	public function capture() {
+    
+    /*
+    Begins capture to the cache. You must first enable caching, by
+    calling the [cache()] method.
+    */
+    
 		if (empty($this->cache)) return false;
 		$this->cache->capture();
 		$this->capturing = true;
+    
 	}
 	
 	public function stop() {
+    
+    /*
+    Completes capture to the cache. You must first begin capture, by
+    calling the [capture()] method.
+    */
+    
 		if (empty($this->cache)) return false;
 		$this->cache->stop();
 		$this->capturing = false;
+    
 	}
 	
 	public function get() {
+    
+    /*
+    Returns the path to the compiled (and/or cached) template.
+    
+    With no caching, usage is simple:
+    
+      require $outline->get();
+    
+    With caching enabled, two passes are required when the template
+    output is first cached - this is because insert-commands can not
+    be executed in the first pass, since they can not be cached.
+    
+    So usage is slightly more complicated:
+    
+      if ($outline->cached()) {
+        // already cached - only one pass required
+        require $outline->get();
+      } else {
+        // first pass captures to cache and generates code for insert commands:
+    		$outline->capture();
+    		require $outline->get();
+    		$outline->stop();
+        // second pass generates the actual template output:
+    		require $outline->get();
+      }
+    
+    */
+    
 		self::$engine_stack[] = & $this;
 		if ((count(self::$engine_stack) == 1) && $this->config['quiet']) self::$error_level = error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING | E_STRICT ^ E_STRICT);
 		if ($this->caching && !empty($this->cache) && $this->cache->valid()) {
@@ -185,22 +301,50 @@ class Outline extends OutlineEngine {
 		} else {
 			return $this->compiled;
 		}
+    
 	}
 	
 	public function getTplName() {
+    
+    /*
+    Returns the template name supplied at construction.
+    */
+    
 		return $this->tplname;
+    
 	}
 	
 	public static function finish() {
+    
+    /*
+    Compiled templates call this method when they exit.
+    */
+    
 		if ((count(self::$engine_stack) == 1) && self::$engine_stack[0]->config['quiet']) error_reporting(self::$error_level);
 		array_pop(self::$engine_stack);
+    
 	}
 	
 	public static function & get_context() {
+    
+    /*
+    Returns the context object of the currently executing template engine.
+    
+    In compiled templates, the reserved variable $outline contains a reference
+    to the this object.
+    */
+    
 		return self::$engine_stack[count(self::$engine_stack)-1]->config['outline_context'];
+    
 	}
 	
 	public static function defer($function, $args) {
+    
+    /*
+    The insert-command generates calls to this method, which dispatches an
+    insert function, or generates required php code, as needed.
+    */
+    
 		if (!function_exists($function)) throw new OutlineException("Outline::defer() : function '{$function}' does not exist");
 		$engine = self::$engine_stack[count(self::$engine_stack)-1];
 		if ($engine->capturing) {
@@ -208,19 +352,32 @@ class Outline extends OutlineEngine {
 		} else {
 			return call_user_func($function, $args);
 		}
+    
 	}
 	
 	public static function register_function($function, $name) {
+    
+    /*
+    User blocks generate calls to this method, to register user functions.
+    */
+    
 		$context = self::get_context();
 		$engine = $context->getOutlineEngine();
 		$engine->config['functions'][$name] = $function;
+    
 	}
 	
 	public static function dispatch($name, $args) {
+    
+    /*
+    Compiled templates call this method to dispatch user block functions.
+    */
+    
 		$context = self::get_context();
 		$engine = $context->getOutlineEngine();
 		if (!isset($engine->config['functions'][$name])) throw new OutlineException("Outline::dispatch() : user function '$name' does not exist");
 		call_user_func($engine->config['functions'][$name], $args);
+    
 	}
 	
 }
@@ -230,6 +387,10 @@ function last_key(&$a) { return end(array_keys($a)); }
 
 class OutlineIterator {
 	
+  /*
+  Compiled templates, that use the for-command, use this helper class.
+  */
+  
 	public $index, $start, $end, $step;
 	
 	public function __construct($start, $end, $step) {

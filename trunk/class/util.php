@@ -1,15 +1,42 @@
 <?php
 
+/*
+
+Outline Utility Functions
+-------------------------
+
+Copyright (C) 2007-2009, Rasmus Schultz <http://www.mindplay.dk>
+
+Please see "README.txt" for license and other information.
+
+*/
+
 class OutlineUtil {
 	
+  /*
+  This class implements a small library of common, static
+  utility functions, used by various classes.
+  */
+  
 	public static function clean($fname) {
+    
+    /*
+    Cleans the given filename, removing any invalid characters.
+    */
+    
 		$pattern = "/([[:alnum:]_\.]*)/";
 		$replace = "_";
 		return str_replace(str_split(preg_replace($pattern,$replace,$fname)),$replace,$fname);
+    
 	}
 	
 	public static function delete($path, $suffix) {
 		
+    /*
+    Recursively deletes files with the given filename suffix,
+    from the given path.
+    */
+    
 		$wiped = true;
 		
 		foreach (glob($path . '/*' . $suffix) as $file) {
@@ -29,6 +56,13 @@ class OutlineUtil {
 	
 	public static function write_file($filename, $content) {
 		
+    /*
+    Atomically writes, or overwrites, the given content to a file.
+    
+    Atomic file writes are required for cache updates, and when
+    writing compiled templates, to avoid race conditions.
+    */
+    
 		$temp = tempnam(OUTLINE_CACHE_PATH, 'temp');
 		if (!($f = @fopen($temp, 'wb'))) {
 			$temp = OUTLINE_CACHE_PATH . DIRECTORY_SEPARATOR . uniqid('temp');

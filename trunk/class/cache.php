@@ -5,7 +5,7 @@
 OutlineCache
 ------------
 
-Copyright (C) 2007-2008, Rasmus Schultz <http://www.mindplay.dk>
+Copyright (C) 2007-2009, Rasmus Schultz <http://www.mindplay.dk>
 
 Please see "README.txt" for license and usage information.
 
@@ -17,6 +17,11 @@ require_once OUTLINE_CLASS_PATH . "/util.php";
 
 class OutlineCache {
 	
+  /*
+  This class implements the hierachical caching engine
+  used by [Outline].
+  */
+  
 	protected $path, $time;
 	
 	protected $valid = false;
@@ -27,6 +32,13 @@ class OutlineCache {
 	
 	public function __construct(&$config, $path) {
 		
+    /*
+    &$config: a reference to the $config array of the [Outline]
+              instance using this instance of the cache engine.
+    $path: an array of cache names - as a minimum, this must
+           contain one name, e.g. the template name.
+    */
+    
 		$this->config = & $config;
 		
 		if (count($path) == 0) throw new OutlineException("OutlineCache::__construct() : path is empty");
@@ -44,6 +56,10 @@ class OutlineCache {
 	
 	public function valid($time_sec = null) {
 		
+    /*
+    Returns true, if content is cached and valid (not expired).
+    */
+    
 		if ($this->checked) return $this->valid;
 		$this->checked = true;
 		
@@ -55,12 +71,26 @@ class OutlineCache {
 	}
 	
 	public function get() {
+    
+    /*
+    Returns the path to the cached content.
+    
+    You must call [valid()] before calling this method, and only
+    if [valid()] returns true - if it returns false, there is no
+    valid, cached content.
+    */
+    
 		if ($this->valid) return implode($this->path);
 		throw new OutlineException("OutlineCache::get() : valid() must be called before get(), and only if valid() returns true");
+    
 	}
 	
 	public function capture() {
 		
+    /*
+    Begins capture of output for caching.
+    */
+    
 		if (@constant("OUTLINE_DEBUG")) OutlineDebug("Starting cache capture");
 		
 		if ($this->buffering) throw new OutlineException("OutlineCache::capture() : capture() may only be called once, or after stop() has been called");
@@ -80,6 +110,11 @@ class OutlineCache {
 	
 	public function stop() {
 		
+    /*
+    Completes capture of output for caching, and saves
+    the output content to the cache.
+    */
+    
 		if (@constant("OUTLINE_DEBUG")) OutlineDebug("Cache capture finished");
 		
 		if (!$this->buffering) throw new OutlineException("OutlineCache::stop() : capture() must be called before stop() can be called");
@@ -95,6 +130,13 @@ class OutlineCache {
 	
 	public function clean($path) {
 		
+    /*
+    Recursively clears cached content for the given path.
+    
+    $path: an array of cache names - as a minimum, this must
+    contain one name, e.g. the template name.
+    */
+    
 		if (!is_array($path)) $path = array($path);
 		
 		$dir = $this->config['cache_path'];
