@@ -89,7 +89,7 @@ class OutlineEngine implements IOutlineEngine {
 		
 		if (!file_exists($this->template)) throw new OutlineException("OutlineEngine::build(): template not found: " . $this->template);
 		
-		if ((filemtime($this->template) > @filemtime($this->compiled)) || !file_exists($this->compiled) || $force) {
+		if ($force || !file_exists($this->compiled) || (filemtime($this->template) > @filemtime($this->compiled))) {
 			
 			if (!@constant("OUTLINE_COMPILER")) {
 				if (@constant("OUTLINE_DEBUG")) OutlineDebug("loading OutlineCompiler");
