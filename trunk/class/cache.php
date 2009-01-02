@@ -128,7 +128,7 @@ class OutlineCache {
 		
 	}
 	
-	public function clean($path) {
+	public function clear($path) {
 		
     /*
     Recursively clears cached content for the given path.

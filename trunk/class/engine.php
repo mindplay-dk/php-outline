@@ -233,7 +233,7 @@ class Outline extends OutlineEngine {
     $path = array($this->tplname);
 		if ($add_path = func_get_args()) $path = array_merge($path, $add_path);
     
-		$this->cache->clean($path);
+		$this->cache->clear($path);
     
 	}
 	
