@@ -55,6 +55,7 @@ class OutlineEngine implements IOutlineEngine {
 		"cache_suffix" =>        '.html',                 /* File extension or suffix for cache files */
 		"cache_time" =>          OUTLINE_CACHE_TIME,      /* Default cache time (in seconds) */
 		"quiet" =>               true,                    /* Suppresses E_NOTICE and E_WARNING error messages */
+    "default_root" =>        null,                    /* Default rootname for template-names with no rootname */
 		"bracket_open" =>        '{',
 		"bracket_close" =>       '}',
 		"bracket_comment" =>     '{*',
@@ -62,11 +63,12 @@ class OutlineEngine implements IOutlineEngine {
 		"bracket_ignore" =>      '{ignore}',
 		"bracket_end_ignore" =>  '{/ignore}',
 		"outline_context" =>     null,
+    "roots" =>               array(),
 		"plugins" =>             array()
 	);
 	
 	public function __construct() {
-		if ($this->config['outline_context'] === null) {
+    if ($this->config['outline_context'] === null) {
       $this->config['outline_context'] = & $this;
     }
 	}
@@ -126,19 +128,20 @@ class OutlineEngine implements IOutlineEngine {
 class Outline extends OutlineEngine {
 	
   /*
-  This is the core template engine, which integrates with [OutlineCache]
-  and provides support-functions for the standard commands in [OutlineSystem].
+  This is the core template engine, which integrates with [OutlineCache],
+  adds support for multiple roots, and provides support-functions for the
+  standard commands in [OutlineSystem].
   */
   
 	protected $tplname;
-	
-	protected $caching = true;
+  
+  protected $caching = true;
 	protected $cache;
 	
 	protected static $engine_stack = array();
 	
 	protected static $error_level;
-	
+  
 	public function __construct($tplname, $config = null) {
 		
     /*
@@ -149,8 +152,6 @@ class Outline extends OutlineEngine {
 		parent::__construct();
 		
 		$this->config['plugins']['OutlineSystem'] = OUTLINE_CLASS_PATH . "/system.php";
-		
-		$this->tplname = $tplname;
 		
 		if (is_array($config)) {
 			foreach ($config as $name => $value) {
@@ -166,103 +167,21 @@ class Outline extends OutlineEngine {
 			$this->config = & self::$engine_stack[0]->config;
 		}
 		
+    $this->tplname = $tplname;
+    
 		$this->caching = !$this->build(
-			$this->config["template_path"] . '/' . $tplname . $this->config["template_suffix"],
-			$this->config["compiled_path"] . '/' . $tplname . $this->config["compiled_suffix"],
+			$this->getAbsTplPath(),
+			$this->config["compiled_path"] . '/' . $this->getRelTplPath($tplname) . $this->config["compiled_suffix"],
 			@constant("OUTLINE_ALWAYS_COMPILE")
 		);
 		
 		if (!isset($this->config['functions'])) $this->config['functions'] = array();
+    
+    if (!is_array($config) || !array_key_exists('default_root', $config)) {
+      $bits = explode(':', $tplname, 2);
+      if (count($bits) == 2) $this->config['default_root'] = $bits[0];
+    }
 		
-	}
-	
-	public function cache() {
-		
-    /*
-    Turns on caching - loads [OutlineCache] as needed.
-    
-    This method takes any number of arguments - any value that has
-    a meaningful string representation, is valid. The arguments
-    determine where in the cache hierachy the output is cached.
-    
-    For example:
-    
-      $outline->cache('product', 'list', $pagenum);
-    
-    This gives you three levels of caching hierachy - this places
-    all your product-related content under the first-order cache
-    named 'product', and all your product lists under the
-    second-order cache named 'list'.
-    */
-    
-		if (!@constant("OUTLINE_CACHE_ENGINE"))
-			require OUTLINE_CLASS_PATH . "/cache.php";
-		
-		$path = explode('/',$this->tplname);
-		if ($add_path = func_get_args()) $path = array_merge($path, $add_path);
-		
-		$this->cache = new OutlineCache($this->config, $path);
-		if (!$this->caching) $this->clear_cache();
-		
-	}
-	
-  	public function cached($time = null) {
-    
-    /*
-    Returns true if the cache for this template has expired.
-    $time: optional - cache lifetime in seconds, defaults to 'cache_time' in the configuration.
-    */
-    
-		if (!$this->caching || empty($this->cache)) return false;
-		return $this->cache->valid($time === null ? $this->config['cache_time'] : $time);
-    
-	}
-	
-	public function clear_cache() {
-    
-    /*
-    Manually clear the cache for this template.
-    
-    Generally, the cache is automatically cleared as needed - with long
-    cache lifetimes, sometimes it is preferable to manually clear when
-    the rendered data has been updated.
-    */
-    
-		if (!$this->cache) throw new OutlineException("can't clear cache, caching is not enabled - you must call cache() first");
-		
-    $path = array($this->tplname);
-		if ($add_path = func_get_args()) $path = array_merge($path, $add_path);
-    
-		$this->cache->clear($path);
-    
-	}
-	
-	protected $capturing = false;
-	
-	public function capture() {
-    
-    /*
-    Begins capture to the cache. You must first enable caching, by
-    calling the [cache()] method.
-    */
-    
-		if (empty($this->cache)) return false;
-		$this->cache->capture();
-		$this->capturing = true;
-    
-	}
-	
-	public function stop() {
-    
-    /*
-    Completes capture to the cache. You must first begin capture, by
-    calling the [capture()] method.
-    */
-    
-		if (empty($this->cache)) return false;
-		$this->cache->stop();
-		$this->capturing = false;
-    
 	}
 	
 	public function get() {
@@ -304,6 +223,101 @@ class Outline extends OutlineEngine {
     
 	}
 	
+  // --- Caching support functions:
+  
+	public function cache() {
+		
+    /*
+    Turns on caching - loads [OutlineCache] as needed.
+    
+    This method takes any number of arguments - any value that has
+    a meaningful string representation, is valid. The arguments
+    determine where in the cache hierachy the output is cached.
+    
+    For example:
+    
+      $outline->cache('product', 'list', $pagenum);
+    
+    This gives you three levels of caching hierachy - this places
+    all your product-related content under the first-order cache
+    named 'product', and all your product lists under the
+    second-order cache named 'list'.
+    */
+    
+		if (!@constant("OUTLINE_CACHE_ENGINE"))
+			require OUTLINE_CLASS_PATH . "/cache.php";
+		
+		$path = explode('/', $this->getRelTplPath());
+		if ($add_path = func_get_args()) $path = array_merge($path, $add_path);
+		
+		$this->cache = new OutlineCache($this->config, $path);
+		if (!$this->caching) $this->clear_cache();
+		
+	}
+	
+  	public function cached($time = null) {
+    
+    /*
+    Returns true if the cache for this template has expired.
+    
+    $time: optional - cache lifetime in seconds, defaults
+           to 'cache_time' in the configuration.
+    */
+    
+		if (!$this->caching || empty($this->cache)) return false;
+		return $this->cache->valid($time === null ? $this->config['cache_time'] : $time);
+    
+	}
+	
+	public function clear_cache() {
+    
+    /*
+    Manually clear the cache for this template.
+    
+    Generally, the cache is automatically cleared as needed - with long
+    cache lifetimes, sometimes it is preferable to manually clear when
+    the rendered data has been updated.
+    */
+    
+		if (!$this->cache) throw new OutlineException("can't clear cache, caching is not enabled - you must call cache() first");
+		
+    $path = array($this->getRelTplPath());
+		if ($add_path = func_get_args()) $path = array_merge($path, $add_path);
+    
+		$this->cache->clear($path);
+    
+	}
+	
+	protected $capturing = false;
+	
+	public function capture() {
+    
+    /*
+    Begins capture to the cache. You must first enable caching, by
+    calling the [cache()] method.
+    */
+    
+		if (empty($this->cache)) return false;
+		$this->cache->capture();
+		$this->capturing = true;
+    
+	}
+	
+	public function stop() {
+    
+    /*
+    Completes capture to the cache. You must first begin capture, by
+    calling the [capture()] method.
+    */
+    
+		if (empty($this->cache)) return false;
+		$this->cache->stop();
+		$this->capturing = false;
+    
+	}
+	
+  // --- Template name/path handling:
+  
 	public function getTplName() {
     
     /*
@@ -313,7 +327,47 @@ class Outline extends OutlineEngine {
 		return $this->tplname;
     
 	}
-	
+  
+  public function getRelTplPath() {
+    
+    /*
+    Maps the template name to a relative path, not including
+    the file extension, which should be appended as needed.
+    */
+    
+    $bits = explode(':', $this->tplname, 2);
+    
+    if (count($bits) == 2) return $bits[0] . '/' . $bits[1];
+    
+    return ( $this->config['default_root'] == null ? '__default__' : $this->config['default_root'] ) . '/' . $bits[0];
+    
+  }
+  
+  public function getAbsTplPath() {
+    
+    /*
+    Maps the template name to an absolute template path,
+    including the file extension.
+    */
+    
+    $bits = explode(':', $this->tplname, 2);
+    
+    if (count($bits) == 2) {
+      list($name, $path) = $bits;
+    } else {
+      $name = @$this->config["default_root"];
+      $path = $bits[0];
+    }
+    
+    $root = ( $name == null ? $this->config["template_path"] : @$this->config['roots'][$name] );
+    if (!$root) throw new OutlineException("Outline::getAbsTplPath() : unknown root name '$name");
+    
+    return $root . '/' . $path . $this->config["template_suffix"];
+    
+  }
+  
+  // --- Support functions for compiled templates:
+  
 	public static function finish() {
     
     /*
