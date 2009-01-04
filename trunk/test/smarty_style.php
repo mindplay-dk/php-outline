@@ -35,7 +35,12 @@ class OutlineTest extends OutlineTpl {
 	}
 }
 
-$tpl = new OutlineTest('test', array("cache_time" => 10));
+$tpl = new OutlineTest('stuff:test', array(
+  "cache_time" => 10,
+  "roots" => array(
+    "stuff" => OUTLINE_SCRIPT_PATH.'/templates'
+  )
+));
 
 $tpl->assign("testvar", 'This variable has local scope');
 $tpl->assign("testdate", date("r"));
