@@ -178,13 +178,11 @@ In the above call, the {$color} value defaults to '#00f' as specified in the blo
 
 	`{!headline title="A red headline" color="#f00"}`
 
-Technically, blocks are simply php-functions, and therefore have all the features of a normal function declaration header in PHP - you separate the arguments with commas, both at declaration time, and when calling a block.
+Technically, blocks are simply php-functions, and therefore have all the features of a normal function declaration header in PHP - but rather than separating arguments with commas, they are separated with spaces, making them look and feel more like markup.
 
 Note that the blockname is case-insensitive.
 
-You can specify default values for arguments, e.g. $color = '#00f'.
-
-You can place your block declaration in an external template, and {include} it from other templates - just be aware, that the include statement must precede the call; a block can not be called before it has been declared.
+You can place your block declaration in an external template, and {include} it from other templates - just be aware that the include statement must precede the call; a block can not be called before it has been declared.
 
 Also note that a block has it's own closed scope - it cannot see any template variables outside of itself, so if you have a variable in the template itself, that you need access to inside the block, you have to pass it as an argument.
 
