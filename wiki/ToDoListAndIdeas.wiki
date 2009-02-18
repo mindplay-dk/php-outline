@@ -9,6 +9,10 @@ Things I plan on adding or changing in the near future (e.g. before first releas
 
 Ideas for the future:
 
+ * Introduce namespacing for blocks and commands, e.g.: `{use form}{input name="test"}{/use}` would be equivalent to `{form:input name="test"}`, and blocks would have the opportunity to change the default namespace. Namespacing would reduce the chance of collisions between user plugins.
+
+ * Add template selection, e.g.: `{include "more_specific","less_specific"}` would include the first template if available, otherwise fall back to the second template, etc. Alternatively, `{select $tpl from "more_specific","less_specific"}` would select the templatename and place it in `$tpl`. Alternatively, user block selection, based on the same principle. Alternatively, support for section inheritance and overrides. (the latter could break line-number relationships between template source and compiled template)
+
  * Apply any modifier to a block, e.g.: `{modify replace:"apples":"cake"}I love apples!{/modify}`
 
 Ideas I'm having second thoughts about:
