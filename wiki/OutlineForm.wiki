@@ -1,0 +1,41 @@
+#summary This is a proposal for a form-building (or "widgets") framework based on Outline
+
+These are my thoughts about building an extension for forms/widgets with Outline.
+
+The general idea, is to facilitate form rendering, validation, and parsing, and to be able to build with all of these features from a single source.
+
+First, let me point out that such an extension would not be purely MVC, since business concerns such as validation and parsing would be configured in the template.
+
+While it would be possible to build a form-handling framework that was strictly MVC, for example by separating configuration of widgets from the form template itself, this would probably not be practical, since features such as parsing and validation are logically tied 1:1 to the form elements in the view, and are not really concerns that can logically be separated at all.
+
+Hence, the separation of concerns will happen within a widget class, where rendering of the widget, parsing, and validation, can be separated and fully MVC.
+
+=== Practical Concerns ===
+
+What would a form template look like?
+
+First off, instead of using regular HTML form elements, we would use template-based commands and widgets - for example:
+
+{{{
+{form name="user" action=$user_action}
+  <table>
+    <tr>
+      <td>Name:</td>
+      <td>{widget:text name="name"}</td>
+    </tr>
+    <tr>
+      <td>E-mail address:</td>
+      <td>{widget:email name="email"}</td>
+    </tr>
+    <tr>
+      <td>Password:</td>
+      <td>{widget:password name="password"}</td>
+    </tr>
+  </table>
+{/form}
+}}}
+
+The `{form}` block replaces the normal `<form>` tag, and produces basically the same output, but at the same time creates a form instance and attaches it to the template engine.
+
+A set of widgets replace the standard form elements - the `{widget:text}` command, for example, replaces the `<input type="text">` element, but registers a widget instance and attaches it to the form object of the template engine.
+
