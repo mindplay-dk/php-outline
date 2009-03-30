@@ -70,3 +70,11 @@ The forms plugin and widget framework aside, this relies on a couple of features
 First, the "forms" collection would be a "virtual" collection - not an actual object property, but a callback registered by the forms plugin, implemented using magic accessors. Accessing it actually invokes a method in the forms plugin, which returns an object, which in turn, implements a magic accessor that provides access to any forms implemented by that template.
 
 Secondly, the template engine would need to support a new method, namely load(), which would load the template without rendering it. The `forms` accessor-callback would invoke this method to construct the form and widget instances.
+
+=== Validation and error handling ===
+
+The form and widget classes must support form-related error handling, and error reporting.
+
+The two most common forms of error reporting include a list of errors at the top of the form, and inline error reporting, where errors related to a particular widget are displayed next to that widget, possibly with the widget itself highlighted by using a different background color, or or red border, etc.
+
+These forms of error reporting must be supported, but we should attempt to leave the form rendering sufficiently open to support any kind of error handling.
