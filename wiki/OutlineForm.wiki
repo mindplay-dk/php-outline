@@ -10,6 +10,8 @@ While it would be possible to build a form-handling framework that was strictly 
 
 Hence, the separation of concerns will happen within a widget class, where rendering of the widget, parsing, and validation, can be separated and fully MVC.
 
+Form templates use widgets as a building block for a high-level specification that results in forms, parsers and validators.
+
 === Practical Concerns ===
 
 What would a form template look like?
@@ -39,3 +41,4 @@ The `{form}` block replaces the normal `<form>` tag, and produces basically the 
 
 A set of widgets replace the standard form elements - the `{widget:text}` command, for example, replaces the `<input type="text">` element, but registers a widget instance and attaches it to the form object of the template engine.
 
+Higher-order widgets (compared to HTML) can also be implemented - for example `{widget:email}` is an extension of `{widget:text}`, which inherits all of it's capabilities in terms of rendering and parsing, but adds a validation rule that asserts that the user input resembles an e-mail address.
