@@ -1,7 +1,7 @@
 Outline
 =======
 
-	Version 0.9-beta2
+	Version 1.0-rc1
 	
 	The latest version will be made available here:
 	
@@ -25,11 +25,11 @@ Getting started
 	
 		2. write-enable the "test/cache" and "test/compiled" folders.
 
-		3. open the "test/test.php" script in your web browser.
+		3. browse for the "test" folder and run the test-scripts from your web browser.
 	
-	You should see a simple demonstration/test page.
-	
-	To try it out in your own application, see the Wiki on the website.
+	To learn how to use it in your own applications, see the Wiki on the website,
+  examine the scripts in the "test" folder, and refer to inline documentation in
+  the source code itself.
 	
 	
 License
