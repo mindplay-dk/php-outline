@@ -152,7 +152,7 @@ class OutlineSystem extends OutlinePlugin {
 		$var = $from = $to = null; $by = 1; $c = count($exp);
 		
 		if ($c==4 || $c==6) {
-			list($var, $from, $to, $by) = array($exp[1], $exp[2], $exp[3], @$exp[5] == false ? 1 : $exp[5]);
+			list($var, $from, $to, $by) = array($exp[1], $exp[2], $exp[3], isset($exp[5]) ? $exp[5] : 1);
 		} else {
 			throw new OutlineException("syntax error in for-statement", $this->compiler);
 		}
