@@ -1,13 +1,11 @@
 #labels todo
 = To-do =
 
-Things I plan on adding or changing in the near future (e.g. before first release):
+Ideas for the future:
 
  * add `{debug}` command - helper function for template developers; displays a list of all assigned template variables.
 
  * Add `{default}` command, e.g.: `{default $name='value'}` assigns 'value' to $name, if $name does not have a value.
-
-Ideas for the future:
 
  * Introduce namespacing for blocks and commands, e.g.: `{use form}{input name="test"}{/use}` would be equivalent to `{form:input name="test"}`, and blocks would have the opportunity to change the default namespace. Namespacing would reduce the chance of collisions between user plugins.
 
