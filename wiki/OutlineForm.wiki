@@ -2,7 +2,7 @@
 
 These are my thoughts about building an extension for forms/widgets with Outline.
 
-The general idea, is to facilitate form rendering, validation, and parsing, and to be able to build with all of these features from a single source.
+The general idea, is to facilitate form rendering, validation, and parsing, and to be able to build with all of these features from a single source. Some form frameworks attempt to automate, which leads to limitations - my objective is not to automate, but to simplify.
 
 First, let me point out that such an extension would not be purely MVC, since business concerns such as validation and parsing would be configured in the template.
 
