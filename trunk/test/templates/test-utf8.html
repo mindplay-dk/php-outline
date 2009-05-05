@@ -1,0 +1,199 @@
+﻿<html>
+
+<head>
+	<title>{$use_this_title}</title>
+</head>
+
+<body>
+
+{if $test_cache}
+	<p>Testing hierachical caching: {$cache_msg}</p>
+	<p>Note that caching-level "a" will be cleared manually on every run, to demonstrate cascading cache clearing. The engine itself will clear the entire cache, if the 'test.html' template is changed.</p>
+{/if}
+
+{ignore}
+	<h1>Testing the {require} and {ignore} commands</h1>
+{/ignore}
+
+{require test_require.php}
+
+<p>Testing »funny« characters</p>
+
+<p>Testing context object - the local $outline reference is of type: {#get_class($outline)}</p>
+
+<p>Contextual object's getTest() method returned: {$outline->getTest()}</p>
+
+<p>This is a demonstration of uncached inserts - the output below will change every second, even though the output is cached. The execution of the function 'uncached_function', declared in 'test.php', is deferred until the time the cache is retrieved.</p>
+
+<ul>
+	{foreach $testarray as $color => $code}
+		<li>{$color} : {insert:timestamp color=$code}</li>
+	{/foreach}
+</ul>
+
+<p>This demonstrates a custom function call: <em>{testfunc value=time()}</em></p>
+
+<p>Printing a constant defined in 'test_require.php': {#TEST_VALUE}</p>
+
+<p>Applying a modifier to the same constant: {#TEST_VALUE|replace:'i':'iiiii'}</p>
+
+{ignore}<h1>Testing the {block} command</h1>{/ignore}
+
+{block:testBlock a='' b='this is the default value of $b'}
+	<p>This is the output from the testBlock: '{$a}' and '{$b}'</p>
+{/block}
+
+{!testBlock a='this is the first value passed to testBlock'}
+{!TESTBLOCK a='this is the first value passed to testBlock' b='this is the second value passed to testBlock'}
+
+<h1>Testing variables and standard modifiers</h1>
+
+<p>This value was assigned in the template function in 'test.php': "{$testvar}"</p>
+
+<p>And the same variable with a native PHP function applied as modifier: "{$testvar|md5}"</p>
+
+<p>This modifier uses a variable as one of it's arguments: "{$testvar|replace:'variable':'VARIABLE'}"</p>
+
+<p>This demonstrates <span style="color:#{@testarray.RED}">lazy</span> <span style="color:#{@testarray.BLUE}">array</span> <span style="color:#{@testarray.GREEN|upper}">resolution</span> using ampersand.</p>
+
+<textarea cols="80" rows="15">
+default: {$empty_array|default:"the array is empty"}
+
+strip: {set $test="spaces   will   be   stripped"}{$test|strip}
+
+date: {#time()|date:"Y-m-d H:i:s"}
+
+time: {#time()|time:"%c"}
+
+html: {set $test = "<strong>bold text</strong>"}{$test|html}
+
+url: {set $test = "url-encode this!"}http://www.google.com/search?{$test|url}
+
+escape: {set $test = "'this will be escaped\nfor javascript'"}javascript:window.alert('{$test|escape}');
+wed: {set $test = "the wed modifier prevents orphans in html"}{$test|wed|html}
+
+lower: {set $test = 'LOWERCASE'}{$test|lower}
+
+upper: {set $test = 'uppercase'}{$test|upper}
+
+format: {set $test = 3.1415}{$test|format} | {set $test = 42000000}{$test|format:0}
+
+br: {set $test = "this is\na test"}{$test|br|html}
+
+chop: {set $test = "this is an example - the chop function shortens elaborate text at a given length"}{$test|chop:65}
+
+</textarea>
+
+{ignore}<h1>Testing the {capture} command</h1>{/ignore}
+
+{capture $test}
+This content was captured to the $test variable.
+{/capture}
+
+<p>Captured text: "{$test|trim}"</p>
+
+{ignore}<h1>Testing the {set} command</h1>{/ignore}
+
+{set $var='This string was assigned using the set command'}
+
+<p>{$var}</p>
+
+<h1>Testing the {ignore}{while}{/ignore} command</h1>
+
+{set $i = 5}
+<ul>
+	{while $i > 0}
+		<li>countdown {$i} ...</li>
+		{set $i = $i - 1}
+	{/while}
+</ul>
+
+{ignore}<h1>Testing variations of the {for} command</h1>{/ignore}
+
+<p>Counting to ten: {for $var from 1 to 10}{$var}, {/for}...</p>
+
+<p>Counting to a hundred by ten at a time: {for $var from 0 to 100 by 10}{$var}, {/for}...</p>
+
+<p>Counting backwards from ten: {for $var from 10 to 1}{$var}, {/for}...</p>
+
+<p>Using dynamic arguments: {for $var from date('Y') to date('Y')-9}{$var}, {/for}...</p>
+
+{ignore}<h1>Testing the {include} command</h1>{/ignore}
+
+{include include/test_include}
+
+{if $outline}
+	<p>After include, contextual OutlineTest object's getTest() method returned: {$outline->getTest()}</p>
+{/if}
+
+{ignore}<h1>Testing the {foreach} command</h1>{/ignore}
+
+{set $odd = false}
+
+{foreach $testarray as $color => $rgb}
+	<p style="color:#{$rgb}">{$color}</p>
+{/foreach}
+
+{ignore}<h1>Testing {else} with {foreach}</h1>{/ignore}
+
+{foreach $empty_array as $name => $value}
+	<p>This will never execute</p>
+{else}
+	<p>This displays because the foreach'ed array was empty.</p>
+{/foreach}
+
+{ignore}<h1>Testing access to a class declared in 'test_require.php'</h1>{/ignore}
+
+{set $testobject = new TestClass()}
+
+<p>Variable access: {$testobject->variable}</p>
+<p>Method access: {$testobject->method()}</p>
+
+{ignore}<h1>Testing the {if} command</h1>{/ignore}
+
+<p>
+	{for $var from 1 to 10}
+		{$var}
+		{if $var < 3}
+			is less than three
+		{elseif $var > 8}
+			is greater than eight
+		{else}
+			is between three and eight
+		{/if}
+		<br />
+	{/for}
+</p>
+
+{ignore}<h1>Testing the {cycle} and {next} commands</h1>{/ignore}
+
+<p>
+	{for $var from 1 to 9}
+		{cycle}
+			one,
+		{next}
+			two,
+		{next}
+			three,
+		{/cycle}
+	{/for}
+	...
+</p>
+
+{*
+	these comments will go unseen
+	these comments will go unseen
+	these comments will go unseen
+*}
+
+<p>Contextual object's getTest() method returned: {$outline->getTest()}</p>
+
+<h2>Page generated at {$testdate}</h2>
+<h3>Displaying the compiled template using the {ignore}{display}{/ignore} command:</h3>
+<pre>
+{display compiled/test.php}
+</pre>
+
+</body>
+
+</html>
