@@ -11,6 +11,10 @@ Please see "README.txt" for license and other information.
 
 */
 
+interface IOutlineFormPlugin {
+  public static function render(OutlineCompiler &$compiler, $arguments);
+}
+
 class OutlineFormPlugin extends OutlinePlugin {
   
   // * form block
@@ -21,10 +25,13 @@ class OutlineFormPlugin extends OutlinePlugin {
     if (self::$form) throw new OutlineException("nested form declarations are not allowed", $this->compiler);
     $args = $this->compiler->parse_attributes($_args);
     if (!isset($args['name'])) throw new OutlineException("missing name attribute in form tag", $this->compiler);
-    self::$form = array();
-    $this->compiler->output('<form name="');
-    $this->compiler->code('echo '.$args['name']);
-    $this->compiler->output('">');
+    self::$form = $args['name'];
+    # this should move into a reusable function:
+    $this->compiler->output('<form');
+    foreach ($args as $name => $expr) {
+      $this->compiler->code('echo \' '.$name.'="\'.'.$expr.'.\'"\'');
+    }
+    $this->compiler->output('>');
   }
   
   public function end_form_block($args) {
@@ -32,10 +39,19 @@ class OutlineFormPlugin extends OutlinePlugin {
     $this->compiler->output('</form>');
   }
   
+  public function form_element($_args) {
+    $this->compiler->checkBlock('form', 'form:');
+    @list($element, $args) = explode(" ", $_args, 2);
+    require_once OUTLINE_CLASS_PATH.'/form.'.$element.'.php';
+    $class_name = 'OutlineForm_'.$element;
+    call_user_func(array($class_name, 'render'), $this->compiler, $this->compiler->parse_attributes($args));
+  }
+  
 	// --- Plugin registration:
 	
 	public static function register(&$compiler) {
     $compiler->registerBlock('form', 'form_block');
+    $compiler->registerTag('form:', 'form_element');
   }
   
 }
