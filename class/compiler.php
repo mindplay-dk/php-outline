@@ -281,6 +281,20 @@ class OutlineCompiler {
 		$this->coding = false;
 	}
 	
+  public function build_tag($name, $attr) {
+    $this->output("<{$name}");
+    $code = array();
+    foreach ($attr as $name => $expr) {
+      if (preg_match('/^\\"([^"]|\\\\\\")+\\"$|^\\\'([^\']|\\\\\\\')+\\\'$|^\\d+$/', $expr)) { # * RegEx: ^\"([^"]|\\\")+\"$|^\'([^']|\\\')+\'$|^\d+$
+        $code[] = '\' '.$name.'="'.(is_numeric($expr) ? $expr : substr($expr,1,strlen($expr)-2)).'"\''; // * simple constant literal/number
+      } else {
+        $code[] = '\' '.$name.'="\'.('.$expr.').\'"\''; // * variable dynamic expression
+      }
+    }
+    $this->code('echo '.implode('.', $code).";");
+    $this->output('>');
+  }
+  
 	// --- Utility methods:
 	
 	public static function is_utf8(&$str) {
