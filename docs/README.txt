@@ -1,7 +1,7 @@
 Outline
 =======
 
-	Version 1.0-rc1
+	Version 1.0
 	
 	The latest version will be made available here:
 	
