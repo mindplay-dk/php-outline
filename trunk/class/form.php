@@ -12,7 +12,7 @@ Please see "README.txt" for license and other information.
 */
 
 interface IOutlineFormPlugin {
-  public static function render(OutlineCompiler &$compiler, $arguments);
+  public static function render(OutlineCompiler &$compiler, $args);
 }
 
 class OutlineFormPlugin extends OutlinePlugin {
@@ -26,12 +26,7 @@ class OutlineFormPlugin extends OutlinePlugin {
     $args = $this->compiler->parse_attributes($_args);
     if (!isset($args['name'])) throw new OutlineException("missing name attribute in form tag", $this->compiler);
     self::$form = $args['name'];
-    # this should move into a reusable function:
-    $this->compiler->output('<form');
-    foreach ($args as $name => $expr) {
-      $this->compiler->code('echo \' '.$name.'="\'.'.$expr.'.\'"\'');
-    }
-    $this->compiler->output('>');
+    $this->compiler->build_tag('form', $args);
   }
   
   public function end_form_block($args) {
@@ -42,8 +37,8 @@ class OutlineFormPlugin extends OutlinePlugin {
   public function form_element($_args) {
     $this->compiler->checkBlock('form', 'form:');
     @list($element, $args) = explode(" ", $_args, 2);
-    require_once OUTLINE_CLASS_PATH.'/form.'.$element.'.php';
     $class_name = 'OutlineForm_'.$element;
+    if (!class_exists($class_name)) require_once OUTLINE_CLASS_PATH.'/form.'.$element.'.php';
     call_user_func(array($class_name, 'render'), $this->compiler, $this->compiler->parse_attributes($args));
   }
   
@@ -54,6 +49,14 @@ class OutlineFormPlugin extends OutlinePlugin {
     $compiler->registerTag('form:', 'form_element');
   }
   
+}
+
+// --- Core Form Elements:
+
+class OutlineForm_text implements IOutlineFormPlugin {
+  public static function render(OutlineCompiler &$compiler, $args) {
+    $compiler->build_tag('input type="text"', $args);
+  }
 }
 
 ?>
