@@ -49,8 +49,8 @@ class OutlineEngine implements IOutlineEngine {
 	public $config = array(
 		"template_path" =>       OUTLINE_TEMPLATE_PATH,   /* Path to folder containing templates */
 		"compiled_path" =>       OUTLINE_COMPILED_PATH,   /* older containing compiled templates (must be writable) */
-		"template_suffix" =>     '.html',                 /* Suffix (extension) of template files */
-		"compiled_suffix" =>     '.php',                  /* Suffix (extension) of compiled template files (usually ".php") */
+		"template_suffix" =>     '.tpl.html',             /* Suffix (extension) of template files */
+		"compiled_suffix" =>     '.tpl.php',              /* Suffix (extension) of compiled template files (usually ".php") */
 		"cache_path" =>          OUTLINE_CACHE_PATH,      /* The folder in which the Cache class stores it's content */
 		"cache_suffix" =>        '.html',                 /* File extension or suffix for cache files */
 		"cache_time" =>          OUTLINE_CACHE_TIME,      /* Default cache time (in seconds) */
