@@ -19,18 +19,33 @@ class OutlineFormPlugin extends OutlinePlugin {
   
   // * form block
   
-  static protected $form = null;
+  protected $form = null;
+  protected $classname = null;
   
   public function form_block($_args) {
-    if (self::$form) throw new OutlineException("nested form declarations are not allowed", $this->compiler);
+    
+    if ($this->form)
+      throw new OutlineException("nested form declarations are not allowed", $this->compiler);
+    
     $args = $this->compiler->parse_attributes($_args);
-    if (!isset($args['name'])) throw new OutlineException("missing name attribute in form tag", $this->compiler);
-    self::$form = $args['name'];
+    
+    if (!isset($args['name']))
+      throw new OutlineException("missing name attribute in form tag", $this->compiler);
+    
+    if (!isset($args['classname']) || !$this->compiler->is_simple($args['classname']))
+      throw new OutlineException("missing or invalid classname attribute in form tag", $this->compiler);
+    
+    $this->classname = $this->compiler->unquote($args['classname']);
+    $this->form = $args['name'];
+    
+    unset($args['classname']);
+    
     $this->compiler->build_tag('form', $args);
+    
   }
   
   public function end_form_block($args) {
-    self::$form = null;
+    $this->form = null;
     $this->compiler->output('</form>');
   }
   
@@ -48,6 +63,8 @@ class OutlineFormPlugin extends OutlinePlugin {
     $compiler->registerBlock('form', 'form_block');
     $compiler->registerTag('form:', 'form_element');
   }
+  
+  // --- 
   
 }
 
