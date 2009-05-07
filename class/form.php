@@ -12,7 +12,7 @@ Please see "README.txt" for license and other information.
 */
 
 interface IOutlineFormPlugin {
-  public static function render(OutlineFormPlugin &$plugin, OutlineCompiler &$compiler, $args);
+  public static function render(OutlineFormPlugin &$plugin, $args);
 }
 
 class OutlineFormPlugin extends OutlinePlugin {
@@ -60,7 +60,7 @@ class OutlineFormPlugin extends OutlinePlugin {
     
     call_user_func_array(
       array($class_name, 'render'),
-      array(&$this, &$this->compiler, $this->compiler->parse_attributes($args))
+      array(&$this, $this->compiler->parse_attributes($args))
     );
     
   }
@@ -120,7 +120,7 @@ class OutlineFormPlugin extends OutlinePlugin {
 
 class OutlineForm_text implements IOutlineFormPlugin {
   
-  public static function render(OutlineFormPlugin &$plugin, OutlineCompiler &$compiler, $args) {
+  public static function render(OutlineFormPlugin &$plugin, $args) {
     $plugin->build_tag('input type="text"', $args);
     $plugin->add_element($args);
   }
