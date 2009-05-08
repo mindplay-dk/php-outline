@@ -17,7 +17,7 @@ interface IOutlineFormPlugin {
 
 class OutlineFormPlugin extends OutlinePlugin {
   
-  // * form block
+  // * Form tags:
   
   protected $form = null;
   protected $classname = null;
@@ -46,8 +46,26 @@ class OutlineFormPlugin extends OutlinePlugin {
   }
   
   public function end_form_block($args) {
-    $this->form = null;
+    
     $this->compiler->output('</form>');
+    
+    OutlineUtil::write_file(
+      OUTLINE_COMPILED_PATH.'/'.$this->compiler->engine->getRelTplPath().'.'.strtolower($this->classname).'.form.php',
+      OUTLINE_PHPTAG_OPEN."\n\n".
+      "class {$this->classname} extends OutlineFormModel {\n".
+      "  public function __construct(\$vars) {\n".
+      "    extract(\$vars);\n".
+      "    \$this->initFormModel(array(\n".
+      "      ".implode(",\n      ", $this->elements)."\n".
+      "    ));\n".
+      "    parent::__construct();\n".
+      "  }\n".
+      "}\n\n".
+      OUTLINE_PHPTAG_CLOSE
+    );
+    
+    $this->form = null;
+    
   }
   
   public function form_element($_args) {
@@ -93,12 +111,12 @@ class OutlineFormPlugin extends OutlinePlugin {
   
   // --- Element registration:
   
-  public function add_element($args) {
+  public function add_element($type, $args) {
     
     if (!isset($args['name']))
       throw new OutlineException("OutlineFormPlugin::register_element() : cannot register element without a name", $this->compiler);
     
-    $code = array();
+    $code = array("'#type' => '$type'");
     foreach ($args as $name => $expr) {
       $code[] = "'$name' => $expr";
     }
@@ -122,7 +140,7 @@ class OutlineForm_text implements IOutlineFormPlugin {
   
   public static function render(OutlineFormPlugin &$plugin, $args) {
     $plugin->build_tag('input type="text"', $args);
-    $plugin->add_element($args);
+    $plugin->add_element('text', $args);
   }
   
 }
