@@ -425,7 +425,7 @@ class OutlineCompiler {
 		$this->plugin_registry[] = $classname;
 		
 		$this->current_plugin = $classname;
-		call_user_func(array($classname, "register"), $this);
+		call_user_func_array(array($classname, "register"), array(&$this));
 		$this->current_plugin = null;
 		
 	}
