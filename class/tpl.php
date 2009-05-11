@@ -184,6 +184,28 @@ class OutlineTpl implements IOutlineEngine {
     
 	}
 	
+  // --- Support for helper objects:
+  
+  private $helpers = array();
+  
+  function & __get($type) {
+    
+    /*
+    Obtain a late-load helper object of the given type.
+    */
+    
+    $this->initEngine();
+    
+    if (!isset($this->helpers[$type])) {
+      require_once $this->engine->get_helper_path($type);
+      $outline__class_name = 'OutlineHelper_'.$type;
+      $this->helpers[$type] = new $outline__class_name($this->engine, $type);
+    }
+    
+    return $this->helpers[$type];
+    
+  }
+  
   // --- IOutlineEngine implementation:
   
 	public function & getOutlineEngine() {
