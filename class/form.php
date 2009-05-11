@@ -46,7 +46,7 @@ class OutlineFormPlugin extends OutlinePlugin {
     $this->compiler->output('</form>');
     
     OutlineUtil::write_file(
-      $this->compiler->engine->get_metadata_path($this->form, 'forms'),
+      $this->compiler->engine->get_metadata_path($this->form, 'form'),
       OUTLINE_PHPTAG_OPEN."\n\n".
       "return array(\n".
       "  ".implode(",\n  ", $this->elements)."\n".
