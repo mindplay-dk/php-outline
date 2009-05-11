@@ -223,13 +223,24 @@ class Outline extends OutlineEngine {
     
 	}
 	
-  public function & get_metadata_path($name, $type = 'default') {
+  public function get_metadata_path($name, $type = 'system') {
     
     /*
-    Returns the path to a metadata array associated with this template.
+    Returns the path to a metadata array, for a given helper type,
+    associated with this template.
     */
     
     return $this->config['compiled_path'] . '/' . $this->getRelTplPath() . ".{$name}.{$type}.php";
+    
+  }
+  
+  public function get_helper_path($type = 'system') {
+    
+    /*
+    Returns the path to a helper class for the given helper type.
+    */
+    
+    return OUTLINE_CLASS_PATH . "/{$type}.helper.php";
     
   }
   
