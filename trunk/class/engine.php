@@ -236,7 +236,7 @@ class Outline extends OutlineEngine {
     $id = "{$name}_{$type}";
     
     if (!array_key_exists($id, $this->helpers)) {
-      $path = $this->getRelTplPath() . ".{$name}.{$type}.php";
+      $path = $this->config['compiled_path'] . '/' . $this->getRelTplPath() . ".{$name}.{$type}.php";
       if (file_exists($path)) {
         require_once $path;
         $fn = "Outline_helper_{$name}_{$type}";
