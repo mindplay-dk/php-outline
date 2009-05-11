@@ -20,7 +20,6 @@ class OutlineFormPlugin extends OutlinePlugin {
   // * Form tags:
   
   protected $form = null;
-  protected $classname = null;
   protected $elements = array();
   
   public function form_block($_args) {
@@ -33,13 +32,10 @@ class OutlineFormPlugin extends OutlinePlugin {
     if (!isset($args['name']))
       throw new OutlineException("OutlineFormPlugin::form_block() : missing name attribute in form tag", $this->compiler);
     
-    if (!isset($args['classname']) || !$this->is_simple($args['classname']))
-      throw new OutlineException("OutlineFormPlugin::form_block() : missing or invalid classname attribute in form tag", $this->compiler);
+    if (!$this->is_simple($args['name']))
+      throw new OutlineException("OutlineFormPlugin::form_block() : invalid name attribute in form tag", $this->compiler);
     
-    $this->classname = $this->unquote($args['classname']);
-    $this->form = $args['name'];
-    
-    unset($args['classname']);
+    $this->form = $this->unquote($args['name']);
     
     $this->build_tag('form', $args);
     
@@ -50,9 +46,9 @@ class OutlineFormPlugin extends OutlinePlugin {
     $this->compiler->output('</form>');
     
     OutlineUtil::write_file(
-      OUTLINE_COMPILED_PATH.'/'.$this->compiler->engine->getRelTplPath().'.'.strtolower($this->classname).'.form.php',
+      OUTLINE_COMPILED_PATH.'/'.$this->compiler->engine->getRelTplPath().'.'.strtolower($this->form).'.forms.php',
       OUTLINE_PHPTAG_OPEN."\n\n".
-      "class {$this->classname} extends OutlineFormModel {\n".
+      "class OutlineFormModel_{$this->form} extends OutlineFormModel {\n".
       "  public function __construct(\$vars) {\n".
       "    extract(\$vars);\n".
       "    \$this->initFormModel(array(\n".
@@ -60,6 +56,10 @@ class OutlineFormPlugin extends OutlinePlugin {
       "    ));\n".
       "    parent::__construct();\n".
       "  }\n".
+      "}\n\n".
+      "function & Outline_helper_{$this->form}_forms(OutlineEngine &\$engine) {\n".
+      "  static \$instance = new OutlineFormModel_{$this->form}(\$engine);\n".
+      "  return \$instance;\n".
       "}\n\n".
       OUTLINE_PHPTAG_CLOSE
     );
