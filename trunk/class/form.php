@@ -46,21 +46,11 @@ class OutlineFormPlugin extends OutlinePlugin {
     $this->compiler->output('</form>');
     
     OutlineUtil::write_file(
-      OUTLINE_COMPILED_PATH.'/'.$this->compiler->engine->getRelTplPath().'.'.strtolower($this->form).'.forms.php',
+      $this->compiler->engine->get_metadata_path($this->form, 'forms'),
       OUTLINE_PHPTAG_OPEN."\n\n".
-      "class OutlineFormModel_{$this->form} extends OutlineFormModel {\n".
-      "  public function __construct(\$vars) {\n".
-      "    extract(\$vars);\n".
-      "    \$this->initFormModel(array(\n".
-      "      ".implode(",\n      ", $this->elements)."\n".
-      "    ));\n".
-      "    parent::__construct();\n".
-      "  }\n".
-      "}\n\n".
-      "function & Outline_helper_{$this->form}_forms(OutlineEngine &\$engine) {\n".
-      "  static \$instance = new OutlineFormModel_{$this->form}(\$engine);\n".
-      "  return \$instance;\n".
-      "}\n\n".
+      "return array(\n".
+      "  ".implode(",\n  ", $this->elements)."\n".
+      ");\n\n".
       OUTLINE_PHPTAG_CLOSE
     );
     

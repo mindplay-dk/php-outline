@@ -223,30 +223,13 @@ class Outline extends OutlineEngine {
     
 	}
 	
-  protected $helpers = array();
-  
-  public function & get_helper($name, $type = 'default') {
+  public function & get_metadata_path($name, $type = 'default') {
     
     /*
-    Loads and returns a helper object associated with this template.
-    
-    Returns null if no helper object with the given name/type exists.
+    Returns the path to a metadata array associated with this template.
     */
     
-    $id = "{$name}_{$type}";
-    
-    if (!array_key_exists($id, $this->helpers)) {
-      $path = $this->config['compiled_path'] . '/' . $this->getRelTplPath() . ".{$name}.{$type}.php";
-      if (file_exists($path)) {
-        require_once $path;
-        $fn = "Outline_helper_{$name}_{$type}";
-        $this->helpers[$id] = call_user_func_array($fn, array(&$this));
-      } else {
-        $this->helpers[$id] = null;
-      }
-    }
-    
-    return $this->helpers[$id];
+    return $this->config['compiled_path'] . '/' . $this->getRelTplPath() . ".{$name}.{$type}.php";
     
   }
   
