@@ -16,8 +16,11 @@ require_once OUTLINE_CLASS_PATH."/tpl.php";
 header("Content-type: text/html; charset=iso-8859-1");
 
 $tpl = new OutlineTpl('form_test');
-$tpl->assign('email', 'rasmus@mindplay.dk'); # this will change - form models will be accessed via helpers
 $tpl->addPlugin('OutlineFormPlugin', OUTLINE_CLASS_PATH.'/form.php');
+
+#$tpl->form->test->email = 'rasmus@mindplay.dk';
+
+#$tpl->assign('email', 'rasmus@mindplay.dk'); # this will change - form models will be accessed via helpers
 
 $tpl->display();
 
