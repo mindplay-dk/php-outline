@@ -136,7 +136,7 @@ class OutlineForm_text implements IOutlineFormPlugin {
   
   public static function render(OutlineFormPlugin &$plugin, $args) {
     $plugin->build_tag('input type="text"', $args);
-    $plugin->add_element(OUTLINE_FORM_RUNTIME, __CLASS__, $args);
+    $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_text', $args);
   }
   
 }
