@@ -1,6 +1,15 @@
 <?php
 
-require_once OUTLINE_CLASS_PATH . '/helper.php';
+/*
+
+OutlineForm (Helper)
+--------------------
+
+Copyright (C) 2007-2009, Rasmus Schultz <http://www.mindplay.dk>
+
+Please see "README.txt" for license and usage information.
+	
+*/
 
 class OutlineHelper_form extends OutlineHelper {
   
