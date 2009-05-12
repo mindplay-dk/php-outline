@@ -197,9 +197,13 @@ class OutlineTpl implements IOutlineEngine {
     $this->initEngine();
     
     if (!isset($this->helpers[$type])) {
+      
+      require_once OUTLINE_CLASS_PATH . '/helper.php';
       require_once $this->engine->get_helper_path($type);
+      
       $outline__class_name = 'OutlineHelper_'.$type;
       $this->helpers[$type] = new $outline__class_name($this->engine, $type, &$this->vars);
+      
     }
     
     return $this->helpers[$type];

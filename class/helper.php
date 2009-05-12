@@ -1,5 +1,16 @@
 <?php
 
+/*
+
+Outline (Helper)
+----------------
+
+Copyright (C) 2007-2009, Rasmus Schultz <http://www.mindplay.dk>
+
+Please see "README.txt" for license and usage information.
+	
+*/
+
 abstract class OutlineHelper {
   
   /*
