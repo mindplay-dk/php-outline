@@ -130,11 +130,13 @@ class OutlineFormPlugin extends OutlinePlugin {
 
 // --- Core Form Elements:
 
+define('OUTLINE_FORM_RUNTIME', OUTLINE_CLASS_PATH . '/form.system.php');
+
 class OutlineForm_text implements IOutlineFormPlugin {
   
   public static function render(OutlineFormPlugin &$plugin, $args) {
     $plugin->build_tag('input type="text"', $args);
-    $plugin->add_element(__FILE__, __CLASS__, $args);
+    $plugin->add_element(OUTLINE_FORM_RUNTIME, __CLASS__, $args);
   }
   
 }
