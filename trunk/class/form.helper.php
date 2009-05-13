@@ -79,6 +79,13 @@ abstract class OutlineFormElement {
     $this->attr = & $attr;
   }
   
+  public function getValue() {
+    return $this->attr['value'];
+  }
+  
+  // --- Abstract interface to be implemented by each element:
+  
+  abstract public function render($fn = 'system');
   abstract public function setValue($value);
   
 }

@@ -17,6 +17,10 @@ class OutlineFormElement_text extends OutlineFormElement {
     $this->attr['value'] = $value;
   }
   
+  public function render($fn = 'system') {
+    return '<input type="text" value="'.$this->getValue().'">'; # for testing only...
+  }
+  
 }
 
 ?>
