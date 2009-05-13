@@ -12,7 +12,7 @@ Please see "README.txt" for license and other information.
 */
 
 interface IOutlineFormPlugin {
-  public static function render(OutlineFormPlugin &$plugin, $args);
+  public static function build(OutlineFormPlugin &$plugin, $args);
 }
 
 class OutlineFormPlugin extends OutlinePlugin {
@@ -67,7 +67,7 @@ class OutlineFormPlugin extends OutlinePlugin {
     if (!class_exists($class_name)) require_once OUTLINE_CLASS_PATH.'/form.'.$element.'.php';
     
     call_user_func_array(
-      array($class_name, 'render'),
+      array($class_name, 'build'),
       array(&$this, $this->compiler->parse_attributes($args))
     );
     
@@ -117,6 +117,8 @@ class OutlineFormPlugin extends OutlinePlugin {
     
     $this->elements[] = $args['name'] . ' => array(' . implode(', ', $code) . ')';
     
+    $this->compiler->code('echo $outline->form->'.$this->form.'->'.$this->unquote($args['name']).'->render();');
+    
   }
   
 	// --- Plugin registration:
@@ -134,8 +136,8 @@ define('OUTLINE_FORM_RUNTIME', OUTLINE_CLASS_PATH . '/form.system.php');
 
 class OutlineForm_text implements IOutlineFormPlugin {
   
-  public static function render(OutlineFormPlugin &$plugin, $args) {
-    $plugin->build_tag('input type="text"', $args);
+  public static function build(OutlineFormPlugin &$plugin, $args) {
+    #$plugin->build_tag('input type="text"', $args);
     $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_text', $args);
   }
   
