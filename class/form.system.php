@@ -12,15 +12,21 @@ Please see "README.txt" for license and usage information.
 */
 
 class OutlineFormElement_text extends OutlineFormElement {
-  
-  public function setValue($value) {
-    $this->attr['value'] = $value;
-  }
-  
   public function render($fn = 'system') {
-    return '<input type="text" value="'.$this->getValue().'">'; # for testing only...
+    return '<input type="text" '.$this->build_attr() . ' />';
   }
-  
+}
+
+class OutlineFormElement_password extends OutlineFormElement {
+  public function render($fn = 'system') {
+    return '<input type="password" '.$this->build_attr() . ' />';
+  }
+}
+
+class OutlineFormElement_submit extends OutlineFormElement {
+  public function render($fn = 'system') {
+    return '<input type="submit" '.$this->build_attr() . ' />';
+  }
 }
 
 ?>

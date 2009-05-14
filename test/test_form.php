@@ -6,18 +6,11 @@ This example demonstrates basic use of the OutlineForm plugin.
 
 NOTES:
 
-In the compiled template, use the context object (in this case OutlineTpl) to
-obtain the form helper object - initialize the form helper object from the
-compiled template at startup.
-
-Replace the form element tags in the compiled template with calls to the render
-methods of the form elements in the helper's elements collection.
-
 Render the form elements using Outline user blocks - this will be a lot more
 efficient than using individual templates for each element. Build all the
 system standard renderers into a single template file.
 
-Allow switching to a different the template and render function by setting an
+Allow switching to a different template and render function by setting an
 attribute on a form element.
 
 */
