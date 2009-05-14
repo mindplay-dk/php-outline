@@ -19,6 +19,11 @@ class OutlineFormElement_text extends OutlineFormElement {
 
 class OutlineFormElement_password extends OutlineFormElement {
   public function render($subelement = null) {
+    if ($this->attr['#repeat']) {
+      # we should not be modifying the $attr array at this point - we need
+      # to work on a copy of the attributes, when using build_attr ...
+      $this->attr['name'] = $this->attr['#name'] . ( $subelement == 'repeat' ? '[repeat]' : '[value]' );
+    }
     return '<input type="password" '.$this->build_attr() . ' />';
   }
 }
