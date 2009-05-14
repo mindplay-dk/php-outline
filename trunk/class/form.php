@@ -12,7 +12,7 @@ Please see "README.txt" for license and other information.
 */
 
 interface IOutlineFormPlugin {
-  public static function build(OutlineFormPlugin &$plugin, $args);
+  public static function build(OutlineFormPlugin &$plugin, $args, $subelement);
 }
 
 class OutlineFormPlugin extends OutlinePlugin {
@@ -48,11 +48,16 @@ class OutlineFormPlugin extends OutlinePlugin {
     
     $this->compiler->output('</form>');
     
+    $elements = array();
+    foreach ($this->elements as $name => $code) {
+      $elements[] = "'$name' => array(" . implode(', ', $code) . ')';
+    }
+    
     OutlineUtil::write_file(
       $this->compiler->engine->get_metadata_path($this->form, 'form'),
       OUTLINE_PHPTAG_OPEN."\n\n".
       "return array(\n".
-      "  ".implode(",\n  ", $this->elements)."\n".
+      "  ".implode(",\n  ", $elements)."\n".
       ");\n\n".
       OUTLINE_PHPTAG_CLOSE
     );
@@ -65,13 +70,14 @@ class OutlineFormPlugin extends OutlinePlugin {
     
     $this->compiler->checkBlock('form', 'form:');
     @list($element, $args) = explode(" ", $_args, 2);
+    @list($element, $subelement) = explode(":", $element, 2);
     
     $class_name = 'OutlineForm_'.$element;
     if (!class_exists($class_name)) require_once OUTLINE_CLASS_PATH.'/form.'.$element.'.php';
     
     call_user_func_array(
       array($class_name, 'build'),
-      array(&$this, $this->compiler->parse_attributes($args))
+      array(&$this, $this->compiler->parse_attributes($args), $subelement)
     );
     
   }
@@ -108,23 +114,31 @@ class OutlineFormPlugin extends OutlinePlugin {
   
   // --- Element registration:
   
-  public function add_element($file, $class_name, $args) {
+  public function add_element($file, $class_name, $args, $subelement = null) {
     
     if (!isset($args['name']))
       throw new OutlineException("OutlineFormPlugin::add_element() : cannot add element without a name", $this->compiler);
     
-    $code = array(
-      "'#file' => '{$file}'",
-      "'#class' => '{$class_name}'"
-    );
+    $name = $this->unquote($args['name']);
     
-    foreach ($args as $name => $expr) {
-      $code[] = "'$name' => $expr";
+    if ($subelement) {
+      
+      $this->elements[$name][] = "'#$subelement' => true";
+      
+    } else {
+      
+      $this->elements[$name] = array(
+        "'#file' => '{$file}'",
+        "'#class' => '{$class_name}'"
+      );
+      
+      foreach ($args as $id => $expr) {
+        $this->elements[$name][] = "'$id' => $expr";
+      }
+      
     }
     
-    $this->elements[] = $args['name'] . ' => array(' . implode(', ', $code) . ')';
-    
-    $this->compiler->code('echo $outline->form->'.$this->form.'->'.$this->unquote($args['name']).'->render();');
+    $this->compiler->code('echo $outline->form->'.$this->form.'->'.$this->unquote($args['name']).'->render('.($subelement ? var_export($subelement, true) : '').');');
     
   }
   
@@ -142,21 +156,21 @@ class OutlineFormPlugin extends OutlinePlugin {
 define('OUTLINE_FORM_RUNTIME', OUTLINE_CLASS_PATH . '/form.system.php');
 
 class OutlineForm_text implements IOutlineFormPlugin {
-  public static function build(OutlineFormPlugin &$plugin, $args) {
-    $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_text', $args);
+  public static function build(OutlineFormPlugin &$plugin, $args, $subelement) {
+    $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_text', $args, $subelement);
   }
 }
 
 class OutlineForm_password implements IOutlineFormPlugin {
-  public static function build(OutlineFormPlugin &$plugin, $args) {
-    $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_password', $args);
+  public static function build(OutlineFormPlugin &$plugin, $args, $subelement) {
+    $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_password', $args, $subelement);
   }
 }
 
 class OutlineForm_submit implements IOutlineFormPlugin {
-  public static function build(OutlineFormPlugin &$plugin, $args) {
+  public static function build(OutlineFormPlugin &$plugin, $args, $subelement) {
     if (!isset($args['name'])) $args['name'] = '"'.$plugin->getForm().'_submit"';
-    $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_submit', $args);
+    $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_submit', $args, $subelement);
   }
 }
 
