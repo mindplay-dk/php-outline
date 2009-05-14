@@ -81,6 +81,7 @@ abstract class OutlineFormElement {
   
   public function __construct(&$attr) {
     $this->attr = & $attr;
+    $this->attr['#name'] = $attr['name'];
   }
   
   public function getValue() {
