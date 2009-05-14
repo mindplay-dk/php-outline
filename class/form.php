@@ -127,6 +127,9 @@ class OutlineFormPlugin extends OutlinePlugin {
       
     } else {
       
+      if (isset($this->elements[$name]))
+        throw new OutlineException("OutlineFormPlugin::add_element() : duplicate element name '$name'", $this->compiler);
+      
       $this->elements[$name] = array(
         "'#file' => '{$file}'",
         "'#class' => '{$class_name}'"
