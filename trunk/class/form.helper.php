@@ -83,10 +83,32 @@ abstract class OutlineFormElement {
     return $this->attr['value'];
   }
   
+  public function setValue($value) {
+    $this->attr['value'] = $value;
+  }
+  
+  // --- Magic accessor:
+  
+  public function __get($name) {
+    if ($name == 'value') return $this->getValue();
+    return @$this->attr[$name];
+  }
+  
+  // --- Common helper functions:
+  
+  public function build_attr($attr) {
+    $str = '';
+    foreach ($this->attr as $name => $value) {
+      if (strlen($value) && substr($name,0,1) != '#') {
+        $str .= ' ' . $name . '="' . htmlspecialchars($this->$name) . '"';
+      }
+    }
+    return substr($str,1);
+  }
+  
   // --- Abstract interface to be implemented by each element:
   
   abstract public function render($fn = 'system');
-  abstract public function setValue($value);
   
 }
 

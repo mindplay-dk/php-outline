@@ -35,6 +35,9 @@ class OutlineFormPlugin extends OutlinePlugin {
     if (!$this->is_simple($args['name']))
       throw new OutlineException("OutlineFormPlugin::form_block() : invalid name attribute in form tag", $this->compiler);
     
+    if (!isset($args['autocomplete']))
+      $args['autocomplete'] = '"off"';
+    
     $this->form = $this->unquote($args['name']);
     
     $this->build_tag('form', $args);
@@ -99,12 +102,16 @@ class OutlineFormPlugin extends OutlinePlugin {
     $this->compiler->output('>');
   }
   
+  public function getForm() {
+    return $this->form;
+  }
+  
   // --- Element registration:
   
   public function add_element($file, $class_name, $args) {
     
     if (!isset($args['name']))
-      throw new OutlineException("OutlineFormPlugin::register_element() : cannot register element without a name", $this->compiler);
+      throw new OutlineException("OutlineFormPlugin::add_element() : cannot add element without a name", $this->compiler);
     
     $code = array(
       "'#file' => '{$file}'",
@@ -135,12 +142,22 @@ class OutlineFormPlugin extends OutlinePlugin {
 define('OUTLINE_FORM_RUNTIME', OUTLINE_CLASS_PATH . '/form.system.php');
 
 class OutlineForm_text implements IOutlineFormPlugin {
-  
   public static function build(OutlineFormPlugin &$plugin, $args) {
-    #$plugin->build_tag('input type="text"', $args);
     $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_text', $args);
   }
-  
+}
+
+class OutlineForm_password implements IOutlineFormPlugin {
+  public static function build(OutlineFormPlugin &$plugin, $args) {
+    $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_password', $args);
+  }
+}
+
+class OutlineForm_submit implements IOutlineFormPlugin {
+  public static function build(OutlineFormPlugin &$plugin, $args) {
+    if (!isset($args['name'])) $args['name'] = '"'.$plugin->getForm().'_submit"';
+    $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_submit', $args);
+  }
 }
 
 ?>
