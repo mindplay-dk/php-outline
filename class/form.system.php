@@ -12,19 +12,19 @@ Please see "README.txt" for license and usage information.
 */
 
 class OutlineFormElement_text extends OutlineFormElement {
-  public function render($fn = 'system') {
+  public function render($subelement = null) {
     return '<input type="text" '.$this->build_attr() . ' />';
   }
 }
 
 class OutlineFormElement_password extends OutlineFormElement {
-  public function render($fn = 'system') {
+  public function render($subelement = null) {
     return '<input type="password" '.$this->build_attr() . ' />';
   }
 }
 
 class OutlineFormElement_submit extends OutlineFormElement {
-  public function render($fn = 'system') {
+  public function render($subelement = null) {
     return '<input type="submit" '.$this->build_attr() . ' />';
   }
 }
