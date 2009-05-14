@@ -71,6 +71,10 @@ abstract class OutlineFormElement {
   
   /*
   This is the abstract base class for all form elements.
+  
+  The $attr array contains all of the attributes of this form element -
+  an attribute can be made "internal" by prefixing it with a hash (#),
+  meaning it will not be exposed as an HTML attribute.
   */
   
   protected $attr;
@@ -91,7 +95,7 @@ abstract class OutlineFormElement {
   
   public function __get($name) {
     if ($name == 'value') return $this->getValue();
-    return @$this->attr[$name];
+    return array_key_exists($name, $this->attr) ? $this->attr[$name] : @$this->attr['#'.$name];
   }
   
   // --- Common helper functions:
@@ -100,7 +104,7 @@ abstract class OutlineFormElement {
     $str = '';
     foreach ($this->attr as $name => $value) {
       if (strlen($value) && substr($name,0,1) != '#') {
-        $str .= ' ' . $name . '="' . htmlspecialchars($this->$name) . '"';
+        $str .= ' ' . $name . '="' . htmlspecialchars($value) . '"';
       }
     }
     return substr($str,1);
