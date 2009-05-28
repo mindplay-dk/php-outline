@@ -186,6 +186,11 @@ This content was captured to the $test variable.
 	these comments will go unseen
 *}
 
+{if $test_object}
+{ignore}<h1>Testing object members exposed by the OutlineTpl::expose() method</h1>{/ignore}
+<pre>{#var_dump($test_object)}</pre>
+{/if}
+
 <p>Contextual object's getTest() method returned: {$outline->getTest()}</p>
 
 <h2>Page generated at {$testdate}</h2>
