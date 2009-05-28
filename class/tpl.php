@@ -81,7 +81,7 @@ class OutlineTpl implements IOutlineEngine {
                 existing template variables.
     */
     
-    $this->vars = $overwrite ? (((array) $array) + $this->vars) : ($this->vars + ((array) $array));
+    $this->vars = $overwrite ? ($array + $this->vars) : ($this->vars + $array);
     
   }
   
