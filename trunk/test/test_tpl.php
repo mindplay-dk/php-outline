@@ -45,6 +45,8 @@ $tpl = new OutlineTest('stuff:test', array(
 $tpl->assign("testvar", 'This variable has local scope');
 $tpl->assign("testdate", date("r"));
 
+$tpl->apply(array("testvar" => 'This will be ignored'), false);
+
 $colors = array(
 	"RED" => "ff0000",
 	"GREEN" => "00a000",
@@ -52,6 +54,16 @@ $colors = array(
 );	
 
 $tpl->assign_by_ref("testarray", $colors);
+
+class Test {
+  public $a = 1;
+  protected $b = 2;
+  private $c = 3;
+}
+
+$test = new Test();
+
+$tpl->expose($test, 'test_object', true);
 
 $a = substr("abc", rand(0,2), 1);
 $b = substr("123", rand(0,2), 1);

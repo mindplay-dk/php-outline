@@ -71,6 +71,47 @@ class OutlineTpl implements IOutlineEngine {
 		$this->vars[$var] = &$value;
     
 	}
+  
+  public function apply($array, $overwrite = true) {
+    
+    /*
+    Exposes the values in the given array as individual template variables.
+    
+    $overwrite: if true, overwrites existing template variables - if false, skips
+                existing template variables.
+    */
+    
+    $this->vars = $overwrite ? (((array) $array) + $this->vars) : ($this->vars + ((array) $array));
+    
+  }
+  
+  public function expose($object, $name = null, $full = false, $overwrite = true) {
+    
+    /*
+    Exposes the members of an object as one or more template variables.
+    
+    $name: if given, exposes the object members as a single template variable
+           with the given name. If null, exposes members as individual variables.
+    $full: if true, exposes all protected and private members of the object.
+    $overwrite: see apply()
+    */
+    
+    $array = (array) $object;
+    
+    foreach ($array as $index => $value) {
+      $new_index = preg_replace('/\x00([^\x00]*)\x00/x', '', $index);
+      if ($new_index != $index) {
+        unset($array[$index]);
+        if ($full) $array[$new_index] = $value;
+      }
+    }
+    
+    $this->apply(
+      $name == null ? $array : array($name => $array),
+      $overwrite
+    );
+    
+  }
 	
   public function cache() {
     
