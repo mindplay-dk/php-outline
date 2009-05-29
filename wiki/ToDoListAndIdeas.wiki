@@ -1,6 +1,12 @@
 #labels todo
 = To-do =
 
+Ideas for next release:
+
+ * Lazy array resolution using the @ operator, anywhere.
+
+ * Remove closing PHP tags.
+
 Ideas for the future:
 
  * add `{debug}` command - helper function for template developers; displays a list of all assigned template variables.
