@@ -85,34 +85,6 @@ class OutlineTpl implements IOutlineEngine {
     
   }
   
-  public function expose($object, $name = null, $full = false, $overwrite = true) {
-    
-    /*
-    Exposes the members of an object as one or more template variables.
-    
-    $name: if given, exposes the object members as a single template variable
-           with the given name. If null, exposes members as individual variables.
-    $full: if true, exposes all protected and private members of the object.
-    $overwrite: see apply()
-    */
-    
-    $array = (array) $object;
-    
-    foreach ($array as $index => $value) {
-      $new_index = preg_replace('/\x00([^\x00]*)\x00/x', '', $index);
-      if ($new_index != $index) {
-        unset($array[$index]);
-        if ($full) $array[$new_index] = $value;
-      }
-    }
-    
-    $this->apply(
-      $name == null ? $array : array($name => $array),
-      $overwrite
-    );
-    
-  }
-	
   public function cache() {
     
     /*
@@ -258,5 +230,3 @@ class OutlineTpl implements IOutlineEngine {
   }
 	
 }
-
-?>
