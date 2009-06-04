@@ -479,5 +479,3 @@ class OutlineIterator {
 	}
 	
 }
-
-?>

@@ -250,5 +250,3 @@ class OutlineSystem extends OutlinePlugin {
 	}
 	
 }
-
-?>

@@ -176,5 +176,3 @@ class OutlineForm_submit implements IOutlineFormPlugin {
     $plugin->add_element(OUTLINE_FORM_RUNTIME, 'OutlineFormElement_submit', $args, $subelement);
   }
 }
-
-?>

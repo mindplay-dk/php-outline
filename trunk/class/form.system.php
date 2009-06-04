@@ -33,5 +33,3 @@ class OutlineFormElement_submit extends OutlineFormElement {
     return '<input type="submit" '.$this->build_attr() . ' />';
   }
 }
-
-?>

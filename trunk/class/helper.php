@@ -42,5 +42,3 @@ abstract class OutlineHelper {
   abstract protected function _get($name, $data);
   
 }
-
-?>
