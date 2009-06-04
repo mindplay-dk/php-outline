@@ -116,5 +116,3 @@ abstract class OutlineFormElement {
   abstract public function render($subelement = null);
   
 }
-
-?>

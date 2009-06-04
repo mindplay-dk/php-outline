@@ -455,5 +455,3 @@ abstract class OutlinePlugin {
 	}
 	
 }
-
-?>

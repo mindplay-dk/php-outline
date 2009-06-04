@@ -33,6 +33,3 @@ function outline__wed($str, $max=18) {
 	}
 	return $str;
 }
-
-
-?>
