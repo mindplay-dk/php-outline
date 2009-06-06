@@ -119,6 +119,20 @@ class OutlineSystem extends OutlinePlugin {
 		$this->compiler->code($var . ' = ob_get_clean();');
 	}	
 	
+  // * modify block:
+  
+	protected $modify_stack = array();
+  
+  public function modify_block($args) {
+		$this->modify_stack[] = $args;
+		$this->compiler->code('ob_start();');
+  }
+  
+  public function end_modify_block($args) {
+		$args = array_pop($this->modify_stack);
+    $this->compiler->code('echo ' . $this->compiler->apply_modifiers('ob_get_clean()'.OUTLINE_MODIFIER_PIPE.$args) . ';');
+  }
+  
 	// * while block:
 	
 	public function while_block($args) {
@@ -240,6 +254,7 @@ class OutlineSystem extends OutlinePlugin {
 		$compiler->registerBlock('block', 'user_block');
 		$compiler->registerTag('!', 'user_tag');
 		$compiler->registerBlock('capture', 'capture_block');
+		$compiler->registerBlock('modify', 'modify_block');
 		$compiler->registerBlock('while', 'while_block');
 		$compiler->registerBlock('for', 'for_block');
 		$compiler->registerBlock('foreach', 'foreach_block');
