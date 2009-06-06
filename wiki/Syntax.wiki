@@ -66,7 +66,7 @@ Modifiers can also be applied to blocks of content, using the {modify} block tag
 
 	`{modify html|strtoupper}<html>example</html>{/modify}`
 
-The above example encodes the `"<html>example</html>" as HTML (e.g. replacing the angled brackets with named entities), and puts it in all caps.
+The above example encodes the string `"<html>example</html>"` as HTML (e.g. replacing the angled brackets with named entities), and puts it in all caps.
 
 The "." operator is commonly used in template engines for "lazy" array-resolution - for example `{$array.item.subitem}` instead of `{$array['item']['subitem']} - in Outline, this operator retains it's original meaning, which is simply to concatenate strings. However, Outline also offers a way to do "lazy" array resolution:
 
@@ -129,6 +129,8 @@ A small library of standard modifiers are included - here are a few examples:
 	prevents orphans by replacing the last space with "&nbsp;". in rendered HTML, this prevents single hanging words, which is considered bad typography. the optional number, is the maximum length of the last word - if longer than that, no change is made.
 
 For a complete list of modifiers, see the example template included with Outline.
+
+Modifiers can also be applied to blocks of content - see the description of the `{modify}` block above.
 
 == Custom Functions ==
 
