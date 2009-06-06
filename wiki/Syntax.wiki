@@ -60,9 +60,15 @@ Note that the {#} tag can actually be used to output the return-value of any php
 
 	`{#time()}`
 
-Note that any available (internal or user) php-function can be used as a modifier. It is also possible to override php-functions with template-specific modifier functions.
+Note that any available (internal or user) php-function can be used as a modifier - it just needs to accept its input value as its first argument. It is also possible to override php-functions with template-specific modifier functions - a few standard PHP functions are overridden by default, because the input value was not the first argument.
 
-The "." operator is commonly used in template engines for "lazy" array-resolution - for example `{$array.item.subitem}` instead of `{$array['item']['subitem']} - in Outline, this operator retains it's original meaning, which is simply to concatenate string. However, Outline also offers a way to do "lazy" array resolution:
+Modifiers can also be applied to blocks of content, using the {modify} block tags:
+
+	`{modify html|strtoupper}<html>example</html>{/modify}`
+
+The above example encodes the `"<html>example</html>" as HTML (e.g. replacing the angled brackets with named entities), and puts it in all caps.
+
+The "." operator is commonly used in template engines for "lazy" array-resolution - for example `{$array.item.subitem}` instead of `{$array['item']['subitem']} - in Outline, this operator retains it's original meaning, which is simply to concatenate strings. However, Outline also offers a way to do "lazy" array resolution:
 
 	`{@array.item.subitem}`
 
