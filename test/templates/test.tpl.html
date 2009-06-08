@@ -84,6 +84,13 @@ chop: {set $test = "this is an example - the chop function shortens elaborate te
 
 </textarea>
 
+{ignore}<h1>Testing the {modify} command</h1>{/ignore}
+<pre>
+{modify html|upper}
+<div>You should see a div tag in all caps</div>
+{/modify}
+</pre>
+
 {ignore}<h1>Testing the {capture} command</h1>{/ignore}
 
 {capture $test}
@@ -186,17 +193,12 @@ This content was captured to the $test variable.
 	these comments will go unseen
 *}
 
-{if $test_object}
-{ignore}<h1>Testing object members exposed by the OutlineTpl::expose() method</h1>{/ignore}
-<pre>{#var_dump($test_object)}</pre>
-{/if}
-
 <p>Contextual object's getTest() method returned: {$outline->getTest()}</p>
 
 <h2>Page generated at {$testdate}</h2>
 <h3>Displaying the compiled template using the {ignore}{display}{/ignore} command:</h3>
 <pre>
-{display compiled/test.php}
+{display compiled/__default__/test.tpl.php}
 </pre>
 
 </body>

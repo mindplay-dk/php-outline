@@ -55,16 +55,6 @@ $colors = array(
 
 $tpl->assign_by_ref("testarray", $colors);
 
-class Test {
-  public $a = 1;
-  protected $b = 2;
-  private $c = 3;
-}
-
-$test = new Test();
-
-$tpl->expose($test, 'test_object', true);
-
 $a = substr("abc", rand(0,2), 1);
 $b = substr("123", rand(0,2), 1);
 $tpl->cache($a, $b); // comment out to disable caching
