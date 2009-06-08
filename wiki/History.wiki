@@ -8,3 +8,4 @@ v1.0.2 (june 7, 2009)
   * Remove closing PHP tags (prevents accidental output from trailing spaces in scripts)
   * Add the apply() method (to apply arrays as template variables) to OutlineTpl
   * Add the {modify} block command (applies modifiers to blocks of content)
+  * Fix a bug in the {cycle} command
