@@ -1,11 +1,11 @@
 #labels todo
 = To-do =
 
-Ideas for next release:
+Ideas for a coming release:
 
  * Lazy array resolution using the @ operator, anywhere.
 
- * Remove closing PHP tags.
+ * Support for a `{with}` block - in conjunction with the @ operator, this would enable you to change the scope of the @ operator, e.g.: `{with $product}{@name} price: {@price}{/with}` would be equivalent to `{@product.name} price: {@product.price}`
 
 Ideas for the future:
 
@@ -13,13 +13,11 @@ Ideas for the future:
 
  * Add `{default}` command, e.g.: `{default $name='value'}` assigns 'value' to $name, if $name does not have a value.
 
- * Introduce namespacing for blocks and commands, e.g.: `{use form}{input name="test"}{/use}` would be equivalent to `{form:input name="test"}`, and blocks would have the opportunity to change the default namespace. Namespacing would reduce the chance of collisions between user plugins.
-
- * Add template selection, e.g.: `{include "more_specific","less_specific"}` would include the first template if available, otherwise fall back to the second template, etc. Alternatively, `{select $tpl from "more_specific","less_specific"}` would select the templatename and place it in `$tpl`. Alternatively, user block selection, based on the same principle. Alternatively, support for section inheritance and overrides. (the latter could break line-number relationships between template source and compiled template)
-
- * Apply any modifier to a block, e.g.: `{modify replace:"apples":"cake"}I love apples!{/modify}`
+ * Add template selection, e.g.: `{include "more_specific","less_specific"}` would include the first template if it exists, otherwise fall back to the second template, etc. Alternatively, `{select $tpl from "more_specific","less_specific"}` would select the templatename and place it in `$tpl`. Alternatively, user block selection, based on the same principle. Alternatively, support for section inheritance and overrides. (the latter could break line-number relationships between template source and compiled template)
 
 Ideas I'm having second thoughts about:
+
+ * Introduce namespacing for blocks and commands, e.g.: `{use form}{input name="test"}{/use}` would be equivalent to `{form:input name="test"}`, and blocks would have the opportunity to change the default namespace. Namespacing would reduce the chance of collisions between user plugins.
 
  * Add {section} block, e.g.: `{section head}...{/section}` captures the content within the section separately from the output of the template - that content can then be retrieved with `$outline->getSection('head')`. This command would enable a more structured way to capture partial output to be inserted (by means of code) other places than a page's main output.
 
