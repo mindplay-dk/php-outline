@@ -9,3 +9,6 @@ v1.0.2 (june 7, 2009)
   * Add the apply() method (to apply arrays as template variables) to OutlineTpl
   * Add the {modify} block command (applies modifiers to blocks of content)
   * Fix a bug in the {cycle} command
+
+v1.0.3 (sept 12, 2009)
+  * Fix an E_STRICT
