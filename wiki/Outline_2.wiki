@@ -1,0 +1,42 @@
+#summary Summary of planned changes to Outline 2.0
+#labels Phase-Requirements
+
+= Outline 2.0 =
+
+I am starting to plan for the version 2.0 branch of Outline.
+
+This version will be mostly designed to solve various API issues that cannot be resolved while maintaining backwards compatibility.
+
+Some changes will be made to simplify integration with modern frameworks such as my personal favorite, [http://www.yiiframework.com/ Yii].
+
+In many ways, the new branch will be leaner and simpler than the old branch - the goal is to make it deal *strictly* with templating, nothing else.
+
+Hence, the new branch will be better suited for integration with third-party frameworks, but perhaps less suitable (out of the box) for stand-alone PHP development. At a later time, a view-class for stand-alone PHP development may be created around it.
+
+
+== Details ==
+
+*restructured codebase* : the codebase will be reorganized and filenames will be standardized, e.g. "OutlineTpl.php", not "tpl.php". Plugins and helpers will be placed in subfolders.
+
+*single-instance* : no more `new OutlineTpl()` for every template - it should be possible to create a single instance of the engine, and perform any number of renderings or compiles, without creating lots of instances. This will reduce overhead and make Outline even faster. A view-class for stand-alone PHP development may support instance-based views at a later time.
+
+*improved configuration* : no more static configuration with define() - a static (default) base-configuration will still be possible, but won't be required.
+
+*helpers* : more clearly defined boundaries between helpers (compile-time) and helper-runtimes (rendering-time).
+
+*no caching engine* : the built-in caching engine will be dropped - caching decisions are not decisions that your template engine should make for you; modern frameworks provide much better caching engines, and give you many more choices of caching media and more flexible caching strategies. A view-class for stand-alone PHP development may support this feature at a later time.
+
+*no filename strategies* : the engine will no longer implement strategies for mapping of "template names" to filenames, resolving "roots", or adding file extensions, etc. The API will require a complete path to a template-file as arguments. A view-class for stand-alone PHP development may support a simplified API and with built-in filename strategy at a later time.
+
+*no form-helper* : the form-helper, which is currently in early stage of development (in SVN), will be dropped - I did not have a clear vision when I started building this, and have since realized that this is beyond the scope of templating. Modern frameworks provide excellent form-builders, which can be integrated with the template engine by means of plugins and helpers.
+
+*support for content-blocks* : to support features like `{content_for}`, commonly used by many frameworks, the engine will need to support some means of outputting not only the rendered template content, but also any named, captured blocks of content generated during rendering.
+
+*include behavior* : `{include}` will run templates in an isolated scope - that is, included templates will not be able to see their parent template's variables, unless these are passed-in explicitly. This is a design-decision which may make some aspects of templating slightly more terse, but will reduce the risk of template-variable overlap, giving more predictable results.
+
+*compiler behavior* : for various reasons (`{include}` behavior in particular), compiled templates will consist of a function-declaration, rather than a flat PHP script. This guarantees that a template is loaded only once, even if rendered/included many times, and also opens up other possibilities for the future, such as static template variables (could be useful for things like alternation, e.g. with `{cycle}`), early template loading, and other performance-oriented strategies.
+
+
+=== Request For Comments ===
+
+Please feel free to contribute your thoughts and comments on the discussion board.
