@@ -13,10 +13,12 @@ In many ways, the new branch will be leaner and simpler than the old branch - th
 
 Hence, the new branch will be better suited for integration with third-party frameworks, but perhaps less suitable (out of the box) for stand-alone PHP development. At a later time, a view-class for stand-alone PHP development may be created around it.
 
+[http://groups.google.com/group/php-outline/browse_thread/thread/4e70f750985c9eb5 Please feel free to contribute your thoughts and comments on the discussion board.]
+
 
 == Details ==
 
-*restructured codebase* : the codebase will be reorganized and filenames will be standardized, e.g. "OutlineTpl.php", not "tpl.php". Plugins and helpers will be placed in subfolders.
+*restructured codebase* : the codebase will be reorganized and filenames will be standardized, e.g. `"OutlineTpl.php"`, not `"tpl.php"`. Plugins and helpers will be placed in subfolders.
 
 *single-instance* : no more `new OutlineTpl()` for every template - it should be possible to create a single instance of the engine, and perform any number of renderings or compiles, without creating lots of instances. This will reduce overhead and make Outline even faster. A view-class for stand-alone PHP development may support instance-based views at a later time.
 
@@ -39,4 +41,4 @@ Hence, the new branch will be better suited for integration with third-party fra
 
 === Request For Comments ===
 
-Please feel free to contribute your thoughts and comments on the discussion board.
+[http://groups.google.com/group/php-outline/browse_thread/thread/4e70f750985c9eb5 Please feel free to contribute your thoughts and comments on the discussion board.]
