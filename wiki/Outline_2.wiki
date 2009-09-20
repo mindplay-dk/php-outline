@@ -18,7 +18,7 @@ Hence, the new branch will be better suited for integration with third-party fra
 
 == Details ==
 
-*restructured codebase* : the codebase will be reorganized and filenames will be standardized, e.g. `"OutlineTpl.php"`, not `"tpl.php"`. Plugins and helpers will be placed in subfolders.
+*restructured codebase* : the codebase will be reorganized and filenames will be standardized, e.g. `"OutlineTpl.php"`, not `"tpl.php"`. Plugins and helpers will be placed in subfolders. A clear distinction between plugins and plugin-runtimes will be made.
 
 *single-instance* : no more `new OutlineTpl()` for every template - it should be possible to create a single instance of the engine, and perform any number of renderings or compiles, without creating lots of instances. This will reduce overhead and make Outline even faster. A view-class for stand-alone PHP development may support instance-based views at a later time.
 
@@ -26,7 +26,7 @@ Hence, the new branch will be better suited for integration with third-party fra
 
 *helpers* : more clearly defined boundaries between helpers (compile-time) and helper-runtimes (rendering-time).
 
-*no caching engine* : the built-in caching engine will be dropped - caching decisions are not decisions that your template engine should make for you; modern frameworks provide much better caching engines, and give you many more choices of caching media and more flexible caching strategies. A view-class for stand-alone PHP development may support this feature at a later time.
+*no caching engine* : the built-in caching engine will be dropped - caching decisions are not decisions that your template engine should make for you; modern frameworks provide much better caching engines, and give you many more choices of caching media and more flexible caching strategies. Support for uncached inserts will be dropped as well - segment caching, as support by Yii among other frameworks, can be used instead. A view-class for stand-alone PHP development may support these features at a later time.
 
 *no filename strategies* : the engine will no longer implement strategies for mapping of "template names" to filenames, resolving "roots", or adding file extensions, etc. The API will require a complete path to a template-file as arguments. A view-class for stand-alone PHP development may support a simplified API and with built-in filename strategy at a later time.
 
