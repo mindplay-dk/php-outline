@@ -24,15 +24,15 @@ Hence, the new branch will be better suited for integration with third-party fra
 
 *improved configuration* : no more static configuration with define() - a static (default) base-configuration will still be possible, but won't be required.
 
-*helpers* : more clearly defined boundaries between helpers (compile-time) and helper-runtimes (rendering-time).
+*helpers* : more clearly defined boundaries between helpers (compile-time) and helper-runtimes (rendering-time). Helpers will become an optional feature that any plugin can implement directly, rather than a separate feature with a separate API.
 
-*no caching engine* : the built-in caching engine will be dropped - caching decisions are not decisions that your template engine should make for you; modern frameworks provide much better caching engines, and give you many more choices of caching media and more flexible caching strategies. Support for uncached inserts will be dropped as well - segment caching, as support by Yii among other frameworks, can be used instead. A view-class for stand-alone PHP development may support these features at a later time.
+*no caching engine* : the built-in caching engine will be dropped - caching decisions are not decisions that your template engine should make for you; modern frameworks provide much more flexible caching engines, offering many more choices of caching media and strategies. Support for uncached inserts will be dropped as well - segment caching, as support by Yii among other frameworks, can be used instead. A view-class for stand-alone PHP development may support these features at a later time. A plugin with Yii-specific commands should include support for "renderDynamic", the framework-generic equivalent of uncached inserts, probably using the same syntax offered in Outline version 1.
 
 *no filename strategies* : the engine will no longer implement strategies for mapping of "template names" to filenames, resolving "roots", or adding file extensions, etc. The API will require a complete path to a template-file as arguments. A view-class for stand-alone PHP development may support a simplified API and with built-in filename strategy at a later time.
 
 *no form-helper* : the form-helper, which is currently in early stage of development (in SVN), will be dropped - I did not have a clear vision when I started building this, and have since realized that this is beyond the scope of templating. Modern frameworks provide excellent form-builders, which can be integrated with the template engine by means of plugins and helpers.
 
-*support for content-blocks* : to support features like `{content_for}`, commonly used by many frameworks, the engine will need to support some means of outputting not only the rendered template content, but also any named, captured blocks of content generated during rendering.
+*support for content-blocks* : to support features like `{content_for}`, commonly used by many frameworks, the engine will need to support some means of outputting not only the rendered template content, but also any named, captured blocks of content generated during rendering. A Yii-specific plugin should support "clips", the framework-generic equivalent of this feature.
 
 *include behavior* : `{include}` will run templates in an isolated scope - that is, included templates will not be able to see their parent template's variables, unless these are passed-in explicitly. This is a design-decision which may make some aspects of templating slightly more terse, but will reduce the risk of template-variable overlap, giving more predictable results.
 
