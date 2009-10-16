@@ -2,8 +2,8 @@
 
 /*
 
-Outline Modifiers
------------------
+Outline System Plugin Run-time
+------------------------------
 
 Copyright (C) 2007-2009, Rasmus Schultz <http://www.mindplay.dk>
 
@@ -32,4 +32,27 @@ function outline__wed($str, $max=18) {
 		$str = substr($str, 0, $space).'&nbsp;'.substr($str, $space + 1);
 	}
 	return $str;
+}
+
+class OutlineIterator {
+	
+  /*
+  Compiled templates, that use the for-command, use this helper class.
+  */
+  
+	public $index, $start, $end, $step;
+	
+	public function __construct($start, $end, $step) {
+		$this->start = $start;
+		$this->end = $end;
+		$this->step = ($end<$start && $step>0 ? -$step : $step);
+		$this->index = $start - $this->step;
+	}
+	
+	public function next() {
+		$more = ($this->step>0 ? $this->index<$this->end : $this->index>$this->end);
+		$this->index += $this->step;
+		return $more;
+	}
+	
 }

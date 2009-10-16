@@ -1,9 +1,0 @@
-<div style="border:dashed 1px #a0a0a0; padding: 10px">
-	<p>This is the included 'test_include.html' template.</p>
-	<p>We can print any variable assigned by the first template from here: "{$testvar}"</p>
-	{if $outline}
-		<p>Contextual OutlineTest object's getTest() method returned: {$outline->getTest()}</p>
-	{/if}
-	<p>Calling a user block declared in the parent template:</p>
-	{!testblock a="this was called from the included template"}
-</div>

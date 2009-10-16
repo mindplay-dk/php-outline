@@ -54,7 +54,7 @@ class OutlineUtil {
 	
 	private static $files = array();
 	
-	public static function write_file($filename, $content) {
+	public static function write_file($path, $content, $mode) {
 		
     /*
     Atomically writes, or overwrites, the given content to a file.
@@ -63,9 +63,9 @@ class OutlineUtil {
     writing compiled templates, to avoid race conditions.
     */
     
-		$temp = tempnam(OUTLINE_CACHE_PATH, 'temp');
+		$temp = tempnam(dirname($path), 'temp');
 		if (!($f = @fopen($temp, 'wb'))) {
-			$temp = OUTLINE_CACHE_PATH . DIRECTORY_SEPARATOR . uniqid('temp');
+			$temp = dirname($path) . DIRECTORY_SEPARATOR . uniqid('temp');
 			if (!($f = @fopen($temp, 'wb'))) {
 				trigger_error("OutlineUtil::write_file() : error writing temporary file '$temp'", E_USER_WARNING);
 				return false;
@@ -75,12 +75,12 @@ class OutlineUtil {
 		fwrite($f, $content);
 		fclose($f);
 		
-		if (!@rename($temp, $filename)) {
-			@unlink($filename);
-			@rename($temp, $filename);
+		if (!@rename($temp, $path)) {
+			unlink($path);
+			rename($temp, $path);
 		}
 		
-		@chmod($filename, OUTLINE_FILE_MODE);
+		@chmod($path, $mode);
 		
 		return true;
 		

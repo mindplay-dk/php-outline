@@ -2,8 +2,8 @@
 
 /*
 
-OutlineSystem Plugin
---------------------
+Outline System Plugin
+---------------------
 
 Copyright (C) 2007-2009, Rasmus Schultz <http://www.mindplay.dk>
 
@@ -11,7 +11,7 @@ Please see "README.txt" for license and other information.
 
 */
 
-class OutlineSystem extends OutlinePlugin {
+class OutlinePlugin_system extends OutlinePlugin {
 	
 	// * System tags and helper methods:
 	

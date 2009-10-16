@@ -4,7 +4,10 @@
 This example demonstrates Outline at it's simplest - no caching, and no encapsulation.
 */
 
-require_once "../config.dist.php";
+require_once "_header.php";
+
+define("OUTLINE_DEBUG", true); // enables various debugging messages during load/compile
+define("OUTLINE_ALWAYS_COMPILE", true); // forces unconditional recompile of templates on every run
 
 header("Content-type: text/html; charset=iso-8859-1");
 

@@ -24,7 +24,7 @@ define("OUTLINE_USERBLOCK_CONST",     'OUTLINE_USER_');
 define("OUTLINE_USERFUNC_PREFIX",     'outline_function_');
 define("OUTLINE_INSERTFUNC_PREFIX",   'outline_insert_');
 
-require_once OUTLINE_CLASS_PATH . "/util.php";
+require OUTLINE_CLASS_PATH . "/OutlineUtil.php";
 
 class OutlineCompilerException extends Exception {
 	
@@ -73,10 +73,13 @@ class OutlineCompiler {
 	
 	public $engine;
 	public $config;
+  
+  protected $init;
+  protected $compiled;
 	
-	public function __construct(OutlineEngine & $engine) {
+	public function __construct(Outline &$engine) {
 		$this->engine = & $engine;
-		$this->config = & $engine->config;
+		$this->config = & $engine->getConfig();
 		$this->commands = array(
 			array("type" => self::COMMAND_BLOCK, "commands" => & $this->blocks),
 			array("type" => self::COMMAND_TAG,   "commands" => & $this->tags)
@@ -105,7 +108,8 @@ class OutlineCompiler {
 	
 	public function compile($tpl) {
 		
-		if ($this->utf8 = self::is_utf8($tpl)) trigger_error("OutlineCompiler running in UTF-8 mode", E_USER_NOTICE);
+		if ($this->utf8 = self::is_utf8($tpl))
+      $this->engine->trace("OutlineCompiler running in UTF-8 mode");
 		
 		$brackets = & $this->brackets_begin;
 		$command = '';
@@ -114,20 +118,38 @@ class OutlineCompiler {
 		
 		$i = 0;
 		
+    $this->init = array();
 		$this->compiled = '';
 		$this->coding = false;
 		$this->linenum = 1;
 		
-		foreach ($this->config['plugins'] as $class => $path) {
+		foreach ($this->config['plugins'] as $plugin) {
+      
+      $class = 'OutlinePlugin_'.$plugin;
+      $class_path = OUTLINE_PLUGIN_PATH.'/'.$plugin.'.plugin.php';
+      $runtime = $plugin.'.runtime.php';
+      
 			if (!in_array($class, self::$loaded_plugins)) {
+        
 				self::$loaded_plugins[] = $class;
-				if (@constant("OUTLINE_DEBUG")) OutlineDebug("Loading plugin '$class' from $path");
-				require_once $path;
+				
+        if (@constant("OUTLINE_DEBUG"))
+          OutlineDebug("Loading plugin {'$class'} from {$class_path}");
+        
+				require_once $class_path;
+        
+        if (file_exists(OUTLINE_PLUGIN_PATH.'/'.$runtime)) {
+          include_once OUTLINE_PLUGIN_PATH.'/'.$runtime;
+          $this->init("require_once OUTLINE_PLUGIN_PATH.'/{$runtime}';");
+        }
+        
 			}
+      
 			$this->registerPlugin($class);
+      
 		}
 		
-		$this->code("\$outline = Outline::get_context();");
+		$this->init("\$outline = Outline::get_context();");
 		
 		while ($i < strlen($tpl)) {
 			
@@ -211,6 +233,8 @@ class OutlineCompiler {
 			unset($this->plugins[$class]);
 		}
 		
+    $this->compiled = OUTLINE_PHPTAG_OPEN . implode(' ', $this->init) . OUTLINE_PHPTAG_CLOSE . $this->compiled;
+    
 		return $this->compiled;
 		
 	}
@@ -271,6 +295,10 @@ class OutlineCompiler {
 	
 	protected $coding;
 	
+  public function init($php) {
+    $this->init[] = $php;
+  }
+  
 	public function code($php) {
 		$this->compiled .= ( $this->coding ? ' ' : OUTLINE_PHPTAG_OPEN ) . $php;
 		$this->coding = true;

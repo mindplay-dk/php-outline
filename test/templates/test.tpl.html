@@ -6,11 +6,6 @@
 
 <body>
 
-{if $test_cache}
-	<p>Testing hierachical caching: {$cache_msg}</p>
-	<p>Note that caching-level "a" will be cleared manually on every run, to demonstrate cascading cache clearing. The engine itself will clear the entire cache, if the 'test.html' template is changed.</p>
-{/if}
-
 {ignore}
 	<h1>Testing the {require} and {ignore} commands</h1>
 {/ignore}
@@ -23,28 +18,11 @@
 
 <p>Contextual object's getTest() method returned: {$outline->getTest()}</p>
 
-<p>This is a demonstration of uncached inserts - the output below will change every second, even though the output is cached. The execution of the function 'uncached_function', declared in 'test.php', is deferred until the time the cache is retrieved.</p>
-
-<ul>
-	{foreach $testarray as $color => $code}
-		<li>{$color} : {insert:timestamp color=$code}</li>
-	{/foreach}
-</ul>
-
-<p>This demonstrates a custom function call: <em>{testfunc value=time()}</em></p>
-
 <p>Printing a constant defined in 'test_require.php': {#TEST_VALUE}</p>
 
 <p>Applying a modifier to the same constant: {#TEST_VALUE|replace:'i':'iiiii'}</p>
 
 {ignore}<h1>Testing the {block} command</h1>{/ignore}
-
-{block:testBlock a='' b='this is the default value of $b'}
-	<p>This is the output from the testBlock: '{$a}' and '{$b}'</p>
-{/block}
-
-{!testBlock a='this is the first value passed to testBlock'}
-{!TESTBLOCK a='this is the first value passed to testBlock' b='this is the second value passed to testBlock'}
 
 <h1>Testing variables and standard modifiers</h1>
 
