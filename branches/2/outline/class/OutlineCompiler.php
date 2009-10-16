@@ -133,8 +133,7 @@ class OutlineCompiler {
         
 				self::$loaded_plugins[] = $class;
 				
-        if (@constant("OUTLINE_DEBUG"))
-          OutlineDebug("Loading plugin {'$class'} from {$class_path}");
+        $this->engine->trace("Loading plugin {'$class'} from {$class_path}");
         
 				require_once $class_path;
         
@@ -445,7 +444,7 @@ class OutlineCompiler {
 	
 	public function registerPlugin($classname) {
 		
-		if (@constant("OUTLINE_DEBUG")) OutlineDebug("Registering plugin '$classname'");
+		$this->engine->trace("Registering plugin '$classname'");
 		
 		if (in_array($classname, $this->plugin_registry))
 			trigger_error("OutlineCompiler::registerPlugin() : plugin '$classname' already registered", E_USER_ERROR);

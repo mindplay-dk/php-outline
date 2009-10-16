@@ -73,7 +73,7 @@ class Outline {
     return $this->config;
   }
   
-  protected function trace($msg) {
+  public function trace($msg) {
     if (!$this->config['trace_callback']) return;
     call_user_func($this->config['trace_callback'], $msg);
   }
