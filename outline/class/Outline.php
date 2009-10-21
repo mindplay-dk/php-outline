@@ -33,8 +33,8 @@ class Outline {
 	protected $config = array(
     "trace_callback" =>      null,             /* Callback function for engine trace messages (optional) */
 		"quiet" =>               true,             /* Suppresses E_NOTICE and E_WARNING error messages */
-    "file_mode" =>           '0777',
-    "dir_mode" =>            '0777',
+    "file_mode" =>           0777,
+    "dir_mode" =>            0777,
 		"plugins" =>             array('system'),
 		"bracket_open" =>        '{',
 		"bracket_close" =>       '}',
@@ -77,8 +77,6 @@ class Outline {
     if (!$this->config['trace_callback']) return;
     call_user_func($this->config['trace_callback'], $msg);
   }
-  
-  protected $functions = array();
   
 	public function compile($template_path, $compiled_path, $force = false) {
 		
