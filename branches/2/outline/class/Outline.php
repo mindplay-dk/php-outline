@@ -27,7 +27,7 @@ class Outline {
   
   /*
   This is the core engine class, which provides functions to compile
-  and render Outline templates.
+  and load/render Outline templates.
   */
   
 	protected $config = array(
@@ -43,8 +43,6 @@ class Outline {
 		"bracket_ignore" =>      '{ignore}',
 		"bracket_end_ignore" =>  '{/ignore}'
 	);
-  
-  protected static $error_level;
   
   public function __construct($config = null) {
     
@@ -82,7 +80,7 @@ class Outline {
 		
 		/*
     Compiles a template, if the compiled template at the given destination path
-    if older then the template file at the given source path.
+    if older than the template file at the given source path.
     
 		Returns true if the template was built, false if it was already up-to-date.
     */
@@ -115,5 +113,101 @@ class Outline {
 		return false;
 		
 	}
+  
+  public function load($compiled_path) {
+    
+    /*
+    Prepares to load and run a compiled template.
+    
+    This method *must* be used with a require statement - the
+    compiled template will run in whatever context you need
+    it to, but requires the call to load() in order to prepare
+    the runtime environment for the compiled template.
+    
+    Example:
+    
+      $test = new Outline();
+      require $test->load('my_template.tpl.php');
+    */
+    
+    OutlineRuntime::ready($this, $compiled_path);
+    
+    return $compiled_path;
+    
+  }
+  
+}
+
+class OutlineRuntime {
+  
+  /*
+  This class provides a runtime support stack for compiled templates.
+  
+  NOTE: You should never manually invoke any method in this class.
+  */
+  
+  protected static $stack = array();
+  
+  public static function ready(Outline & $outline, $compiled_path) {
+    
+    /*
+    This method is called by Outline::load() to prepare the runtime
+    environment for the compiled template.
+    */
+    
+    self::$stack[] = new OutlineRuntime(
+      & $outline
+      $compiled_path,
+    );
+    
+  }
+  
+  public static function start($compiled_path) {
+    
+    /*
+    This method is called at the beginning of a compiled template.
+    */
+    
+    if (end(self::$stack)->compiled_path != $compiled_path) {
+      throw new OutlineException('OutlineRuntime::start() : runtime stack entry mismatch');
+    }
+    
+    return end(self::$stack);
+    
+  }
+  
+  public static function finish($compiled_path) {
+    
+    /*
+    This method is called at the end of a compiled template.
+    */
+    
+    $runtime = array_pop(self::$stack);
+    
+    if ($runtime->compiled_path != $compiled_path) {
+      throw new OutlineException('OutlineRuntime::finish() : runtime stack entry mismatch');
+    }
+    
+    $runtime->__destruct();
+    unset($runtime);
+    
+  }
+  
+  // --- Runtime API:
+  
+  public $outline;
+  public $compiled_path;
+  
+  public function __construct(Outline & $outline, $compiled_path) {
+    $this->compiled_path = $compiled_path;
+    $this->outline = & $outline;
+  }
+  
+  public function __destruct() {
+    unset($this->outline);
+    unset($this->compiled_path);
+  }
+  
+  // TODO: add support for plugin runtimes
   
 }
