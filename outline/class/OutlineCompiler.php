@@ -148,7 +148,7 @@ class OutlineCompiler {
       
 		}
 		
-		$this->init("\$outline = Outline::get_context();");
+		$this->init("\$outline = OutlineRuntime::start(__FILE__);");
 		
 		while ($i < strlen($tpl)) {
 			
@@ -223,7 +223,7 @@ class OutlineCompiler {
 		if (count($this->block_stack))
 			throw new OutlineCompilerException("OutlineCompiler::compile() : unterminated block: " . end($this->block_stack) . " at end of template", $this);
 		
-		$this->code('Outline::finish();');
+		$this->code('OutlineRuntime::finish(__FILE__);');
 		
 		if ($this->coding) $this->compiled .= OUTLINE_PHPTAG_CLOSE;
 		
