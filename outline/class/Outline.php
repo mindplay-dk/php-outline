@@ -210,6 +210,8 @@ class OutlineRuntime {
     unset($this->compiled_path);
   }
   
-  // TODO: add support for plugin runtimes
+  public function init_plugin($plugin) {
+    require_once OUTLINE_PLUGIN_PATH.'/'.$plugin.'.runtime.php';
+  }
   
 }
