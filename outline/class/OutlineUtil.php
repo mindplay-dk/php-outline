@@ -30,30 +30,6 @@ class OutlineUtil {
     
 	}
 	
-	public static function delete($path, $suffix) {
-		
-    /*
-    Recursively deletes files with the given filename suffix,
-    from the given path.
-    */
-    
-		$wiped = true;
-		
-		foreach (glob($path . '/*' . $suffix) as $file) {
-			if (!unlink($file)) trigger_error("OutlineUtil::delete() : unable to remove file '$file'", E_USER_WARNING);
-		}
-		
-		foreach (glob($path . '/*', GLOB_ONLYDIR) as $dir) {
-			$wiped = $wiped && self::delete($dir, $suffix);
-			if (!rmdir($dir)) trigger_error("OutlineUtil::delete() : unable to remove dir '$dir' - not empty?", E_USER_WARNING);
-		}
-		
-		return $wiped;
-		
-	}
-	
-	private static $files = array();
-	
 	public static function write_file($path, $content, $mode) {
 		
     /*
@@ -86,4 +62,18 @@ class OutlineUtil {
 		
 	}
 	
+  public static function normalize_path($path) {
+    
+    /*
+    Normalizes a path to match the native operating system.
+    */
+    
+    return str_replace(
+      DIRECTORY_SEPARATOR == '/' ? '\\' : '/',
+      DIRECTORY_SEPARATOR == '/' ? '/' : '\\',
+      $path
+    );
+    
+  }
+  
 }

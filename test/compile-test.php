@@ -12,8 +12,12 @@ function OutlineDebug($msg) {
 
 $engine = new Outline(array('trace_callback' => 'OutlineDebug'));
 
+$compiled_path = dirname(__FILE__).'/compiled/test.tpl.php';
+
 $engine->compile(
   dirname(__FILE__).'/templates/test.tpl.html',
-  dirname(__FILE__).'/compiled/test.tpl.php',
+  $compiled_path,
   true // force recompile
 );
+
+require $engine->load($compiled_path);
