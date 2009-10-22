@@ -26,33 +26,33 @@ function outline__br($var, $replace = "<br />") { return str_replace("\n", $repl
 function outline__chop($var, $max = 100, $dots = '...', $chop = false) { return strlen($var)>$max ? ( $chop ? substr($var,0,$max).$dots : preg_replace('/\s+?(\S+)?$/','',substr($var, 0, $max)).$dots ) : $var; }
 
 function outline__wed($str, $max=18) {
-	$str = rtrim($str);
-	$space = strrpos($str, ' ');
-	if ($space !== false && strlen($str)-$space <= $max) {
-		$str = substr($str, 0, $space).'&nbsp;'.substr($str, $space + 1);
-	}
-	return $str;
+  $str = rtrim($str);
+  $space = strrpos($str, ' ');
+  if ($space !== false && strlen($str)-$space <= $max) {
+    $str = substr($str, 0, $space).'&nbsp;'.substr($str, $space + 1);
+  }
+  return $str;
 }
 
 class OutlineIterator {
-	
+  
   /*
   Compiled templates, that use the for-command, use this helper class.
   */
   
-	public $index, $start, $end, $step;
-	
-	public function __construct($start, $end, $step) {
-		$this->start = $start;
-		$this->end = $end;
-		$this->step = ($end<$start && $step>0 ? -$step : $step);
-		$this->index = $start - $this->step;
-	}
-	
-	public function next() {
-		$more = ($this->step>0 ? $this->index<$this->end : $this->index>$this->end);
-		$this->index += $this->step;
-		return $more;
-	}
-	
+  public $index, $start, $end, $step;
+  
+  public function __construct($start, $end, $step) {
+    $this->start = $start;
+    $this->end = $end;
+    $this->step = ($end<$start && $step>0 ? -$step : $step);
+    $this->index = $start - $this->step;
+  }
+  
+  public function next() {
+    $more = ($this->step>0 ? $this->index<$this->end : $this->index>$this->end);
+    $this->index += $this->step;
+    return $more;
+  }
+  
 }

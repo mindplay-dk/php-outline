@@ -8,38 +8,38 @@ OutlineTpl (Engine Wrapper)
 Copyright (C) 2007-2009, Rasmus Schultz <http://www.mindplay.dk>
 
 Please see "README.txt" for license and usage information.
-	
+  
 */
 
 class OutlineTpl implements IOutlineEngine {
-	
-	/*
-	This class simplifies Outline, implementing the more
-	traditional style of templating, where you create an
-	object, assign named variables, and then render and
-	print (or render and return) the template output.
-	
-	The constructor's $config argument is used as configuration
-	for the engine - see the [OutlineEngine] class for options.	
-	*/
   
-	protected $vars = array();
-	protected $engine;
-	protected $config;
-	protected $tplname;
+  /*
+  This class simplifies Outline, implementing the more
+  traditional style of templating, where you create an
+  object, assign named variables, and then render and
+  print (or render and return) the template output.
+  
+  The constructor's $config argument is used as configuration
+  for the engine - see the [OutlineEngine] class for options.  
+  */
+  
+  protected $vars = array();
+  protected $engine;
+  protected $config;
+  protected $tplname;
   protected $caching = false;
-	
-	public function __construct($tplname, $config = null) {
+  
+  public function __construct($tplname, $config = null) {
     $this->tplname = $tplname;
-		$this->config = is_array($config) ? $config : array();
-		$this->config['outline_context'] = & $this;
-	}
-	
-	public function __destruct() {
-		if ($this->engine) $this->engine->__destruct();
-		foreach ($this as $index => $value) unset($this->$index);
-	}
-	
+    $this->config = is_array($config) ? $config : array();
+    $this->config['outline_context'] = & $this;
+  }
+  
+  public function __destruct() {
+    if ($this->engine) $this->engine->__destruct();
+    foreach ($this as $index => $value) unset($this->$index);
+  }
+  
   protected function initEngine() {
     
     /*
@@ -51,26 +51,26 @@ class OutlineTpl implements IOutlineEngine {
     
   }
   
-	public function assign($var, $value) {
+  public function assign($var, $value) {
     
     /*
     Exposes the given value as a template variable with the name $var.
     */
     
-		$this->vars[$var] = $value;
+    $this->vars[$var] = $value;
     
-	}
-	
-	public function assign_by_ref($var, &$value) {
+  }
+  
+  public function assign_by_ref($var, &$value) {
     
     /*
     Exposes the given value-reference, typically an object or array
     reference, as a template variable with the name $var.
     */
     
-		$this->vars[$var] = &$value;
+    $this->vars[$var] = &$value;
     
-	}
+  }
   
   public function apply($array, $overwrite = true) {
     
@@ -148,7 +148,7 @@ class OutlineTpl implements IOutlineEngine {
     
   }
   
-	public function display() {
+  public function display() {
     
     /*
     Renders the template and displays the generated content.
@@ -159,29 +159,29 @@ class OutlineTpl implements IOutlineEngine {
     if (!$this->caching || $this->engine->cached()) {
       require $this->engine->get();
     } else {
-  		$this->engine->capture();
-  		require $this->engine->get();
-  		$this->engine->stop();
-  		require $this->engine->get();
+      $this->engine->capture();
+      require $this->engine->get();
+      $this->engine->stop();
+      require $this->engine->get();
     }
     
-	}
-	
-	public function fetch() {
+  }
+  
+  public function fetch() {
     
     /*
     Renders the template and returns (but does not display)
     the generated content.
     */
     
-		ob_start();
-		$this->display();
-		$content = ob_get_clean();
-		return $content;
+    ob_start();
+    $this->display();
+    $content = ob_get_clean();
+    return $content;
     
-	}
-	
-	public function addPlugin($class, $path) {
+  }
+  
+  public function addPlugin($class, $path) {
     
     /*
     Adds a plugin required to render your template.
@@ -193,10 +193,10 @@ class OutlineTpl implements IOutlineEngine {
     
     if (!isset($this->config['plugins']))
       $this->config['plugins'] = array();
-		$this->config['plugins'][$class] = $path;
+    $this->config['plugins'][$class] = $path;
     
-	}
-	
+  }
+  
   // --- Support for helper objects:
   
   private $helpers = array();
@@ -225,8 +225,8 @@ class OutlineTpl implements IOutlineEngine {
   
   // --- IOutlineEngine implementation:
   
-	public function & getOutlineEngine() {
+  public function & getOutlineEngine() {
     return $this->engine;
   }
-	
+  
 }

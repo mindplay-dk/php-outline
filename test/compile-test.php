@@ -7,7 +7,7 @@ function outline_function_testfunc($value) {
 }
 
 function OutlineDebug($msg) {
-	echo "<div style=\"color:#f00\"><strong>Outline</strong>: $msg</div>";
+  echo "<div style=\"color:#f00\"><strong>Outline</strong>: $msg</div>";
 }
 
 $engine = new Outline(array('trace_callback' => 'OutlineDebug'));
