@@ -12,25 +12,25 @@ define("OUTLINE_ALWAYS_COMPILE", true); // forces unconditional recompile of tem
 header("Content-type: text/html; charset=iso-8859-1");
 
 function outline_insert_timestamp($args) {
-	$outline = Outline::get_context();
-	return "<span style=\"color:#{$args['color']};\">" . time() . "</span> (context:".get_class($outline).")";
+  $outline = Outline::get_context();
+  return "<span style=\"color:#{$args['color']};\">" . time() . "</span> (context:".get_class($outline).")";
 }
 
 function outline_function_testfunc($args) {
-	$outline = Outline::get_context();
-	return "today's date is " . date("r") . ' - passed string was: ' . $args['value'] . " (context:".get_class($outline).")";
+  $outline = Outline::get_context();
+  return "today's date is " . date("r") . ' - passed string was: ' . $args['value'] . " (context:".get_class($outline).")";
 }
 
 class MyOutline extends Outline {
-	public function getTest() {
-		return "this message comes from the MyOutline test class";
-	}
+  public function getTest() {
+    return "this message comes from the MyOutline test class";
+  }
 }
 
 function show_my_template($use_this_title) {
-	
-	$_outline = new MyOutline('test');
-	
+  
+  $_outline = new MyOutline('test');
+  
   $testvar = 'This variable has local scope';
   $testdate = date("r");
   $testarray = array(
@@ -41,7 +41,7 @@ function show_my_template($use_this_title) {
   $empty_array = array();
   
   require $_outline->get();
-	
+  
 }
 
 show_my_template('Welcome to Outline - the fast and light template engine for php!');
