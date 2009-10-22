@@ -123,6 +123,8 @@ class OutlineCompiler {
     $this->coding = false;
     $this->linenum = 1;
     
+    $this->init("\$_ = OutlineRuntime::start(__FILE__);");
+    
     foreach ($this->config['plugins'] as $plugin) {
       
       $class = 'OutlinePlugin_'.$plugin;
@@ -139,7 +141,7 @@ class OutlineCompiler {
         
         if (file_exists(OUTLINE_PLUGIN_PATH.'/'.$runtime)) {
           include_once OUTLINE_PLUGIN_PATH.'/'.$runtime;
-          $this->init("require_once OUTLINE_PLUGIN_PATH.'/{$runtime}';");
+          $this->init("\$_->init_plugin('{$plugin}');");
         }
         
       }
@@ -147,8 +149,6 @@ class OutlineCompiler {
       $this->registerPlugin($class);
       
     }
-    
-    $this->init("\$outline = OutlineRuntime::start(__FILE__);");
     
     while ($i < strlen($tpl)) {
       
