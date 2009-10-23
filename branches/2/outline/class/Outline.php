@@ -167,21 +167,31 @@ class OutlineRuntime {
   public static function start($compiled_path) {
     
     /*
-    This method is called at the beginning of a compiled template.
+    This method is called at the beginning of a compiled template - it
+    returns the OutlineRuntime instance for use by plugin runtimes.
     */
     
-    if (end(self::$stack)->compiled_path != OutlineUtil::normalize_path($compiled_path)) {
+    $runtime = end(self::$stack);
+    
+    if ($runtime->compiled_path != OutlineUtil::normalize_path($compiled_path)) {
       throw new OutlineException('OutlineRuntime::start() : runtime stack entry mismatch');
     }
     
-    return end(self::$stack);
+    if ($runtime->quiet) {
+      $runtime->error_level = error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING | E_STRICT ^ E_STRICT);
+    }
+    
+    return $runtime;
     
   }
   
   public static function finish($compiled_path) {
     
     /*
-    This method is called at the end of a compiled template.
+    This method is called at the end of a compiled template - it destroys
+    the runtime environment of the finished template, and returns the
+    previous OutlineRuntime (if present) so that the finishing template
+    can restore the parent runtime environment.
     */
     
     $runtime = array_pop(self::$stack);
@@ -190,8 +200,14 @@ class OutlineRuntime {
       throw new OutlineException('OutlineRuntime::finish() : runtime stack entry mismatch');
     }
     
+    if ($runtime->quiet) {
+      error_reporting($runtime->error_level);
+    }
+    
     $runtime->__destruct();
     unset($runtime);
+    
+    return count(self::$stack) ? end(self::$stack) : null;
     
   }
   
@@ -200,9 +216,13 @@ class OutlineRuntime {
   public $outline;
   public $compiled_path;
   
+  protected $quiet, $error_level;
+  
   public function __construct(Outline & $outline, $compiled_path) {
     $this->compiled_path = $compiled_path;
     $this->outline = & $outline;
+    $config = $outline->getConfig();
+    $this->quiet = $config['quiet'];
   }
   
   public function __destruct() {

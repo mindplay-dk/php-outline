@@ -2,8 +2,8 @@
 
 require "_header.php";
 
-function outline_function_testfunc($value) {
-  return 'The time is: '.date('H:i:s',$value);
+function outline_function_testfunc($args) {
+	return "today's date is " . date("r") . ' - passed string was: ' . $args['value'];
 }
 
 function OutlineDebug($msg) {
