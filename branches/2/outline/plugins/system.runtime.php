@@ -11,6 +11,11 @@ Please see "README.txt" for license and other information.
 
 */
 
+class OutlineRuntime_system implements IOutlineRuntime {
+  public function __construct(OutlineRuntime & $runtime) {
+  }
+}
+
 function outline__replace($str, $search = '', $replace = '') { return str_replace($search, $replace, $str); }
 function outline__default($var, $default = '') { return empty($var) ? $default : $var; }
 function outline__strip($str, $replace = ' ') { return preg_replace('!\s+!', $replace, $str); }
