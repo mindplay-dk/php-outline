@@ -79,7 +79,7 @@ class OutlineCompiler {
   
   public function __construct(Outline &$engine) {
     $this->engine = & $engine;
-    $this->config = & $engine->getConfig();
+    $this->config = $engine->getConfig();
     $this->commands = array(
       array("type" => self::COMMAND_BLOCK, "commands" => & $this->blocks),
       array("type" => self::COMMAND_TAG,   "commands" => & $this->tags)
@@ -223,7 +223,7 @@ class OutlineCompiler {
     if (count($this->block_stack))
       throw new OutlineCompilerException("OutlineCompiler::compile() : unterminated block: " . end($this->block_stack) . " at end of template", $this);
     
-    $this->code('OutlineRuntime::finish(__FILE__);');
+    $this->code('$_ = OutlineRuntime::finish(__FILE__);');
     
     if ($this->coding) $this->compiled .= OUTLINE_PHPTAG_CLOSE;
     
