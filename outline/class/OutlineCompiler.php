@@ -123,7 +123,7 @@ class OutlineCompiler {
     $this->coding = false;
     $this->linenum = 1;
     
-    $this->init("\$_ = OutlineRuntime::start(__FILE__);");
+    $this->init("\$_ = OutlineRuntime::start(__FILE__, isset(\$this) ? \$this : null);");
     
     foreach ($this->config['plugins'] as $plugin) {
       
@@ -466,6 +466,10 @@ class OutlineCompiler {
 }
 
 abstract class OutlinePlugin {
+  
+  /*
+  Base class for Outline plugins.
+  */
   
   protected $compiler;
   

@@ -164,7 +164,7 @@ class OutlineRuntime {
     
   }
   
-  public static function start($compiled_path) {
+  public static function start($compiled_path, $context) {
     
     /*
     This method is called at the beginning of a compiled template - it
@@ -177,9 +177,11 @@ class OutlineRuntime {
       throw new OutlineException('OutlineRuntime::start() : runtime stack entry mismatch');
     }
     
-    if ($runtime->quiet) {
+    if ($runtime->config['quiet']) {
       $runtime->error_level = error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING | E_STRICT ^ E_STRICT);
     }
+    
+    $runtime->context = $context;
     
     return $runtime;
     
@@ -200,7 +202,7 @@ class OutlineRuntime {
       throw new OutlineException('OutlineRuntime::finish() : runtime stack entry mismatch');
     }
     
-    if ($runtime->quiet) {
+    if ($runtime->config['quiet']) {
       error_reporting($runtime->error_level);
     }
     
@@ -216,13 +218,14 @@ class OutlineRuntime {
   public $outline;
   public $compiled_path;
   
-  protected $quiet, $error_level;
+  protected $config;
+  protected $context;
+  protected $error_level;
   
   public function __construct(Outline & $outline, $compiled_path) {
     $this->compiled_path = $compiled_path;
     $this->outline = & $outline;
-    $config = $outline->getConfig();
-    $this->quiet = $config['quiet'];
+    $this->config = $outline->getConfig();
   }
   
   public function __destruct() {
@@ -232,6 +235,18 @@ class OutlineRuntime {
   
   public function init_plugin($plugin) {
     require_once OUTLINE_PLUGIN_PATH.'/'.$plugin.'.runtime.php';
+    $class = 'OutlineRuntime_'.$plugin;
+    @$this->$plugin = new $class($this);
   }
+  
+}
+
+interface IOutlineRuntime {
+  
+  /*
+  This interface is implemented by plugin runtimes.
+  */
+  
+  public function __construct(OutlineRuntime & $runtime);
   
 }
