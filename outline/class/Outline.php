@@ -101,7 +101,7 @@ class Outline {
       try {
         $compiler = new OutlineCompiler($this);
         @mkdir(dirname($compiled_path), $this->config['dir_mode'], true);
-        $source = $compiler->compile(file_get_contents($template_path));
+        $source = $compiler->compile($template_path);
         OutlineUtil::write_file($compiled_path, $source, $this->config['file_mode']);
         $compiler->__destruct(); unset($compiler);
       } catch (OutlineCompilerException $e) {
@@ -229,8 +229,7 @@ class OutlineRuntime {
   }
   
   public function __destruct() {
-    unset($this->outline);
-    unset($this->compiled_path);
+    foreach ($this as $index => $value) unset($this->$index);
   }
   
   public function init_plugin($plugin) {
