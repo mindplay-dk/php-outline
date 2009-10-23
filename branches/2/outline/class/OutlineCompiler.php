@@ -70,6 +70,7 @@ class OutlineCompiler {
   public $current_plugin = null;
   
   public $utf8 = false;
+  public $uid;
   
   public $engine;
   public $config;
@@ -106,7 +107,10 @@ class OutlineCompiler {
   
   // --- Compiler and Parser methods:
   
-  public function compile($tpl) {
+  public function compile($template_path) {
+    
+    $tpl = file_get_contents($template_path);
+    $this->uid = sprintf('%u',crc32($template_path));
     
     if ($this->utf8 = self::is_utf8($tpl))
       $this->engine->trace("OutlineCompiler running in UTF-8 mode");

@@ -83,7 +83,7 @@ class OutlinePlugin_system extends OutlinePlugin {
   static protected $block_keyword = null;
   
   public function user_block_name($keyword) {
-    return ( OUTLINE_USERBLOCK_PREFIX . OutlineUtil::clean($this->compiler->engine->getTplName()) . '_' . $keyword );
+    return ( OUTLINE_USERBLOCK_PREFIX . $this->compiler->uid . '_' . $keyword );
   }
   
   public function user_block($_args) {
