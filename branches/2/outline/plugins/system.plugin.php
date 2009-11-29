@@ -59,25 +59,6 @@ class OutlinePlugin_system extends OutlinePlugin {
     $this->compiler->code('} else if ('.$args.') {');
   }
   
-  // * require, include, display tags:
-  
-  public function require_tag($args) {
-    $this->compiler->code("require_once '$args';");
-  }
-  
-  protected $include_num = 0;
-  
-  public function include_tag($args) {
-    $tplname = trim($args);
-    if (substr($tplname,0,1) != '$') $tplname = "'$tplname'";
-    $var = '$outline_include_' . ($this->include_num++);
-    $this->compiler->code("$var = new Outline($tplname); require {$var}->get();");
-  }
-  
-  public function display_tag($args) {
-    $this->compiler->code("echo htmlspecialchars(file_get_contents('".$args."'));");
-  }
-  
   // * user-block:
   
   static protected $block_keyword = null;
@@ -91,7 +72,7 @@ class OutlinePlugin_system extends OutlinePlugin {
     @list($keyword, $args) = explode(" ", substr($_args,1), 2);
     self::$block_keyword = $keyword = strtolower(trim($keyword));
     $function = $this->user_block_name($keyword);
-    $this->compiler->code("Outline::register_function('{$function}', '{$keyword}'); if (!function_exists('{$function}')) { function {$function}(\$args) { extract(\$args+" . $this->compiler->build_arguments($args) . "); ");
+    $this->compiler->code("if (!function_exists('{$function}')) { function {$function}(\$_, \$_args) { extract(\$_args+" . $this->compiler->build_arguments($args) . "); ");
   }
   
   public function end_user_block($args) {
@@ -101,7 +82,8 @@ class OutlinePlugin_system extends OutlinePlugin {
   
   public function user_tag($_args) {
     @list($keyword, $args) = explode(" ", $_args, 2);
-    $this->compiler->code("Outline::dispatch('".strtolower(trim($keyword))."', ".$this->compiler->build_arguments($args).');');
+    $function = $this->user_block_name($keyword);
+    $this->compiler->code("{$function}(\$_, ".$this->compiler->build_arguments($args).');');
   }
   
   // * capture block:
@@ -232,13 +214,6 @@ class OutlinePlugin_system extends OutlinePlugin {
     $this->compiler->code("} if ($var == $count) { $var = 0; }");
   }
   
-  // * insert tag:
-  
-  public function insert_tag($_args) {
-    @list($function, $args) = explode(" ", $_args, 2);
-    $this->compiler->code("echo Outline::defer('" . OUTLINE_INSERTFUNC_PREFIX . $function . "', " . $this->compiler->build_arguments($args) . ");");
-  }
-  
   // --- Plugin registration:
   
   public static function register(&$compiler) {
@@ -248,9 +223,6 @@ class OutlinePlugin_system extends OutlinePlugin {
     $compiler->registerBlock('if', 'if_block');
     $compiler->registerTag('else', 'else_tag');
     $compiler->registerTag('elseif', 'elseif_tag');
-    $compiler->registerTag('require', 'require_tag');
-    $compiler->registerTag('include', 'include_tag');
-    $compiler->registerTag('display', 'display_tag');
     $compiler->registerBlock('block', 'user_block');
     $compiler->registerTag('!', 'user_tag');
     $compiler->registerBlock('capture', 'capture_block');
@@ -260,7 +232,6 @@ class OutlinePlugin_system extends OutlinePlugin {
     $compiler->registerBlock('foreach', 'foreach_block');
     $compiler->registerBlock('cycle', 'cycle_block');
     $compiler->registerTag('next', 'cycle_next_tag');
-    $compiler->registerTag('insert:', 'insert_tag');
     $compiler->registerTag('@', 'array_tag');
   }
   

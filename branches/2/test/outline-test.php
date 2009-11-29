@@ -1,12 +1,8 @@
 <?php
 
-/*
-This example demonstrates Outline at it's simplest - no caching, and no encapsulation.
-*/
-
 require_once "_header.php";
 
-class MyOutline {
+class OutlineTest {
   
   /*
   A tiny "template engine" for testing purposes.
@@ -18,17 +14,12 @@ class MyOutline {
   protected $compiled_path;
   
   public function __construct($tpl) {
-    if (!isset(self::$engine)) {
-      self::$engine = new Outline(array(
-        'trace_callback' => array($this, 'trace')
-      ));
-    }
     $this->template_path = dirname(__FILE__).'/templates/'.$tpl.'.tpl.html';
     $this->compiled_path = dirname(__FILE__).'/compiled/'.$tpl.'.tpl.php';
   }
   
   public function getTest() {
-    return "this message comes from the MyOutline test class";
+    return "this message comes from the OutlineTest test class";
   }
   
   public function render($_vars = array()) {
@@ -41,20 +32,28 @@ class MyOutline {
     require self::$engine->load($this->compiled_path);
   }
   
-  public function trace($msg) {
+  public static function trace($msg) {
     echo "<div style=\"color:#f00\"><strong>Outline</strong>: $msg</div>";
+  }
+  
+  public static function init() {
+    self::$engine = new Outline(array(
+      'trace_callback' => array(__CLASS__, 'trace')
+    ));
   }
   
 }
 
-header("Content-type: text/html; charset=iso-8859-1");
+OutlineTest::init();
 
 function outline_function_testfunc($args) {
   // TODO: demonsrate obtaining runtimes, engine and context
-  return "today's date is " . date("r") . ' - passed string was: ' . $args['value'];
+  return "passed value was: {$args['value']}";
 }
 
-$test = new MyOutline('test');
+define('TEST_VALUE', 'This is a sample constant defined in outline-test.php');
+
+$test = new OutlineTest('test');
 
 $test->render(array(
   'page_title' => 'Outline Test Page',
