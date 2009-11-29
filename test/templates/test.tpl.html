@@ -1,35 +1,18 @@
 <html>
 
 <head>
-	<title>{$use_this_title}</title>
+	<title>{$page_title}</title>
 </head>
 
 <body>
 
-{if $test_cache}
-	<p>Testing hierachical caching: {$cache_msg}</p>
-	<p>Note that caching-level "a" will be cleared manually on every run, to demonstrate cascading cache clearing. The engine itself will clear the entire cache, if the 'test.html' template is changed.</p>
-{/if}
-
-{ignore}
-	<h1>Testing the {require} and {ignore} commands</h1>
-{/ignore}
-
-{require test_require.php}
+<h1>{$page_title}</h1>
 
 <p>Testing »funny« characters</p>
 
-<p>Testing context object - the local $outline reference is of type: {#get_class($outline)}</p>
+<p>Testing context object - {if !isset($this)}we don't have {ignore}{$this}{/ignore}{else}we have {ignore}{$this}{/ignore} of class {#get_class($this)}{/if}.</p>
 
-<p>Contextual object's getTest() method returned: {$outline->getTest()}</p>
-
-<p>This is a demonstration of uncached inserts - the output below will change every second, even though the output is cached. The execution of the function 'uncached_function', declared in 'test.php', is deferred until the time the cache is retrieved.</p>
-
-<ul>
-	{foreach $testarray as $color => $code}
-		<li>{$color} : {insert:timestamp color=$code}</li>
-	{/foreach}
-</ul>
+<p>Testing runtime context: {#get_class($_)} (note that you should consider the {ignore}{$_}{/ignore} variable private - any access to the underlying template runtime is provided through template commands)</p>
 
 <p>This demonstrates a custom function call: <em>{testfunc value=time()}</em></p>
 
@@ -118,21 +101,15 @@ This content was captured to the $test variable.
 
 <p>Using dynamic arguments: {for $var from date('Y') to date('Y')-9}{$var}, {/for}...</p>
 
-{ignore}<h1>Testing the {include} command</h1>{/ignore}
-
-{include include/test_include}
-
-{if $outline}
-	<p>After include, contextual OutlineTest object's getTest() method returned: {$outline->getTest()}</p>
-{/if}
-
 {ignore}<h1>Testing the {foreach} command</h1>{/ignore}
 
 {set $odd = false}
 
-{foreach $testarray as $color => $rgb}
-	<p style="color:#{$rgb}">{$color}</p>
-{/foreach}
+<ul>
+	{foreach $testarray as $color => $code}
+		<li><span style="color:{$code}">{$color}</span></li>
+	{/foreach}
+</ul>
 
 {ignore}<h1>Testing {else} with {foreach}</h1>{/ignore}
 
@@ -141,13 +118,6 @@ This content was captured to the $test variable.
 {else}
 	<p>This displays because the foreach'ed array was empty.</p>
 {/foreach}
-
-{ignore}<h1>Testing access to a class declared in 'test_require.php'</h1>{/ignore}
-
-{set $testobject = new TestClass()}
-
-<p>Variable access: {$testobject->variable}</p>
-<p>Method access: {$testobject->method()}</p>
 
 {ignore}<h1>Testing the {if} command</h1>{/ignore}
 
@@ -186,18 +156,21 @@ This content was captured to the $test variable.
 	these comments will go unseen
 *}
 
-{if $test_object}
-{ignore}<h1>Testing object members exposed by the OutlineTpl::expose() method</h1>{/ignore}
-<pre>{#var_dump($test_object)}</pre>
-{/if}
+<p>Contextual object's getTest() method returned: {$this->getTest()}</p>
 
-<p>Contextual object's getTest() method returned: {$outline->getTest()}</p>
+<h1>Missing features</h1>
+<p>The following list descibes features removed from Outline in version 2.0, and explains why:</p>
+<ul>
+  <li><strong>Caching:</strong> caching features have been removed. Caching is a generic feature - there are too many possible caching strategies for a template engine (or any other software component) to implement. It belongs in a framework, and most modern frameworks provide elaborate choices of caching media and strategies.</li>
+  <li><strong>Inserts:</strong> with caching removed, the cache-specific {ignore}{insert}{/ignore} command has also been removed. Some (not all) frameworks provide an equivalent feature, which could easily be exposed to templates by implementing a framework-specific command. Frameworks that don't provide such a feature out of the box, could probably be extended to support such a feature.</li>
+  <li><strong>Nesting:</strong> {ignore}nesting templates with the {require} command has been dropped, because different frameworks may use different conventions, caching schemes, etc. - the template engine now relies on a framework-specific {include} or {require} command.{/ignore}</li>
+  <li><strong>Context:</strong> previous versions of Outline provided the $outline variable, giving a reference to the template engine, and providing means for engine wrappers to replace this context object. Outline 2 uses a different strategy - for one, it uses a single engine for any number of templates, rather than creating a new instance for every template. It also provides no runtime context, but instead encourages you to do so yourself - for example, by loading a template during a method-call to your own class, your are making available the {ignore}{$this}{/ignore} object reference - in an MVC environment, you can use this to effectively give templates access to protected members of a View class.</li>
+  <li><strong>Includes:</strong> the {ignore}{include}, {require} and {display}{/ignore} commands have all been removed. These can very easily be implemented with framework-specific considerations, and have been removed simply to leave the command-names available for a framework-specific plugin to use.</li>
+  <li><strong>OutlineHelper:</strong> this class was designed to support features now supported generically by plugins, in the form of plugin runtimes, and as such as no longer necessary.</li>
+  <li><strong>OutlineTpl:</strong> this is gone for now - in the future, a stand-alone template engine may be built on top of Outline 2.0, for those who don't use a supported framework.</li>
+</ul>
 
 <h2>Page generated at {$testdate}</h2>
-<h3>Displaying the compiled template using the {ignore}{display}{/ignore} command:</h3>
-<pre>
-{display compiled/test.php}
-</pre>
 
 </body>
 
