@@ -24,8 +24,6 @@ define("OUTLINE_USERBLOCK_CONST",     'OUTLINE_USER_');
 define("OUTLINE_USERFUNC_PREFIX",     'outline_function_');
 define("OUTLINE_INSERTFUNC_PREFIX",   'outline_insert_');
 
-require OUTLINE_CLASS_PATH . "/OutlineUtil.php";
-
 class OutlineCompilerException extends Exception {
   
   protected $linenum = 0;

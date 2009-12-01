@@ -1,6 +1,10 @@
 <?php
 
-require_once "_header.php";
+if (!isset($_GET['bypass'])) define('RECOMPILE', true);
+
+$start = microtime(true);
+
+require_once "../outline/engine.php";
 
 class OutlineTest {
   
@@ -23,7 +27,7 @@ class OutlineTest {
   }
   
   public function render($_vars = array()) {
-    self::$engine->compile(
+    if (defined('RECOMPILE')) self::$engine->compile(
       $this->template_path,
       $this->compiled_path,
       true // force recompile
@@ -66,5 +70,7 @@ $test->render(array(
   ),
   'empty_array' => array(),
 ));
+
+echo '<em>'.(defined('RECOMPILE') ? 'compiled and ' : '').'rendered in '.number_format(1000*(microtime(true)-$start),2).' msec'.(defined('RECOMPILE') ? ' (<a href="?bypass">bypass compiler</a>)' : '').'</em>';
 
 ?>
