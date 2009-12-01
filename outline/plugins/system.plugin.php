@@ -129,17 +129,19 @@ class OutlinePlugin_system extends OutlinePlugin {
   
   protected $for_stack = array();
   
+  const FOR_EX = '(\$[\w\d_]*)\s+from\s+(.*)\sto\s(.*(?=\sby\s)|.*)(\sby\s(.+))?';
+  
   public function for_block($args) {
     
     if ($this->compiler->utf8) {
       mb_ereg(
-        '(\$[\w\d_]*)\s+from\s+(.*)\sto\s(.*(?=\sby\s)|.*)(\sby\s(.+))?',
+        self::FOR_EX,
         $args,
         $exp
       );
     } else {
       preg_match(
-        '/(\$[\w\d_]*)\s+from\s+(.*)\sto\s(.*(?=\sby\s)|.*)(\sby\s(.+))?/',
+        '/'.self::FOR_EX.'/',
         $args,
         $exp
       );
