@@ -13,6 +13,8 @@ Please see "README.txt" for license and other information.
 
 class OutlineRuntime_system implements IOutlineRuntime {
   
+  protected $runtime;
+  
   public function __construct(OutlineRuntime & $runtime) {
     $this->runtime = & $runtime;
   }
