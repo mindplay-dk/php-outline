@@ -1,3 +1,12 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<title>Outline 2 - Test Page</title>
+</head>
+
+<body>
+
 <?php
 
 if (!isset($_GET['bypass'])) define('RECOMPILE', true);
@@ -60,7 +69,7 @@ define('TEST_VALUE', 'This is a sample constant defined in outline-test.php');
 $test = new OutlineTest('test');
 
 $test->render(array(
-  'page_title' => 'Outline Test Page',
+  'page_title' => 'Outline 2 - Test Page',
   'testvar' => 'This variable has local scope',
   'testdate' => date("r"),
   'testarray' => array(
@@ -74,3 +83,7 @@ $test->render(array(
 echo '<em>'.(defined('RECOMPILE') ? 'compiled and ' : '').'rendered in '.number_format(1000*(microtime(true)-$start),2).' msec'.(defined('RECOMPILE') ? ' (<a href="?bypass">bypass compiler</a>)' : '').'</em>';
 
 ?>
+
+</body>
+
+</html>
