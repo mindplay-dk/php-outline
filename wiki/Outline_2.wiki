@@ -34,9 +34,11 @@ Hence, the new branch will be better suited for integration with third-party fra
 
 *no form-helper* : the form-helper, which was in early stage of development (in SVN), has  been dropped - I did not have a clear vision when I started building this, and have since realized that this is far beyond the scope of templating. Modern frameworks provide excellent form-builders, which can be integrated with the template engine by means of plugins and helpers.
 
-*support for content-blocks* : to support features like `{content_for}`, commonly used by many frameworks, the engine will need to support some means of outputting not only the rendered template content, but also any named, captured blocks of content generated during rendering. A Yii-specific plugin should support "clips", the framework-generic equivalent of this feature. _THIS IS NOT FINAL._
+_THE FOLLOWING IDEAS ARE NOT FINAL:_
 
-*include behavior* : `{include}` will run templates in an isolated scope - that is, included templates will not be able to see their parent template's variables, unless these are passed-in explicitly. This is a design-decision which may make some aspects of templating slightly more terse, but will reduce the risk of template-variable overlap, giving more predictable results. _THIS IS NOT FINAL._
+*support for content-blocks* : to support features like `{content_for}`, commonly used by many frameworks, the engine will need to support some means of outputting not only the rendered template content, but also any named, captured blocks of content generated during rendering. A Yii-specific plugin should support "clips", the framework-generic equivalent of this feature.
+
+*include behavior* : `{include}` will run templates in an isolated scope - that is, included templates will not be able to see their parent template's variables, unless these are passed-in explicitly. This is a design-decision which may make some aspects of templating slightly more terse, but will reduce the risk of template-variable overlap, giving more predictable results.
 
 *compiler behavior* : for various reasons (`{include}` behavior in particular), compiled templates will consist of a function-declaration, rather than a flat PHP script. This guarantees that a template is loaded only once, even if rendered/included many times, and also opens up other possibilities for the future, such as static template variables (could be useful for things like alternation, e.g. with `{cycle}`), early template loading, and other performance-oriented strategies.
 
