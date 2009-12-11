@@ -141,11 +141,11 @@ class OutlineCompiler {
         
         require_once $class_path;
         
-        if (file_exists(OUTLINE_PLUGIN_PATH.'/'.$runtime)) {
-          include_once OUTLINE_PLUGIN_PATH.'/'.$runtime;
-          $this->init("\$_->init_plugin('{$plugin}');");
-        }
-        
+      }
+      
+      if (file_exists(OUTLINE_PLUGIN_PATH.'/'.$runtime)) {
+        include_once OUTLINE_PLUGIN_PATH.'/'.$runtime;
+        $this->init("\$_->init_runtime('{$plugin}');");
       }
       
       $this->registerPlugin($class);
