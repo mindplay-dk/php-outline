@@ -59,6 +59,7 @@ class OutlineCompiler {
   protected $tags = array();
   
   protected $commands;
+  protected $runtimes;
   
   protected $plugins = array();
   protected $plugin_registry = array();
@@ -137,7 +138,7 @@ class OutlineCompiler {
         
         self::$loaded_plugins[] = $class;
         
-        $this->engine->trace("Loading plugin {'$class'} from {$class_path}");
+        $this->engine->trace("Loading plugin '{$class}' from '{$class_path}'");
         
         require_once $class_path;
         
