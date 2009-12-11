@@ -232,10 +232,10 @@ class OutlineRuntime {
     foreach ($this as $index => $value) unset($this->$index);
   }
   
-  public function init_plugin($plugin) {
-    require_once OUTLINE_PLUGIN_PATH.'/'.$plugin.'.runtime.php';
-    $class = 'OutlineRuntime_'.$plugin;
-    @$this->$plugin = new $class($this);
+  public function init_runtime($runtime) {
+    require_once OUTLINE_PLUGIN_PATH.'/'.$runtime.'.runtime.php';
+    $class = 'OutlineRuntime_'.$runtime;
+    @$this->$runtime = new $class($this);
   }
   
 }
