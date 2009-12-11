@@ -144,11 +144,6 @@ class OutlineCompiler {
         
       }
       
-      if (file_exists(OUTLINE_PLUGIN_PATH.'/'.$runtime)) {
-        include_once OUTLINE_PLUGIN_PATH.'/'.$runtime;
-        $this->init("\$_->init_runtime('{$plugin}');");
-      }
-      
       $this->registerPlugin($class);
       
     }
@@ -230,9 +225,16 @@ class OutlineCompiler {
     
     if ($this->coding) $this->compiled .= OUTLINE_PHPTAG_CLOSE;
     
-    foreach ($this->plugins as $class => $plugin) {
-      $plugin->__destruct();
-      unset($this->plugins[$class]);
+    foreach ($this->config['plugins'] as $plugin) {
+      $class = 'OutlinePlugin_'.$plugin;
+      if (isset($this->plugins[$class])) {
+        if (file_exists(OUTLINE_PLUGIN_PATH.'/'.$runtime)) {
+          include_once OUTLINE_PLUGIN_PATH.'/'.$runtime;
+          $this->init("\$_->init_runtime('{$plugin}');");
+        }
+        $this->plugins[$class]->__destruct();
+        unset($this->plugins[$class]);
+      }
     }
     
     $this->compiled = OUTLINE_PHPTAG_OPEN . implode(' ', $this->init) . OUTLINE_PHPTAG_CLOSE . $this->compiled;
