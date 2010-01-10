@@ -12,7 +12,7 @@ You have your basic for-loops, which work in both directions:
 
 You can also specify an increment, to achieve sequences like 0, 10, 20, 30 ...
 
-	`{for $var from 0 to 100 step 10} ... {/for}`
+	`{for $var from 0 to 100 by 10} ... {/for}`
 
 Looping through each element of an array is similar to php:
 
