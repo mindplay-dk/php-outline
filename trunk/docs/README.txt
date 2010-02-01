@@ -1,7 +1,7 @@
 Outline
 =======
 
-	Version 1.0.2
+	Version 1.0.4
 	
 	The latest version will be made available here:
 	
@@ -35,7 +35,7 @@ Getting started
 License
 -------
 
-	Copyright (C) 2007-2009, Rasmus Schultz <http://www.mindplay.dk>
+	Copyright (C) 2007-2010, Rasmus Schultz <http://www.mindplay.dk>
 	
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published by
