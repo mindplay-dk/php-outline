@@ -56,12 +56,12 @@ class OutlineEngine implements IOutlineEngine {
 		"cache_time" =>          OUTLINE_CACHE_TIME,      /* Default cache time (in seconds) */
 		"quiet" =>               true,                    /* Suppresses E_NOTICE and E_WARNING error messages */
     "default_root" =>        null,                    /* Default rootname for template-names with no rootname */
-		"bracket_open" =>        '{',
-		"bracket_close" =>       '}',
-		"bracket_comment" =>     '{*',
-		"bracket_end_comment" => '*}',
-		"bracket_ignore" =>      '{ignore}',
-		"bracket_end_ignore" =>  '{/ignore}',
+		"bracket_open" =>        '{',                     /* Opening bracket for Outline commands */
+		"bracket_close" =>       '}',                     /* Closing bracket for Outline commands */
+		"bracket_comment" =>     null,                    /* Additional brackets are automatically configured, but can be customized as needed */
+		"bracket_end_comment" => null,                    /* - */
+		"bracket_ignore" =>      null,                    /* - */
+		"bracket_end_ignore" =>  null,                    /* - */
 		"outline_context" =>     null,
     "roots" =>               array(),
 		"plugins" =>             array()
@@ -167,6 +167,15 @@ class Outline extends OutlineEngine {
 			$this->config = & self::$engine_stack[0]->config;
 		}
 		
+    if ($this->config['bracket_comment']==null)
+      $this->config['bracket_comment'] = $this->config['bracket_open'].'*';
+    if ($this->config['bracket_end_comment']==null)
+      $this->config['bracket_end_comment'] = '*'.$this->config['bracket_close'];
+    if ($this->config['bracket_ignore']==null)
+      $this->config['bracket_ignore'] = $this->config['bracket_open'].'ignore'.$this->config['bracket_close'];
+    if ($this->config['bracket_end_ignore']==null)
+      $this->config['bracket_end_ignore'] = $this->config['bracket_open'].'/ignore'.$this->config['bracket_close'];
+    
     $this->tplname = $tplname;
     
 		$this->caching = !$this->build(
