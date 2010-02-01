@@ -38,10 +38,10 @@ class Outline {
     "plugins" =>             array('system'),
     "bracket_open" =>        '{',
     "bracket_close" =>       '}',
-    "bracket_comment" =>     '{*',
-    "bracket_end_comment" => '*}',
-    "bracket_ignore" =>      '{ignore}',
-    "bracket_end_ignore" =>  '{/ignore}'
+    "bracket_comment" =>     null,
+    "bracket_end_comment" => null,
+    "bracket_ignore" =>      null,
+    "bracket_end_ignore" =>  null,
   );
   
   public function __construct($config = null) {
@@ -60,6 +60,15 @@ class Outline {
         $this->config[$name] = $value;
       }
     }
+    
+    if ($this->config['bracket_comment']==null)
+      $this->config['bracket_comment'] = $this->config['bracket_open'].'*';
+    if ($this->config['bracket_end_comment']==null)
+      $this->config['bracket_end_comment'] = '*'.$this->config['bracket_close'];
+    if ($this->config['bracket_ignore']==null)
+      $this->config['bracket_ignore'] = $this->config['bracket_open'].'ignore'.$this->config['bracket_close'];
+    if ($this->config['bracket_end_ignore']==null)
+      $this->config['bracket_end_ignore'] = $this->config['bracket_open'].'/ignore'.$this->config['bracket_close'];
     
   }
   
