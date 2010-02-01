@@ -15,7 +15,7 @@ function outline_insert_timestamp($args) {
 	return "<span style=\"color:#{$args['color']};\">" . time() . "</span> (context:".get_class($outline).")";
 }
 
-function outline_function_testfunc($args) {
+function outline_function_format_date($args) {
 	$outline = Outline::get_context();
 	return "today's date is " . date("r") . ' - passed string was: ' . $args['value'] . " (context:".get_class($outline).")";
 }
@@ -28,7 +28,11 @@ class MyOutline extends Outline {
 
 function show_my_template($use_this_title) {
 	
-	$_outline = new MyOutline('test');
+	$_outline = new MyOutline('stuff:test', array(
+    "roots" => array(
+      "stuff" => OUTLINE_SCRIPT_PATH.'/templates'
+    )
+  ));
 	
 	$a = substr("abc", rand(0,2), 1);
 	$b = substr("123", rand(0,2), 1);
