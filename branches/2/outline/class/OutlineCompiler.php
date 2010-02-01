@@ -132,16 +132,17 @@ class OutlineCompiler {
       
       $class = 'OutlinePlugin_'.$plugin;
       $class_path = OUTLINE_PLUGIN_PATH.'/'.$plugin.'.plugin.php';
+      
       $runtime = $plugin.'.runtime.php';
+      $runtime_path = OUTLINE_PLUGIN_PATH.'/'.$runtime;
       
       if (!in_array($class, self::$loaded_plugins)) {
-        
         self::$loaded_plugins[] = $class;
-        
         $this->engine->trace("Loading plugin '{$class}' from '{$class_path}'");
-        
         require_once $class_path;
         
+        if (file_exists($runtime_path))
+          require_once $runtime_path;
       }
       
       $this->registerPlugin($class);
@@ -247,12 +248,16 @@ class OutlineCompiler {
     
     $cancel = (substr($command, 0, strlen(OUTLINE_COMMAND_CANCEL)) === OUTLINE_COMMAND_CANCEL);
     
+    @list($function, $args) = explode(" ", $command, 2);
+    $function = OUTLINE_USERFUNC_PREFIX . $function;
+    if (function_exists($function)) {
+      $this->code('echo '.$function.'('.$this->build_arguments($args).');');
+      return;
+    }
+    
     $match = 0;
-    
     $lcommand = strtolower($command);
-    
     foreach ($this->commands as $c) {
-      
       foreach ($c['commands'] as $keyword => $item) {
         if ((substr($lcommand, $cancel ? strlen(OUTLINE_COMMAND_CANCEL) : 0, strlen($keyword)) === $keyword) && (strlen($keyword) > $match)) {
           $match = strlen($keyword);
@@ -263,19 +268,10 @@ class OutlineCompiler {
           $command_name = substr($command, $cancel ? strlen(OUTLINE_COMMAND_CANCEL) : 0, strlen($keyword));
         }
       }
-      
     }
     
-    if (!$match) {
-      @list($function, $args) = explode(" ", $command, 2);
-      $function = OUTLINE_USERFUNC_PREFIX . $function;
-      if (function_exists($function)) {
-        $this->code('echo '.$function.'('.$this->build_arguments($args).');');
-        return;
-      } else {
-        throw new OutlineCompilerException("OutlineCompiler::parse() : unrecognized tag: ".htmlspecialchars($command), $this);
-      }
-    }
+    if (!$match)
+      throw new OutlineCompilerException("OutlineCompiler::parse() : unrecognized tag: ".htmlspecialchars($command), $this);
     
     if ($classname && !isset($this->plugins[$classname]))
       $this->plugins[$classname] = new $classname($this);
