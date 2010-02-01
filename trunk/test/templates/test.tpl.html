@@ -31,7 +31,7 @@
 	{/foreach}
 </ul>
 
-<p>This demonstrates a custom function call: <em>{testfunc value=time()}</em></p>
+<p>This demonstrates a custom function call: <em>{format_date value=time()}</em></p>
 
 <p>Printing a constant defined in 'test_require.php': {#TEST_VALUE}</p>
 
@@ -198,7 +198,7 @@ This content was captured to the $test variable.
 <h2>Page generated at {$testdate}</h2>
 <h3>Displaying the compiled template using the {ignore}{display}{/ignore} command:</h3>
 <pre>
-{display compiled/__default__/test.tpl.php}
+{display compiled/stuff/test.tpl.php}
 </pre>
 
 </body>
